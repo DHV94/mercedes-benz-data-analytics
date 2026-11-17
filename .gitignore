@@ -1,0 +1,33 @@
+# dbt
+target/
+dbt_packages/
+logs/dbt.log
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/logs/
+
+# Secrets / credentials  (NEVER commit these)
+profiles.yml
+.env
+*.pem
+*.p8
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Generated source data (reproducible with data_generator/)
+data_generator/output/
+
+# Local state of the token hook
+logs/.token_state.json
+
+# Power BI / OS / IDE
+*.pbix.tmp
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

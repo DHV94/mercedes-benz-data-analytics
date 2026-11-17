@@ -1,0 +1,3 @@
+date,time,session_id,model,input_tokens,cache_write_tokens,cache_read_tokens,output_tokens
+2026-11-17,14:08:10,de09eff8-46c0-4140-8d2c-41d162dc1ab5,claude-sonnet-5-5,52,112620,1906455,22199
+2026-11-17,14:09:31,de09eff8-46c0-4140-8d2c-41d162dc1ab5,claude-sonnet-5-5,4,24,111690,1203
