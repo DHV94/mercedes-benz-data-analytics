@@ -90,9 +90,16 @@ See `CLAUDE.md`. Model in use: Sonnet 5.5 (medium); switch to Opus only for hard
 - 2026-11-17: scope, data strategy, conventions agreed. Repo `mercedes-benz-data-analytics` created (private), base files + token hook done, branch `develop` created. First commit pending (user does it).
 - 2026-11-18: decisions on volume (~100k), local-currency prices + FX conversion, dirt list, DevSecOps angle. This context document created.
 
-## 11. Open items / next steps
-1. User: create new dbt Cloud account (Gmail `+dbt` alias); first commit + publish `develop`.
-2. Design of sources (columns per region, Japan differences, dirt catalogue) in `docs/`.
-3. Snowflake setup scripts (`snowflake/`), then data generator.
-4. Close the dimensional model; backlog (GitHub Projects).
-5. Pending info from user: confirm required deliverables/format of the presentation when known.
+- 2026-11-18 (later): new dbt Cloud account created. Source design v0.1 drafted (`docs/es/source_design.md`). Decisions: Reiwa dates + schema drift included; Europe = EUR/GBP/CHF; net prices in reports (gross kept, `tax_rates` seed); leasing/renting added as `acquisition_type`; weekly consumption on Tuesday mornings (scheduled job + source freshness); Japan only (Korea/India = future work).
+
+- 2026-11-18 (end): Korea added (S4b, CP949, price in 10k KRW). Market weights reviewed with public 2025 data (Mercedes cars: China 551.9k units ~31%, Europe 634.6k, US ~285k, Germany 213.2k, Korea ~68.5k). `replacement` acquisition type added (interpretation to confirm). Wrote `snowflake/01_setup_environment.sql`. User has NOT committed yet.
+
+## 11. Open items / next steps (resume here)
+1. **User**: commit everything on `develop` (suggested: `docs: add source design and project context`, `feat(snowflake): add environment setup script`) and publish the branch.
+2. **User**: replace `<YOUR_USER>` in `snowflake/01_setup_environment.sql`, run it in Snowsight, report the output of the final `show databases`.
+3. Confirm the meaning of `replacement` (see `docs/es/source_design.md`, note after D24).
+4. Next scripts: `02_stages_and_file_formats.sql` (internal stage + 5 file formats: EU `;`, US `,`, JP Shift-JIS, KR tab CP949, JSON), then `03_bronze_tables.sql`.
+5. Write the data generator (`data_generator/`) — Claude writes it, explains it; user reviews.
+6. Create dbt Cloud project (new account already created): connection to Snowflake (DEV_MB_TRANSFORM_ROLE, WH_MB), repo connection, `dbt_project.yml` with env vars `DBT_SILVER_DB` / `DBT_GOLD_DB` like the course.
+7. Close the dimensional model; backlog (GitHub Projects).
+8. Pending info from user: required deliverables/format of the presentation when known.
