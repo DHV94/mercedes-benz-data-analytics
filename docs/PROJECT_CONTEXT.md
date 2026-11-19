@@ -21,6 +21,20 @@ Final project, Data Engineering programme (Cívica). Simulate working for **Merc
 
 **Stretch (only if time):** forecast for a future model by region (Europe, China, Japan, US) — out of scope for data engineering; mention as future work, at most Power BI's built-in forecast, flagged as indicative.
 
+## 3b. Closed use cases (2026-11-19) — supersedes section 3 where they differ
+Design principle: few, simple, visual; scalable later. Cases 1–4 go in a Power BI **map** report (country level, region as roll-up).
+
+| # | Use case | Notes |
+|---|---|---|
+| UC1 | Sales evolution by **body type** by region, last 5 years (2021–2025) | Data is generated for 2019–2025 so 2021 has year-over-year context |
+| UC2 | Sales evolution by **powertrain** by region, last 5 years | Same |
+| UC3 | **Top 3 best-selling models** by region, 2025 | Model = model **family** (e.g. GLC), not variant |
+| UC4 | **Top 3 worst-selling models** by region, 2025 | Only models on sale all year; define a minimum-availability rule so new/discontinued models don't distort it |
+| UC5 | **Recalls: software vs mechanical components**, recent years | **Open**: to explore with ChatGPT (other public data found by the user). Baseline: NHTSA recalls + `nhtsa_component_map` seed |
+
+Metric definition (to be formalised in `docs/es/business_context.md`): a *unit sold* = delivered vehicle with status `sold`; `returned`, `cancelled` and `replacement` are excluded.
+Acquisition type, net price in EUR and data-quality reporting stay as attributes/filters/technical work, not use cases.
+
 ## 4. Data strategy (hybrid)
 No public transaction-level Mercedes sales exist, so:
 1. **Simulated sales** (Python generator, acts as the "source system"), 2019–2025, **~100k rows sample** (justified as a demo sample for performance), calibrated to public Mercedes figures. Delivered per region, in different formats, in several batches (incremental loads).

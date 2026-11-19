@@ -9,5 +9,6 @@ Full project context lives in [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md)
 - **The user makes all git commits** (GitHub Desktop) and creates branches. Never commit/push.
 - Chat language: Spanish. Code, columns, models, branches, commits: English. Docs: Spanish + English.
 - Hard deadline: **2026-11-24 ~20:00**. Presentation 2026-11-25 (user is #11 of 29, first day). Do not count on work time after the deadline.
+- **Decision log**: whenever a decision is made (or an option is discarded), add it to `docs/es/decisions_log.md` (context, options, decision, why). The user will use it in the presentation.
 - Never put secrets in the repo (`profiles.yml`, `.env` are git-ignored).
 - Token log is automatic (`scripts/log_tokens.py` Stop hook -> `logs/token_log.csv`).
