@@ -3,9 +3,9 @@
 > **Rule: whoever works on the project (Claude, ChatGPT or the user) updates this file before the last commit of every work session.** It must always reflect the real state of the repo, so any session can resume from it alone.
 > Read order for a new session: `CLAUDE.md` → this file → `docs/PROJECT_CONTEXT.md` → `docs/es/decisions_log.md` → (when relevant) `docs/es/source_design.md`.
 
-- **Last updated:** 2026-11-20, later (by Claude, Sonnet 5.5)
+- **Last updated:** 2026-11-20, work PC (by Claude, Sonnet 5.5)
 - **Copy-paste prompt to start any new session:** `docs/HANDOFF_PROMPT.md`
-- **Branch of reference:** `develop`. All files up to 2026-11-20 are committed in `develop`; branch `pre` created from `develop`. Feature branches are used when useful to simulate the team workflow (see `CONTRIBUTING.md`).
+- **Branch of reference:** `develop`. Work happens **only in `develop`** (D-030, no `feature/*`); `pre` only at specific milestones; `main` for the final delivery (see `CONTRIBUTING.md`). Branch `pre` already exists on GitHub (`origin/pre`).
 - Slide notes: `docs/es/slides_notes.md` (script, evidence checklist, questions for the teachers).
 
 ## 1. Real state of the repo (audit 2026-11-20)
@@ -14,7 +14,7 @@
 |---|---|
 | Repo, branches (`main`, `develop`), README, CONTRIBUTING, `.gitignore` | ✅ Done |
 | Token log (`scripts/log_tokens.py` + hook in `.claude/settings.json`) | ✅ Working; `logs/token_log.csv` is committed |
-| Context, decision log (D-001…D-025), source design | ✅ Written (source design is a **draft**, see §3) |
+| Context, decision log (D-001…D-031), source design | ✅ Written (source design is a **draft**, see §3) |
 | `snowflake/01_setup_environment.sql` | ✍️ Written and committed. **Confirmed by the user: NOT run yet.** Nothing exists in Snowflake. No data generated, dbt not used yet. |
 | `docs/es/exercise_dimensional_model.md` | ✍️ Written: modelling exercise (course-style statement, no solution). **The user designs the model first**; Claude reviews. |
 | Stages / file formats / bronze tables (`02_…`, `03_…`) | ❌ Not started |
@@ -35,12 +35,14 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 - Teachers' priorities: grain of every table · incremental strategy from ingestion to Gold (not forced on every table) · reproducible batches · run twice without duplicates · second batch with new/changed data · SQL counts before/after · **SCD2 snapshot (dealers)** · dbt tests + alerts · macros only where useful · documentation.
 
 ## 3. Open points
-1. Define the time-window narrative (see §2). **Decided:** generate data for 2021–2025 only (no 2020). Create branch `pre` from `develop` (user does it) — flow is `feature/*` → `develop` → `pre` → `main`.
+1. Define the time-window narrative (see §2). **Decided:** generate data for 2021–2025 only (no 2020). Branch `pre` **already exists** (on `origin`) — flow is `develop` → `pre` (milestones only) → `main` (D-030).
 2. **User is solving `docs/es/exercise_dimensional_model.md`** (conceptual/logical/physical silver + gold star schema). Claude reviews it afterwards; do NOT give the solution beforehand. Family vs variant must be distinguished.
 3. ~~`replacement` / leasing / renting~~ — **dropped** (D-018): the project only records sales.
 4. UC5: which real public data besides NHTSA? (user is exploring with ChatGPT). Bring: source, license, format, grain, coverage, join key.
 5. Delivery channel for repo + slides: **not confirmed, ask the teachers**.
 6. `source_design.md` still lists 5 regions and 24 dirt types: trim to the core scope once the model is closed.
+7. **Live demo (D-031):** ~3 min. Batch 1 and batch 2 (new + changed rows), incremental run, SQL counts before/after, automation with a Snowflake Task or a scheduled dbt Cloud job (to confirm). **Plan B:** screenshots or a recorded video in case the live run fails.
+8. **Questions for the teachers** (bring to the work sessions): (a) delivery channel for the repo and the slides; (b) is one Snowflake Task or one dbt Cloud job enough as "automation"?; (c) what do they expect from the demo and from the 2021–2025 window?
 
 ## 4. Calendar (replaces the old one)
 - Fri 20: class in the afternoon → close dimensional model.
@@ -56,7 +58,7 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 2. Run/verify Snowflake setup; stage + file format + bronze table for **one** source (suggested: Europe).
 3. Small generator with reproducible batches for that source.
 4. dbt Cloud project: sources → staging → silver (incremental) → gold; tests; snapshot on dealers.
-5. Idempotency demo (run twice) and second batch; SQL counts.
+5. Idempotency demo (run twice) and second batch; SQL counts. **This is the base of the live demo** (D-031, open point 7).
 6. Power BI; documentation; slides.
 
 ## 6. Session log (append one line per session)
@@ -64,3 +66,4 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 - 2026-11-20 (Claude): audit of the repo, scope revision after teacher/ChatGPT review, this file created.
 - 2026-11-20 end (Claude): added VIN section to slide notes, slides as free-form blocks, git prompts only when worthwhile. User continues the modelling exercise in class and will send the result. Next session: review the user's model (grain, keys, relationships) — do not give the solution first.
 - 2026-11-20 later (Claude): modelling exercise written (user is solving it in draw.io and will send results), leasing/renting/replacement dropped, data 2021–2025 only, branch flow with `pre`, commit-explanation and git-action-warning rules, slide notes file.
+- 2026-11-20 work PC (Claude): applied D-030 (work only in `develop`) to CLAUDE.md and CONTRIBUTING.md, D-029 marked as partially superseded, D-030/D-031 recorded, open points 7 (live demo) and 8 (teacher questions) added, read-only repo checks done. Next: review the user's dimensional model (do not give the solution first).

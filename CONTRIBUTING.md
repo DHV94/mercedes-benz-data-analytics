@@ -9,11 +9,9 @@
 |---|---|
 | `main` | Production (**PRO**). Deliverable-ready only. Tagged releases. |
 | `pre` | Pre-production (**PRE**). Validation before release (CI job, tests, demo checks). |
-| `develop` | Integration (**DEV**). |
-| `feature/<topic>` | One task each, e.g. `feature/snowflake-setup`. |
-| `fix/<topic>` | Bug fixes. |
+| `develop` | Working branch and integration (**DEV**). All day-to-day work happens here. |
 
-Flow: `feature/*` → `develop` → `pre` → `main`, always by **pull request** (or merge from GitHub Desktop). Each branch maps to an environment, like in the course (DEV/PRE/PRO): in dbt Cloud, `develop` runs in DEV, `pre` in PRE and `main` in PRO. Promote to the next branch only when the previous one is stable.
+Flow (decision D-030): work **directly in `develop`**, with no `feature/*` or `fix/*` branches (solo project, few days). `pre` is used only at specific milestones (promotion DEV → PRE) and `main` only for the final delivery, by pull request (or merge from GitHub Desktop). Each branch still maps to an environment, like in the course (DEV/PRE/PRO): in dbt Cloud, `develop` runs in DEV, `pre` in PRE and `main` in PRO. Promote to the next branch only when the previous one is stable.
 
 Every commit must be explained by the assistant before the user makes it (message + plain-language explanation).
 

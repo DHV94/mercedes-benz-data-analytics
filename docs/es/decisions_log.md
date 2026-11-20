@@ -171,7 +171,21 @@
 - **Por qué**: entender en todo momento qué contiene cada commit, para poder defender el historial.
 - **Ajuste (2026-11-20)**: los avisos de Git (commit, rama, PR) solo cuando merezca la pena: tarea terminada o hito. Sin control excesivo, para no perder tiempo.
 
-## D-029 · Flujo de ramas con tres entornos
+## D-029 · Flujo de ramas con tres entornos (parcialmente sustituida por D-030)
 - **Opciones**: `feature` → `develop` → `main`; o añadir una rama `pre`.
 - **Decisión**: `feature/*` → `develop` (DEV) → `pre` (PRE) → `main` (PRO).
 - **Por qué**: replica los tres entornos DEV/PRE/PRO del curso y permite enseñar la promoción entre entornos. Coste: más merges, así que se usa `pre` solo cuando `develop` esté estable.
+
+## D-030 · Solo develop, pre puntual (2026-11-20)
+- **Contexto**: trabajo individual y pocos días; las ramas `feature/*` añaden merges y PRs sin aportar nada.
+- **Opciones**: mantener `feature/*` → `develop` → `pre` → `main`; o trabajar directamente en `develop`.
+- **Decisión**: se trabaja directamente en `develop`; `pre` solo en hitos puntuales (promoción DEV→PRE); `main` para la entrega final.
+- **Por qué**: ahorrar tiempo. Se mantiene la promoción entre entornos para enseñarla en la exposición.
+- **Consecuencia**: sustituye en parte a D-029 (`feature/*` deja de ser obligatorio).
+
+## D-031 · Demos en directo en la exposición (2026-11-20)
+- **Contexto**: indicación nueva del profesorado: plantear acciones en directo (ingestas, automatización, incrementalidad).
+- **Decisión**: una demo corta (unos 3 minutos): lote 1 y lote 2 (con datos nuevos y modificados), ejecución incremental y recuentos SQL antes y después. Automatización con una Task de Snowflake o un job programado de dbt Cloud (por confirmar con los profesores).
+- **Por qué**: es lo que cabe en 10-15 minutos y demuestra lo que piden los profesores (incrementalidad, sin duplicados).
+- **Plan B**: capturas o vídeo grabado por si falla algo en directo.
+- **Pendiente**: preguntar a los profesores en clase (canal de entrega, automatización válida, qué esperan de la demo).
