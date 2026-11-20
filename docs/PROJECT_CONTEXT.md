@@ -42,7 +42,7 @@ Acquisition type, net price in EUR and data-quality reporting stay as attributes
 | UC2 | Sales evolution by **body type**, 2021–2025 | |
 | UC3 | Sales evolution by **powertrain**, 2021–2025 | Time-window narrative still open (D-026) |
 | UC4 | **Top 3 families by region**, 2025 | |
-| UC5 | **Recall campaigns, software/electronics vs mechanical**, by model and year | Separate report section, no map (NHTSA = US). Extra public data to be evaluated |
+| UC5 | **Recall campaigns, software/electronics vs mechanical**, by model and year | Separate report section, no map (NHTSA = US). **Limited to the US and shown next to US sales, no ratio (D-039).** Extra public data to be evaluated |
 
 - UC1–UC4: commercial section with interactive map, region/country filters and navigation between charts.
 - Dropped for now: bottom-3 models, forecasting, and any ratio of real recalls over simulated sales (misleading: real vs simulated data).

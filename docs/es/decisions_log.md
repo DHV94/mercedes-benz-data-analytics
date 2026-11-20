@@ -39,7 +39,7 @@
 | D-027 | 2026-11-20 | El modelo dimensional lo diseña el usuario primero, con un ejercicio | ✅ |
 | D-028 | 2026-11-20 | Cada commit se entrega con mensaje y explicación | ✅ |
 | D-029 | 2026-11-20 | Flujo de ramas feature → develop → pre → main | ✅ (parcial, ver D-030) |
-| D-030 | 2026-11-20 | Solo develop, pre puntual | ✅ |
+| D-030 | 2026-11-20 | Solo develop, pre puntual | ❌ (sustituida por D-038) |
 | D-031 | 2026-11-20 | Demos en directo en la exposición | ✅ |
 | D-032 | 2026-11-20 | Revisiones NHTSA de 2021 a 2025, filtradas por fecha del informe | ✅ |
 | D-033 | 2026-11-20 | NHTSA: descarga del fichero plano en lugar de la API | ✅ |
@@ -47,6 +47,8 @@
 | D-035 | 2026-11-20 | NHTSA: bronze completo, filtrado en silver | ✅ |
 | D-036 | 2026-11-20 | Revisiones NHTSA opcionales, con punto de control | ⏳ |
 | D-037 | 2026-11-20 | Alcance: solo turismos Mercedes-Benz; camiones, furgonetas y Maybach como ampliación | ✅ |
+| D-038 | 2026-11-20 | Flujo feature → develop → main, sin rama pre ni pro | ✅ |
+| D-039 | 2026-11-20 | UC5 limitado a EE. UU. y mostrado junto a las ventas de EE. UU. | ✅ |
 
 ---
 
@@ -185,7 +187,7 @@
 - **Decisión**: `feature/*` → `develop` (DEV) → `pre` (PRE) → `main` (PRO).
 - **Por qué**: replica los tres entornos DEV/PRE/PRO del curso y permite enseñar la promoción entre entornos. Coste: más merges, así que se usa `pre` solo cuando `develop` esté estable.
 
-## D-030 · Solo develop, pre puntual (2026-11-20)
+## D-030 · Solo develop, pre puntual (2026-11-20) (sustituida por D-038)
 - **Contexto**: trabajo individual y pocos días; las ramas `feature/*` añaden merges y PRs sin aportar nada.
 - **Opciones**: mantener `feature/*` → `develop` → `pre` → `main`; o trabajar directamente en `develop`.
 - **Decisión**: se trabaja directamente en `develop`; `pre` solo en hitos puntuales (promoción DEV→PRE); `main` para la entrega final.
@@ -235,3 +237,18 @@
 - **Decisión**: (b). El proyecto trata **turismos Mercedes-Benz**; camiones, furgonetas y Maybach quedan fuera de alcance y se declaran así en la exposición.
 - **Por qué**: menos casos y mejor hechos. Además, el diseño es escalable: añadir otro tipo de vehículo supone ampliar el catálogo de modelos y los mapeos, no rehacer el modelo.
 - **Cómo se aplica**: en silver se filtra `MAKETXT` en `MERCEDES-BENZ` y `MERCEDES BENZ` y `RCLTYPECD = 'V'`. Las furgonetas Sprinter vienen bajo la marca Mercedes-Benz, así que se excluyen porque su modelo no está en el catálogo (alias → variante). Ajusta el filtro de D-035, que mencionaba `MERCEDES-MAYBACH`.
+
+## D-038 · Flujo de ramas: feature → develop → main (2026-11-20)
+- **Contexto**: D-030 proponía trabajar solo en `develop`. Se prefiere aislar cada tarea en su propia rama, pero sin la rama `pre`.
+- **Opciones**: (a) solo `develop` (D-030); (b) `feature/*` → `develop` → `pre` → `main` (D-029); (c) `feature/*` → `develop` → `main`; (d) añadir una rama `pro` para dbt.
+- **Decisión**: (c). Una rama `feature/<tema>` por tarea; cuando funciona, a `develop` (DEV); cuando se comprueba allí, a `main` (PRO). Sin `pre`.
+- **Sobre una rama `pro`**: no hace falta. En dbt Cloud el entorno de producción se asocia a una rama (normalmente la principal), así que `main` cumple ese papel. Un entorno de despliegue sigue `develop` (DEV) y el de producción sigue `main` (PRO). Hay que confirmarlo al configurar dbt Cloud.
+- **Por qué**: cada tarea queda aislada y revisable, y se mantiene la promoción entre dos entornos para enseñarla sin el coste de un tercero.
+- **Consecuencia**: sustituye a D-030 y, en lo referente a `pre`, a D-029. `origin/pre` queda sin uso.
+
+## D-039 · UC5 limitado a EE. UU., junto a las ventas de EE. UU. (2026-11-20)
+- **Contexto**: la NHTSA solo cubre EE. UU., mientras que las ventas cubren varias regiones. Se quiere observar fallos de software frente a mecánicos con alguna referencia de ventas.
+- **Opciones**: (a) UC5 con revisiones solas; (b) UC5 de EE. UU. mostrado junto a las ventas de EE. UU. (mismo selector de modelo, **sin ratio**); (c) además, desglosar por propulsión.
+- **Decisión**: (b). El informe de revisiones se acota a EE. UU. y se muestra al lado de las ventas de EE. UU. de la misma familia y año. Sigue vigente D-020: no se dividen revisiones reales entre ventas simuladas.
+- **Propulsión (opcional)**: las revisiones no traen propulsión, solo el texto del modelo (`C 300`), y un mismo modelo puede ser combustión o híbrido enchufable. A nivel de **familia** la unión es fiable; a nivel de propulsión es ambigua. Se deja como mejora opcional, solo si el mapeo sale limpio (ver D-036).
+- **Advertencia para la exposición**: las ventas son simuladas, así que ninguna conclusión sobre qué propulsión falla más puede apoyarse en ellas; solo en las revisiones reales.

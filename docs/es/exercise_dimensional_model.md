@@ -162,7 +162,7 @@ Observaciones del fichero real:
 - **UC2** · ¿Y por **carrocería**, entre 2021 y 2025?
 - **UC3** · ¿Y por **propulsión**, entre 2021 y 2025?
 - **UC4** · ¿Cuáles son las **3 familias más vendidas** por región en 2025?
-- **UC5** · ¿Cómo han evolucionado las campañas de revisión por **software/electrónica frente a mecánicas**, por modelo y año?
+- **UC5** · ¿Cómo han evolucionado las campañas de revisión en **EE. UU.** por **software/electrónica frente a mecánicas**, por modelo y año, junto a las ventas de EE. UU.?
 
 Todas las ventas se analizan por **región y país**, con importes **sin impuestos y en EUR**.
 

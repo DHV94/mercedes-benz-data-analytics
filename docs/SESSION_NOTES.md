@@ -5,7 +5,7 @@
 
 - **Last updated:** 2026-11-20, work PC (by Claude, Sonnet 5.5)
 - **Copy-paste prompt to start any new session:** `docs/HANDOFF_PROMPT.md`
-- **Branch of reference:** `develop`. Work happens **only in `develop`** (D-030, no `feature/*`); `pre` only at specific milestones; `main` for the final delivery (see `CONTRIBUTING.md`). Branch `pre` already exists on GitHub (`origin/pre`).
+- **Branch of reference:** `develop`. Flow `feature/*` → `develop` → `main` (D-038). No `pre` and no `pro` branch (`main` is PRO, also in dbt Cloud). `origin/pre` exists on GitHub but is unused (see `CONTRIBUTING.md`).
 - Slide notes: `docs/es/slides_notes.md` (script, evidence checklist, questions for the teachers).
 
 ## 1. Real state of the repo (audit 2026-11-20)
@@ -27,7 +27,7 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 
 ## 2. Scope as of 2026-11-20 (see `docs/PROJECT_CONTEXT.md` §3c and decisions D-019…D-025)
 
-- **Five use cases:** UC1 sales by model family · UC2 by body type · UC3 by powertrain (**UC1–UC3 all over 2021–2025**) · UC4 top-3 families by region in 2025 · UC5 recalls software/electronics vs mechanical by model and year.
+- **Five use cases:** UC1 sales by model family · UC2 by body type · UC3 by powertrain (**UC1–UC3 all over 2021–2025**) · UC4 top-3 families by region in 2025 · UC5 recalls (US only, shown next to US sales, no ratio; D-039) software/electronics vs mechanical by model and year; powertrain breakdown optional.
 - **Time window (open):** 5 years (2021–2025) justified as the basis to plan the next 5, e.g. a strategic review at the end of 2026 (or a meeting held in H1 2026). Still to define; in Power BI decide whether each view is one year or the whole window (year selector).
 - UC1–UC4: commercial section with an interactive map. UC5: separate section, no map (NHTSA = US only).
 - Dropped for now: bottom-3 models, sales forecasting, and any **ratio of real recalls over simulated sales**.
@@ -35,7 +35,7 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 - Teachers' priorities: grain of every table · incremental strategy from ingestion to Gold (not forced on every table) · reproducible batches · run twice without duplicates · second batch with new/changed data · SQL counts before/after · **SCD2 snapshot (dealers)** · dbt tests + alerts · macros only where useful · documentation.
 
 ## 3. Open points
-1. Define the time-window narrative (see §2). **Decided:** generate data for 2021–2025 only (no 2020). Branch `pre` **already exists** (on `origin`) — flow is `develop` → `pre` (milestones only) → `main` (D-030).
+1. Define the time-window narrative (see §2). **Decided:** generate data for 2021–2025 only (no 2020). Branch `pre` is **no longer used** — flow is `feature/*` → `develop` → `main` (D-038).
 2. **User is solving `docs/es/exercise_dimensional_model.md`** (conceptual/logical/physical silver + gold star schema). Claude reviews it afterwards; do NOT give the solution beforehand. Family vs variant must be distinguished.
 3. ~~`replacement` / leasing / renting~~ — **dropped** (D-018): the project only records sales.
 4. UC5: which real public data besides NHTSA? (user is exploring with ChatGPT). Bring: source, license, format, grain, coverage, join key.
@@ -68,3 +68,4 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 - 2026-11-20 end (Claude): added VIN section to slide notes, slides as free-form blocks, git prompts only when worthwhile. User continues the modelling exercise in class and will send the result. Next session: review the user's model (grain, keys, relationships) — do not give the solution first.
 - 2026-11-20 later (Claude): modelling exercise written (user is solving it in draw.io and will send results), leasing/renting/replacement dropped, data 2021–2025 only, branch flow with `pre`, commit-explanation and git-action-warning rules, slide notes file.
 - 2026-11-20 work PC (Claude): applied D-030 (work only in `develop`) to CLAUDE.md and CONTRIBUTING.md, D-029 marked as partially superseded, D-030/D-031 recorded, open points 7 (live demo) and 8 (teacher questions) added, read-only repo checks done. Next: review the user's dimensional model (do not give the solution first).
+- 2026-11-20 work PC (Claude, later): D-030 replaced by D-038 (`feature/*` → `develop` → `main`, no `pre`, no `pro`; `main` is PRO in dbt Cloud). Added D-032…D-037 (NHTSA scope and storage, passenger cars only). Exercise 2.6 rewritten with real NHTSA fields. D-039: UC5 limited to the US, shown next to US sales (no ratio). User now solves the modelling exercise in draw.io; next session: review it (grain, keys, family vs variant, relationships) without giving the solution. Worked at the work PC.
