@@ -62,4 +62,5 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 ## 6. Session log (append one line per session)
 - 2026-11-17/19 (Claude): scope, repo, hook, docs, Snowflake script, decision log.
 - 2026-11-20 (Claude): audit of the repo, scope revision after teacher/ChatGPT review, this file created.
+- 2026-11-20 end (Claude): added VIN section to slide notes, slides as free-form blocks, git prompts only when worthwhile. User continues the modelling exercise in class and will send the result. Next session: review the user's model (grain, keys, relationships) — do not give the solution first.
 - 2026-11-20 later (Claude): modelling exercise written (user is solving it in draw.io and will send results), leasing/renting/replacement dropped, data 2021–2025 only, branch flow with `pre`, commit-explanation and git-action-warning rules, slide notes file.
