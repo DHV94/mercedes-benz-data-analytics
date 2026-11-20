@@ -7,12 +7,15 @@
 ## Branches / Ramas
 | Branch | Purpose |
 |---|---|
-| `main` | Deliverable-ready only. Tagged releases. |
-| `develop` | Integration branch. |
+| `main` | Production (**PRO**). Deliverable-ready only. Tagged releases. |
+| `pre` | Pre-production (**PRE**). Validation before release (CI job, tests, demo checks). |
+| `develop` | Integration (**DEV**). |
 | `feature/<topic>` | One task each, e.g. `feature/snowflake-setup`. |
 | `fix/<topic>` | Bug fixes. |
 
-Everything reaches `develop` through a **pull request**; `develop` reaches `main` only at a milestone.
+Flow: `feature/*` → `develop` → `pre` → `main`, always by **pull request** (or merge from GitHub Desktop). Each branch maps to an environment, like in the course (DEV/PRE/PRO): in dbt Cloud, `develop` runs in DEV, `pre` in PRE and `main` in PRO. Promote to the next branch only when the previous one is stable.
+
+Every commit must be explained by the assistant before the user makes it (message + plain-language explanation).
 
 ## Commits (Conventional Commits)
 ```
