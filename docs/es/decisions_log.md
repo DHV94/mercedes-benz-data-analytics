@@ -252,3 +252,29 @@
 - **Decisión**: (b). El informe de revisiones se acota a EE. UU. y se muestra al lado de las ventas de EE. UU. de la misma familia y año. Sigue vigente D-020: no se dividen revisiones reales entre ventas simuladas.
 - **Propulsión (opcional)**: las revisiones no traen propulsión, solo el texto del modelo (`C 300`), y un mismo modelo puede ser combustión o híbrido enchufable. A nivel de **familia** la unión es fiable; a nivel de propulsión es ambigua. Se deja como mejora opcional, solo si el mapeo sale limpio (ver D-036).
 - **Advertencia para la exposición**: las ventas son simuladas, así que ninguna conclusión sobre qué propulsión falla más puede apoyarse en ellas; solo en las revisiones reales.
+
+## D-040 · Modelado: sin modelo físico y normalización flexible (2026-11-20)
+- **Contexto**: el ejercicio de modelado pedía conceptual, lógico y físico para silver, con comprobación hasta 3FN, y después el dimensional para gold.
+- **Opciones**: (a) hacer las tres fases y llegar a 3FN; (b) conceptual, lógico y dimensional, sin modelo físico, sin exigir 3FN completa.
+- **Decisión**: (b). El modelo físico se descarta; el `CREATE TABLE` real saldrá de dbt. En el lógico se busca una normalización razonable y se justifica cada simplificación (por ejemplo, moneda e impuesto como atributos de país).
+- **Por qué**: tiempo limitado y el físico en dbt se define por los propios modelos. Lo importante es entender y poder defender el grano, las claves y las relaciones.
+- **Revisión del conceptual (2026-11-20)**: el diagrama está en `docs/diagrams/mercedes-benz-data-analytics_modelado_conceptual.png`. Cardinalidades de familia, carrocería y propulsión por corregir; moneda e impuesto pasan a país; el tipo de cambio es una tabla aparte. Pendiente: nivel al que se unen revisiones y modelo (familia o variante) y si el impuesto varía con el tiempo.
+
+## D-041 · Conceptual v2: revisiones unidas a la familia, impuesto aparte y historial (2026-11-20)
+- **Revisiones ↔ modelo**: en la v2 las campañas se unen a **familia**, no a variante (coherente con D-039: la unión a variante es ambigua).
+- **Campaña ↔ componente**: relación de **muchos a muchos**, comprobada con el fichero real (turismos Mercedes-Benz, informes 2021–2025): 216 campañas; 162 con un componente, 45 con dos, 8 con tres y 1 con cuatro; y un mismo componente aparece en varias campañas (por ejemplo, `ELECTRICAL SYSTEM:SOFTWARE` en 12). Además, el componente depende de la combinación campaña + modelo + año (en `21V058000`, un modelo tiene componente de software y otro, de notificación de accidente), así que el lógico necesita ese grano.
+- **Grano real del fichero**: 43.484 filas se reducen a 2.973 combinaciones distintas de campaña, modelo, año y componente; el fichero repite la fila por cada referencia de pieza (`MFR_COMP_PTNO`). Hay 237 textos de modelo distintos. Silver debe deduplicar y mapear a familia.
+- **Impuesto**: tabla aparte (no atributo de país), porque puede cambiar con el tiempo.
+- **Historial (snapshot)**: confirmado para **concesionarios** (cambios de nombre y estado). Para impuestos queda **por decidir**; recomendación: tabla con fechas de vigencia (`valid_from`/`valid_to`), porque la ley fija la fecha de efecto y un snapshot solo registra cuándo detectamos el cambio.
+
+## D-042 · Concesionarios con historial de versiones (2026-11-21)
+- **Contexto**: los concesionarios cambian de nombre y de estado (abierto o cerrado), y los profesores piden un snapshot SCD2 demostrable (D-023).
+- **Opciones**: (a) solo el estado actual; (b) una tabla con columnas de vigencia (`valid_from`, `valid_to`, `is_current`), que es lo que produce el snapshot de dbt; (c) dos tablas, concesionario e historial.
+- **Decisión**: (b). La clave primaria identifica cada **versión** y `dealer_code` es la clave de negocio común a todas sus versiones. La venta referencia el `dealer_code`, y los informes usan la versión vigente.
+- **Mejora futura (para mencionar en la exposición)**: unir cada venta con la versión del concesionario **vigente en la fecha de la venta** (*point-in-time join*). Es más preciso pero más trabajo; en gold se haría en la dimensión de concesionario.
+- **Matiz**: las fechas del snapshot son cuándo dbt **detectó** el cambio, no cuándo ocurrió; si el origen trae la fecha de cierre real, se guarda además como atributo.
+
+## D-043 · Clave de la venta (2026-11-21)
+- **Opciones**: el VIN como clave primaria, o un identificador propio.
+- **Decisión**: `sale_id` propio, **generado con un hash determinista** de `source_system` y `source_sale_id` (no un contador). El VIN queda como atributo con test de calidad.
+- **Por qué**: un VIN puede repetirse (venta, devolución, nueva venta), puede venir vacío o mal formado, y un contador cambiaría en cada ejecución e impediría demostrar que ejecutar dos veces no duplica.
