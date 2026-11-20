@@ -1,6 +1,7 @@
 # Diseño de fuentes (BORRADOR v0.1)
 
 > Estado: borrador para revisar. Nada de esto está implementado todavía.
+> **Alcance revisado el 2026-11-20 (ver D-021):** fuentes principales Europa, EE. UU. y China; Japón y Corea son opcionales y solo se harán si hay una fuente completa de extremo a extremo. El catálogo de defectos (§5) se recortará al alcance final.
 > Objetivo: decidir **qué datos llegan, cómo llegan y qué suciedad traen** antes de escribir el generador.
 
 ## 1. Inventario de fuentes
@@ -15,7 +16,7 @@
 | S5 | `dealer_master` | Maestro de concesionarios (CRM) | CSV | `BRONZE.dealer_master` |
 | S6 | `nhtsa_recalls` | Datos públicos NHTSA (reales) | Fichero plano | `BRONZE.nhtsa_recalls` |
 
-**Seeds de dbt** (los mantenemos nosotros, van al repo): `model_catalog`, `region_country`, `nhtsa_component_map`, `fx_rates`, `tax_rates`, `status_map`, `acquisition_type_map`.
+**Seeds de dbt** (los mantenemos nosotros, van al repo): `model_catalog`, `region_country`, `nhtsa_component_map`, `fx_rates`, `tax_rates`, `status_map`.
 
 > **Por qué así:** cada región es un "equipo" distinto con su propio sistema. Es lo que pasa en una multinacional y obliga a unificar en staging/silver, que es donde dbt aporta valor.
 
@@ -35,9 +36,6 @@
 | `currency` | EUR, GBP, USD, CNY, JPY |
 | `sale_status` | vendida / devuelta / cancelada |
 | `customer_type` | particular / flota / empresa |
-| `acquisition_type` | cash / financing / leasing / renting / **replacement** (ver nota) |
-| `monthly_payment` | Cuota mensual (solo `leasing` y `renting`; nulo en el resto) |
-| `contract_months` | Duración del contrato (solo `leasing` y `renting`) |
 | `gross_price` / `tax_rate` / `net_price` | Se **calculan en silver** a partir de `sale_price` y del seed `tax_rates` |
 
 Cada región nombra y formatea estos campos a su manera (siguiente sección).
@@ -50,7 +48,6 @@ Cada región nombra y formatea estos campos a su manera (siguiente sección).
 - Columnas: `sale_id; vin; model_name; model_year; sale_date; delivery_date; dealer_code; country; sale_price; currency; sale_status; customer_type`
 - Estados: `sold`, `returned`, `cancelled`.
 - Particularidad: el precio **incluye IVA**.
-- Campos extra de contratos: `acquisition_type`, `monthly_payment`, `contract_months` (los demás sistemas los llaman distinto o no los traen).
 
 ### S2 · EE. UU. (`sales_us`)
 - CSV con `,`, UTF-8, columnas con otros nombres, **fecha `mm/dd/yyyy`**.
@@ -84,7 +81,7 @@ Cada región nombra y formatea estos campos a su manera (siguiente sección).
 ### S4b · Corea del Sur (`sales_kr`) — añadido 2026-11-18
 - Mercado relevante: en 2025 Mercedes fue la segunda marca importada en Corea (unos 68.000 coches, ~22 % de las importaciones, según KAIDA, el organismo de importadores coreanos).
 - CSV con **tabulador**, codificación **CP949 / EUC-KR** (otra codificación distinta de Shift-JIS), fecha `yyyy-mm-dd`.
-- Columnas en inglés abreviado: `sale_no, vin, model, model_yr, sale_dt, deliver_dt, dealer_cd, city, price_krw_10k, status, cust_type, acq_type`.
+- Columnas en inglés abreviado: `sale_no, vin, model, model_yr, sale_dt, deliver_dt, dealer_cd, city, price_krw_10k, status, cust_type`.
 - **El precio viene en unidades de 10.000 KRW** (`6850` = 68.500.000 KRW), una trampa real y buen defecto de unidades (D23).
 - Moneda KRW. El precio incluye IVA (10 %).
 
@@ -100,7 +97,7 @@ Descarga de los ficheros planos públicos de la NHTSA filtrando por fabricante M
 - **Todo como texto (`VARCHAR`)** en bronze para CSV: no se pierde nada si el formato viene roto. Los tipos se aplican en staging.
 - Columnas técnicas añadidas por la carga: `_source_file` (`METADATA$FILENAME`), `_row_number` (`METADATA$FILE_ROW_NUMBER`), `_loaded_at`.
 - Un `STAGE` interno y un `FILE FORMAT` por región (cuatro: EU, US, JP y JSON).
-- **Lotes**: 2019–2024, un fichero por región y año; 2025, un fichero por región y mes. Así probamos carga histórica y carga incremental (`COPY INTO` ignora ficheros ya cargados; en dbt, modelo incremental sobre `_loaded_at`).
+- **Lotes**: 2021–2024, un fichero por región y año; 2025, un fichero por región y mes. Así probamos carga histórica y carga incremental (`COPY INTO` ignora ficheros ya cargados; en dbt, modelo incremental sobre `_loaded_at`).
 
 ## 5. Catálogo de suciedad
 
@@ -132,9 +129,6 @@ Porcentajes orientativos sobre las filas de cada región. Cada defecto debe tene
 | D22 | Zona horaria: el timestamp chino cruza medianoche al convertir a UTC | CN | ~2 | staging (decisión documentada) | – |
 
 | D23 | Precio en unidades de 10.000 KRW en vez de KRW | KR | 100 | staging (×10.000) | `accepted_range` |
-| D24 | Precio 0 en entregas `replacement` (válido, no es error) | Todas | ~1 | silver (regla: se excluye de ingresos) | test singular que permite 0 solo si `replacement` |
-
-> **Nota `replacement` (interpretación a confirmar):** coche entregado como **sustitución** de otro (garantía, campaña de revisión o reclamación), sin ingreso. Se cuenta como unidad entregada pero **no como venta**, y permite relacionarlo con las revisiones. Si te referías al coche de cortesía que se presta mientras el tuyo está en taller, eso es flota del concesionario y no una transacción: lo dejaríamos fuera.
 
 > D09–D13 son las que más "lucen": limpieza de precios y unificación de estados y monedas.
 > D21 es opcional y la dejo para el final si da tiempo: es un buen ejemplo de *schema drift*.
@@ -152,12 +146,11 @@ Porcentajes orientativos sobre las filas de cada región. Cada defecto debe tene
 1. **Reiwa (D18) y schema drift (D21)**: incluidos.
 2. **Europa**: EUR + GBP + CHF.
 3. **Impuestos**: precio sin impuestos en los informes, conservando también el bruto (ver regla 2).
-4. **Lotes**: histórico anual 2019–2024 y mensual en 2025. Consumo semanal los martes (regla 5).
-5. **Renting/leasing**: añadido como `acquisition_type` (+ `monthly_payment`, `contract_months`).
+4. **Lotes**: histórico anual 2021–2024 y mensual en 2025. Consumo semanal los martes (regla 5).
+5. **Renting/leasing/sustitución**: ~~añadido como `acquisition_type`~~ **descartado el 2026-11-20** (D-018) para simplificar: el proyecto solo registra ventas.
 6. **Mercados**: Europa (DE, FR, IT, ES, GB, CH), EE. UU., China, Japón y Corea del Sur. India (tercer mercado mundial, pero pequeño para Mercedes), Canadá, México y Australia quedan como ampliación futura.
 7. **Peso de cada mercado en la muestra de ~100k** (orientativo, según cifras públicas de 2025: China ~31 % de Mercedes-Benz Cars, Europa ~35 %, EE. UU. ~16 %): Europa 35 %, China 30 %, EE. UU. 18 %, Corea 8 %, Japón 5 % y el resto ajustable. Reparto por países europeos pendiente (Alemania ~213.000 unidades en 2025).
 
 ## 8. Pendiente
 
-- Definir para leasing/renting qué cuenta como "venta" en `fct_sales` (propuesta: una unidad entregada = una fila, sea cual sea la forma de adquisición; `monthly_payment` es un atributo, no un ingreso).
-- Seeds por crear: `tax_rates`, `fx_rates`, `status_map`, `acquisition_type_map` (cada región lo nombra distinto).
+- Seeds por crear: `tax_rates`, `fx_rates`, `status_map` (cada región nombra los estados distinto).

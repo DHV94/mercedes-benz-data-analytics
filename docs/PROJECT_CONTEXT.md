@@ -7,7 +7,7 @@
 Final project, Data Engineering programme (Cívica). Simulate working for **Mercedes-Benz**: build the full data platform (ingestion, cleaning, modelling, testing, BI) with **Snowflake + dbt Cloud + Power BI**, simulating a multi-person international team.
 
 ## 2. Constraints
-- Individual project; deadline **2026-11-24 ~20:00**; presentations 25–26 Nov (user presents on the 25th). No margin assumed after the deadline.
+- Individual project; deadline **2026-11-24 ~20:00**; presentations 25–26 Nov; **user presents Thu 26 Nov, 3rd turn** (updated 2026-11-20). Internal goal: stable code by Tue 24 ~20:00.
 - Snowflake trial: ~382 $ credits, ~19 days left on 2026-11-17 (expires ~2026-12-06). Warehouse XS, auto-suspend 60 s.
 - dbt Cloud: use **"Latest" (v1.x)**, not v2/Fusion. New account planned (Gmail `+dbt` alias) because the free Developer plan allows 1 project and the practice project uses it.
 - Course material (read-only reference): `C:\Users\dhv94\Documents\GitHub\Curso-Data-Engineer`. Do NOT copy it into this repo (slides may not be redistributable).
@@ -21,12 +21,12 @@ Final project, Data Engineering programme (Cívica). Simulate working for **Merc
 
 **Stretch (only if time):** forecast for a future model by region (Europe, China, Japan, US) — out of scope for data engineering; mention as future work, at most Power BI's built-in forecast, flagged as indicative.
 
-## 3b. Closed use cases (2026-11-19) — supersedes section 3 where they differ
+## 3b. (SUPERSEDED on 2026-11-20 by 3c — kept for history)
 Design principle: few, simple, visual; scalable later. Cases 1–4 go in a Power BI **map** report (country level, region as roll-up).
 
 | # | Use case | Notes |
 |---|---|---|
-| UC1 | Sales evolution by **body type** by region, last 5 years (2021–2025) | Data is generated for 2019–2025 so 2021 has year-over-year context |
+| UC1 | Sales evolution by **body type** by region, last 5 years (2021–2025) | (superseded by 3c) |
 | UC2 | Sales evolution by **powertrain** by region, last 5 years | Same |
 | UC3 | **Top 3 best-selling models** by region, 2025 | Model = model **family** (e.g. GLC), not variant |
 | UC4 | **Top 3 worst-selling models** by region, 2025 | Only models on sale all year; define a minimum-availability rule so new/discontinued models don't distort it |
@@ -35,9 +35,26 @@ Design principle: few, simple, visual; scalable later. Cases 1–4 go in a Power
 Metric definition (to be formalised in `docs/es/business_context.md`): a *unit sold* = delivered vehicle with status `sold`; `returned`, `cancelled` and `replacement` are excluded.
 Acquisition type, net price in EUR and data-quality reporting stay as attributes/filters/technical work, not use cases.
 
+## 3c. Definitive use cases and scope (2026-11-20) — current
+| # | Use case | Notes |
+|---|---|---|
+| UC1 | Sales evolution by **model family**, 2021–2025 | Family (e.g. GLC) ≠ variant (e.g. GLC 300 e). Define the grain explicitly |
+| UC2 | Sales evolution by **body type**, 2021–2025 | |
+| UC3 | Sales evolution by **powertrain**, 2021–2025 | Time-window narrative still open (D-026) |
+| UC4 | **Top 3 families by region**, 2025 | |
+| UC5 | **Recall campaigns, software/electronics vs mechanical**, by model and year | Separate report section, no map (NHTSA = US). Extra public data to be evaluated |
+
+- UC1–UC4: commercial section with interactive map, region/country filters and navigation between charts.
+- Dropped for now: bottom-3 models, forecasting, and any ratio of real recalls over simulated sales (misleading: real vs simulated data).
+- Optional if time: pictures of model families as a catalogue attribute.
+- Sources: Europe, US and China are the core; Japan and Korea (only designed on paper) are optional, after one source works end-to-end.
+- Teachers' priorities: grain per table; incremental from ingestion to Gold (only where it makes sense); reproducible batches; run twice without duplicates; second batch with new/changed data; SQL before/after counts; SCD2 snapshot on dealers; dbt tests + alerts; macros only where useful; documentation.
+- Calendar and presentation: see `docs/SESSION_NOTES.md` §4 (**user presents Thursday 2026-11-26, 3rd turn**; supersedes the dates in §2 and §7).
+- Day-to-day state and next actions: `docs/SESSION_NOTES.md`.
+
 ## 4. Data strategy (hybrid)
 No public transaction-level Mercedes sales exist, so:
-1. **Simulated sales** (Python generator, acts as the "source system"), 2019–2025, **~100k rows sample** (justified as a demo sample for performance), calibrated to public Mercedes figures. Delivered per region, in different formats, in several batches (incremental loads).
+1. **Simulated sales** (Python generator, acts as the "source system"), **2021–2025** (decided 2026-11-20, D-026), **~100k rows sample** (justified as a demo sample for performance), calibrated to public Mercedes figures. Delivered per region, in different formats, in several batches (incremental loads).
 2. **Seeds**: `model_catalog` (model, body type, powertrain, production years), `region_country`, `nhtsa_component_map` (NHTSA component -> software/electronics | mechanical | other), `fx_rates` (EUR conversion).
 3. **Real NHTSA recalls** for Mercedes-Benz (public).
 4. Calendar and region tables.
@@ -70,7 +87,7 @@ Source files -> Snowflake stage -> BRONZE (COPY INTO) -> dbt: staging (stg_) -> 
 - Dimensions: `dim_model` (includes body type + powertrain, **shared by both facts**), `dim_dealer`, `dim_region`, `dim_date`, `dim_component`.
 
 ## 6. Git / team simulation
-- Branches: `main` (deliverable only), `develop`, `feature/*`, `fix/*`; PRs into `develop`.
+- Branches (updated 2026-11-20): `feature/*`/`fix/*` → `develop` (DEV) → `pre` (PRE) → `main` (PRO, deliverable only), by PR/merge. Each branch maps to a dbt/Snowflake environment.
 - Commits: Conventional Commits in English, **no date prefix** (git stores it): `feat(ingestion): add stage and file formats`.
 - Tags (SemVer): `v0.1.0-alpha` raw ingestion · `v0.2.0-alpha` staging/silver + tests · `v0.3.0-beta` star schema · `v0.4.0-beta` Power BI · `v1.0.0` final.
 - See `CONTRIBUTING.md`.
