@@ -5,7 +5,8 @@
 
 - **Last updated:** 2026-11-20, later (by Claude, Sonnet 5.5)
 - **Copy-paste prompt to start any new session:** `docs/HANDOFF_PROMPT.md`
-- **Branch of reference:** `develop` (local == `origin/develop` at the time of the audit; working tree clean)
+- **Branch of reference:** `develop`. All files up to 2026-11-20 are committed in `develop`; branch `pre` created from `develop`. Feature branches are used when useful to simulate the team workflow (see `CONTRIBUTING.md`).
+- Slide notes: `docs/es/slides_notes.md` (script, evidence checklist, questions for the teachers).
 
 ## 1. Real state of the repo (audit 2026-11-20)
 
@@ -61,3 +62,4 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 ## 6. Session log (append one line per session)
 - 2026-11-17/19 (Claude): scope, repo, hook, docs, Snowflake script, decision log.
 - 2026-11-20 (Claude): audit of the repo, scope revision after teacher/ChatGPT review, this file created.
+- 2026-11-20 later (Claude): modelling exercise written (user is solving it in draw.io and will send results), leasing/renting/replacement dropped, data 2021–2025 only, branch flow with `pre`, commit-explanation and git-action-warning rules, slide notes file.
