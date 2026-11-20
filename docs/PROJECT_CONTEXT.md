@@ -130,7 +130,7 @@ See `CLAUDE.md`. Model in use: Sonnet 5.5 (medium); switch to Opus only for hard
 2. **User**: replace `<YOUR_USER>` in `snowflake/01_setup_environment.sql`, run it in Snowsight, report the output of the final `show databases`.
 3. Confirm the meaning of `replacement` (see `docs/es/source_design.md`, note after D24).
 4. Next scripts: `02_stages_and_file_formats.sql` (internal stage + 5 file formats: EU `;`, US `,`, JP Shift-JIS, KR tab CP949, JSON), then `03_bronze_tables.sql`.
-5. Write the data generator (`data_generator/`) — Claude writes it, explains it; user reviews.
+5. Write the data generator (`data/data_generator/`) — Claude writes it, explains it; user reviews.
 6. Create dbt Cloud project (new account already created): connection to Snowflake (DEV_MB_TRANSFORM_ROLE, WH_MB), repo connection, `dbt_project.yml` with env vars `DBT_SILVER_DB` / `DBT_GOLD_DB` like the course.
 7. Close the dimensional model; backlog (GitHub Projects).
 8. Pending info from user: required deliverables/format of the presentation when known.

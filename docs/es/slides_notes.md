@@ -51,7 +51,8 @@ Elige 4 o 5; el detalle está en `docs/es/decisions_log.md`.
 | Una fuente de extremo a extremo antes de ampliar (D-021) | Construir las cinco regiones a la vez | Pocas funcionalidades bien hechas |
 | Precio sin impuestos y en EUR, conservando el bruto (D-011, D-012) | Guardar todo ya en EUR | Los orígenes no son comparables entre sí |
 | Predicción de ventas fuera de alcance (D-002) | Modelo predictivo | Es ciencia de datos, no ingeniería de datos |
-| Flujo `feature` → `develop` → `pre` → `main` (D-029) | Solo `develop` y `main` | Replica los tres entornos DEV/PRE/PRO |
+| Flujo `develop` → `pre` → `main`, sin ramas `feature` (D-030) | `feature/*` → `develop` → `pre` → `main` | Trabajo individual y poco tiempo; se mantiene la promoción entre entornos |
+| Revisiones NHTSA desde fichero plano, no desde la API (D-033) | API de la NHTSA | Tiempo del proyecto: una descarga reproducible en lugar de construir y probar una extracción; sin dependencia externa en la demo |
 
 ## 4. Evidencias que hay que guardar (capturas)
 

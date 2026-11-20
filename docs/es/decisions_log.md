@@ -38,7 +38,15 @@
 | D-026 | 2026-11-20 | Ventana de análisis 2021–2025 para UC1–UC3 | ✅ (justificación ⏳) |
 | D-027 | 2026-11-20 | El modelo dimensional lo diseña el usuario primero, con un ejercicio | ✅ |
 | D-028 | 2026-11-20 | Cada commit se entrega con mensaje y explicación | ✅ |
-| D-029 | 2026-11-20 | Flujo de ramas feature → develop → pre → main | ✅ |
+| D-029 | 2026-11-20 | Flujo de ramas feature → develop → pre → main | ✅ (parcial, ver D-030) |
+| D-030 | 2026-11-20 | Solo develop, pre puntual | ✅ |
+| D-031 | 2026-11-20 | Demos en directo en la exposición | ✅ |
+| D-032 | 2026-11-20 | Revisiones NHTSA de 2021 a 2025, filtradas por fecha del informe | ✅ |
+| D-033 | 2026-11-20 | NHTSA: descarga del fichero plano en lugar de la API | ✅ |
+| D-034 | 2026-11-20 | Todo lo de datos bajo `data/` | ✅ |
+| D-035 | 2026-11-20 | NHTSA: bronze completo, filtrado en silver | ✅ |
+| D-036 | 2026-11-20 | Revisiones NHTSA opcionales, con punto de control | ⏳ |
+| D-037 | 2026-11-20 | Alcance: solo turismos Mercedes-Benz; camiones, furgonetas y Maybach como ampliación | ✅ |
 
 ---
 
@@ -94,6 +102,7 @@
 - **Propuesta inicial (descartada)**: no normalizar y solo documentarlo como limitación.
 - **Decisión**: guardar `gross_price`, `tax_rate` y `net_price` con un seed `tax_rates` con fechas de validez; los informes usan neto.
 - **Por qué**: el IVA no es ingreso de la compañía y los orígenes no son comparables entre sí.
+- **Aclaración (2026-11-20)**: el precio neto se mantiene **en moneda local** y se convierte a EUR aparte (D-011). Silver guarda `sale_price_gross_local` (tal como llega), `tax_rate`, `sale_price_net_local` y `currency`; gold usa solo `sale_price_net_local` y `sale_price_net_eur`. Se conserva el bruto porque el neto es derivado: así se puede auditar y recalcular si cambia el seed. En EE. UU. el precio no incluye impuestos, así que bruto = neto (`tax_rate` = 0).
 
 ## D-013 · Mercados
 - **Decisión**: Europa (DE, FR, IT, ES, GB, CH), EE. UU., China, Japón y Corea. Fuera: India, Canadá, México, Australia.
@@ -189,3 +198,40 @@
 - **Por qué**: es lo que cabe en 10-15 minutos y demuestra lo que piden los profesores (incrementalidad, sin duplicados).
 - **Plan B**: capturas o vídeo grabado por si falla algo en directo.
 - **Pendiente**: preguntar a los profesores en clase (canal de entrega, automatización válida, qué esperan de la demo).
+
+## D-032 · Revisiones NHTSA de 2021 a 2025 (2026-11-20)
+- **Contexto**: las ventas cubren 2021–2025 (D-026). Si las revisiones cubrieran solo 2025, UC5 («evolución por año») no tendría sentido.
+- **Opciones**: solo 2025; 2021–2025 filtrando por fecha del informe; 2021–2025 filtrando por año modelo.
+- **Decisión**: se cargan las campañas de 2021 a 2025 filtrando por la **fecha del informe** (cuándo se publica la campaña), igual que la ventana de ventas. El año modelo del vehículo afectado se conserva como atributo y puede ser anterior a 2021.
+- **Por qué**: son dos fechas distintas (una campaña de 2023 puede afectar a modelos de 2018). Filtrar por fecha del informe da la misma línea temporal que las ventas.
+
+## D-033 · NHTSA: fichero plano en lugar de la API (2026-11-20)
+- **Contexto**: la NHTSA ofrece los datos de revisiones como ficheros planos descargables y como API.
+- **Opciones**: (a) API de la NHTSA; (b) descarga del fichero plano `FLAT_RCL_POST_2010.zip` y su descripción de campos `RCL.txt`.
+- **Decisión**: (b), descarga manual del fichero plano, filtrado de Mercedes-Benz y 2021–2025, y carga como carga batch en Snowflake.
+- **Por qué**: **el tiempo disponible para el proyecto**. Una API obliga a construir y probar la extracción (paginación, errores, límites de uso) y añade una dependencia externa en directo el día de la exposición. El fichero es una sola descarga, encaja con el stage + file format que ya se ve en el curso y es reproducible sin conexión.
+- **Dónde se guardan** (ajustado el mismo día): en `data/nhtsa/raw/` se suben a Git el **zip** (15 MB) y `RCL.txt`. El fichero descomprimido (314 MB) **no** se sube, porque GitHub rechaza ficheros de más de 100 MB; se vuelve a generar descomprimiendo el zip. Si más adelante se necesita un extracto pequeño, irá en `data/nhtsa/`.
+- **Consecuencia**: no hay actualización automática de revisiones. Se documenta como limitación y como mejora futura (pasar a la API).
+
+## D-034 · Carpeta `data/` (2026-11-20)
+- **Decisión**: todo lo relativo a datos vive bajo `data/`: `data/data_generator/` (simulador de las fuentes) y `data/nhtsa/` (fichero real).
+- **Por qué**: un solo sitio para lo que son datos de entrada, separado del código dbt y de Snowflake.
+
+## D-035 · NHTSA: bronze completo, filtrado en silver (2026-11-20)
+- **Opciones**: (a) filtrar Mercedes-Benz antes de cargar; (b) cargar el fichero completo en bronze y filtrar después.
+- **Decisión**: (b). Bronze guarda el fichero tal como llega (todas las marcas, desde 2010); el filtro (turismos Mercedes-Benz, informes de 2021 a 2025) se hace al pasar a silver.
+- **Por qué**: bronze es una copia fiel del origen, y así el filtro queda en código dbt versionado y se puede cambiar sin volver a descargar. Los datos de otras marcas son públicos de la NHTSA y no plantean problema; el coste de almacenamiento es insignificante.
+- **Alternativa válida (descartada)**: filtrar antes de cargar, justificando que no queremos datos de la competencia. Se descarta porque rompe la regla de bronze y obliga a un paso fuera de dbt.
+- **Ojo**: el filtro no es un simple `= 'MERCEDES-BENZ'`. La marca aparece como `MERCEDES-BENZ`, `MERCEDES BENZ` y `MERCEDES-MAYBACH`; además hay camiones y autobuses de Daimler (Freightliner, Western Star, Thomas Built, Setra) que no son turismos, y equipos sueltos (`RCLTYPECD` distinto de `V`).
+
+## D-036 · Las revisiones NHTSA son opcionales: punto de control (2026-11-20)
+- **Contexto**: el fichero real es sucio y de grano distinto al de las ventas (campaña × modelo × año × componente, con `POTAFF` repetido en cada fila; el modelo viene con nombres como `GLS450` y `GLS 450`; el componente es un texto jerárquico). Puede complicar el proyecto más de lo que aporta.
+- **Decisión**: de momento se incluye en el modelado. **Se revisa en cada sesión**; si consume demasiado tiempo, se descarta UC5 y las revisiones, y el proyecto se queda con las ventas (UC1–UC4).
+- **Criterio para descartar**: si el miércoles 25 o antes el flujo de ventas de extremo a extremo (bronze → gold) no está estable, las revisiones salen.
+
+## D-037 · Alcance: solo turismos (2026-11-20)
+- **Contexto**: el fichero de la NHTSA incluye también furgonetas (Sprinter, Daimler Vans), camiones, autobuses y Maybach, algo que no se había planteado.
+- **Opciones**: (a) cubrir todo el grupo Daimler/Mercedes; (b) centrarse en turismos de la marca Mercedes-Benz y decir expresamente que el resto queda fuera.
+- **Decisión**: (b). El proyecto trata **turismos Mercedes-Benz**; camiones, furgonetas y Maybach quedan fuera de alcance y se declaran así en la exposición.
+- **Por qué**: menos casos y mejor hechos. Además, el diseño es escalable: añadir otro tipo de vehículo supone ampliar el catálogo de modelos y los mapeos, no rehacer el modelo.
+- **Cómo se aplica**: en silver se filtra `MAKETXT` en `MERCEDES-BENZ` y `MERCEDES BENZ` y `RCLTYPECD = 'V'`. Las furgonetas Sprinter vienen bajo la marca Mercedes-Benz, así que se excluyen porque su modelo no está en el catálogo (alias → variante). Ajusta el filtro de D-035, que mencionaba `MERCEDES-MAYBACH`.

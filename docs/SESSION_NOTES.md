@@ -18,7 +18,7 @@
 | `snowflake/01_setup_environment.sql` | ✍️ Written and committed. **Confirmed by the user: NOT run yet.** Nothing exists in Snowflake. No data generated, dbt not used yet. |
 | `docs/es/exercise_dimensional_model.md` | ✍️ Written: modelling exercise (course-style statement, no solution). **The user designs the model first**; Claude reviews. |
 | Stages / file formats / bronze tables (`02_…`, `03_…`) | ❌ Not started |
-| Data generator (`data_generator/`) | ❌ Not started (folder only has `.gitkeep`) |
+| Data generator (`data/data_generator/`) | ❌ Not started (folder only has `.gitkeep`) |
 | dbt Cloud project (`dbt_project/`) | ❌ Not started. New dbt Cloud account exists. |
 | `docs/es/business_context.md`, English docs (`docs/en/`) | ❌ Not started |
 | Power BI (`powerbi/`) | ❌ Not started |
@@ -43,6 +43,7 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 6. `source_design.md` still lists 5 regions and 24 dirt types: trim to the core scope once the model is closed.
 7. **Live demo (D-031):** ~3 min. Batch 1 and batch 2 (new + changed rows), incremental run, SQL counts before/after, automation with a Snowflake Task or a scheduled dbt Cloud job (to confirm). **Plan B:** screenshots or a recorded video in case the live run fails.
 8. **Questions for the teachers** (bring to the work sessions): (a) delivery channel for the repo and the slides; (b) is one Snowflake Task or one dbt Cloud job enough as "automation"?; (c) what do they expect from the demo and from the 2021–2025 window?
+9. **NHTSA recalls = checkpoint (D-036).** Real file downloaded to `data/nhtsa/raw/` (zip + `RCL.txt` committed; unzipped 314 MB ignored). Included in the modelling for now; review every session and **drop UC5 if it costs too much time** (if the sales flow is not stable end-to-end by Tue 24). Bronze keeps the full file, filter (MB cars, report date 2021–2025) in silver (D-035). Snowflake cannot read `.zip`: gzip the txt before loading. Exercise 2.6 was updated with the real fields.
 
 ## 4. Calendar (replaces the old one)
 - Fri 20: class in the afternoon → close dimensional model.
