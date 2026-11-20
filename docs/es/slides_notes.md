@@ -13,9 +13,11 @@
 | Demo | Sí, si es posible. Alternativa: capturas y un vídeo corto de respaldo |
 | Extras | Meme con un perro (solo si encaja de forma natural) · coche Mercedes en miniatura · pizarra de clase si ayuda |
 
-## 2. Guion por diapositiva (≈ 12 min)
+## 2. Bloques de contenido (≈ 12 min)
 
-| # | Diapositiva | Min | Mensaje clave |
+> No es una diapositiva por bloque ni por minuto: el diseño es libre. Un bloque puede ocupar varias diapositivas o varios bloques compartir una. Los minutos son solo orientativos. El diseño final lo haces tú a mano cuando el contenido esté cerrado.
+
+| # | Bloque | Min | Mensaje clave |
 |---|---|---|---|
 | 1 | Portada | 0:20 | Título, nombre, formación |
 | 2 | Motivación | 1:00 | Por qué Mercedes-Benz y por qué este proyecto |
@@ -28,7 +30,7 @@
 | 9 | Aprendizajes, limitaciones y futuro | 1:00 | Qué haría distinto y qué se puede ampliar |
 | 10 | Cierre y preguntas | 0:20 | Agradecimiento |
 
-### Mis notas por diapositiva
+### Mis notas por bloque
 - **2 · Motivación:**
 - **3 · Contexto:**
 - **4 · Decisiones:**
@@ -73,3 +75,28 @@ Guarda cada captura el día que funcione; es lo más difícil de recuperar al fi
 - ¿Por qué canal se envían el repositorio y las diapositivas, y hasta cuándo?
 - ¿Se puede usar la pizarra de clase durante la exposición?
 - ¿Hay que hacer demo en directo o basta con capturas?
+
+## 7. Explicar el VIN (número de bastidor)
+
+**Qué es.** *Vehicle Identification Number*: código de **17 caracteres** que identifica a un vehículo de forma única, como su huella dactilar (norma ISO 3779). No usa las letras `I`, `O` ni `Q`, para no confundirlas con `1` y `0`.
+
+**Cómo se trocea.**
+
+| Posiciones | Parte | Qué dice |
+|---|---|---|
+| 1–3 | WMI | Fabricante y país (en Mercedes, por ejemplo, `WDD`, `W1K` o `W1N`) |
+| 4–9 | VDS | Características: modelo, carrocería, motor. La posición 9 es un dígito de control en Norteamérica |
+| 10 | Año modelo | Una letra: 2021 = `M`, 2022 = `N`, 2023 = `P`, 2024 = `R`, 2025 = `S` |
+| 11 | Planta | Dónde se fabricó |
+| 12–17 | Nº de serie | Identifica la unidad |
+
+**Por qué importa en el proyecto.**
+- Es la **clave natural** de una venta. Ojo: un mismo VIN puede aparecer más de una vez (venta, devolución y nueva venta), así que hay que pensar si `vin` es único en la tabla de hechos. Tema del ejercicio de modelado.
+- Es un **defecto de calidad** típico (D04): longitud distinta de 17, vacío o con `I`, `O`, `Q`. Se puede validar en staging.
+- **No sirve para cruzar ventas con las revisiones de la NHTSA**: las campañas se publican por modelo y año, no por VIN.
+- Puede ser un **dato sensible**: si se puede vincular a un propietario, se trata como dato personal. Encaja con el apartado de ciberseguridad (por ejemplo, una *masking policy* en Snowflake).
+- Nuestros VIN de ejemplo son **ficticios** y no siguen la estructura real. Decidir si el generador crea VIN con estructura válida (más realista, algo más de trabajo).
+
+**Idea de diapositiva:** un VIN troceado en colores con una flecha a cada parte.
+
+> Antes de poner estos datos en una diapositiva, compruébalos con una fuente fiable.

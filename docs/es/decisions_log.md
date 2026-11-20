@@ -169,6 +169,7 @@
 ## D-028 · Commits explicados
 - **Decisión**: cada vez que toque un commit, el asistente entrega el mensaje listo para pegar (Conventional Commits, en inglés) y una explicación en español de qué hace cada fichero y por qué. El usuario hace los commits a mano y puede copiar la explicación a la descripción.
 - **Por qué**: entender en todo momento qué contiene cada commit, para poder defender el historial.
+- **Ajuste (2026-11-20)**: los avisos de Git (commit, rama, PR) solo cuando merezca la pena: tarea terminada o hito. Sin control excesivo, para no perder tiempo.
 
 ## D-029 · Flujo de ramas con tres entornos
 - **Opciones**: `feature` → `develop` → `main`; o añadir una rama `pre`.
