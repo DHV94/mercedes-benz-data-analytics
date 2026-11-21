@@ -278,3 +278,52 @@
 - **Opciones**: el VIN como clave primaria, o un identificador propio.
 - **Decisión**: `sale_id` propio, **generado con un hash determinista** de `source_system` y `source_sale_id` (no un contador). El VIN queda como atributo con test de calidad.
 - **Por qué**: un VIN puede repetirse (venta, devolución, nueva venta), puede venir vacío o mal formado, y un contador cambiaría en cada ejecución e impediría demostrar que ejecutar dos veces no duplica.
+
+## D-044 · Generador de datos: diseño (2026-11-21)
+- **Contexto**: hace falta un origen reproducible para la demo de incrementalidad (D-022, D-031) y poco tiempo. El generador lo escribe el asistente (excepción prevista en las normas de trabajo) y se explica después al usuario.
+- **Decisión**: se empieza solo por **Europa** (D-021). `data/data_generator/generate_europe.py`, con una semilla fija (mismos ficheros en cada ejecución, comprobado con huellas SHA-256).
+- **Dos lotes**: el lote 1 es el histórico hasta el 31-10-2025 (un fichero por año, unas 44.000 filas con duplicados); el lote 2 trae ventas nuevas (nov–dic 2025), **correcciones** de ventas ya enviadas (mismo `sale_id` con estado o precio cambiado) y filas **reenviadas idénticas**. El maestro de concesionarios del lote 2 incluye nombres cambiados y cierres, para el snapshot.
+- **Catálogo**: 49 variantes, 3 propulsiones (ICE, PHEV, BEV; sin híbrido ligero para simplificar) y 7 carrocerías. Precios y disponibilidad ficticios. Una tendencia anual hace que los datos «cuenten algo»: el eléctrico pasa de ~2 % (2021) a ~22 % (2025), y el SUV de ~42 % a ~51 %.
+- **Suciedad**: 13 defectos con porcentaje configurable (duplicados, VIN vacío o inválido, nombres de modelo, fechas malas, entrega anterior a la venta, precios con separador de miles o símbolo, precios 0 o negativos, moneda, espacios y mayúsculas, tipo de cliente vacío, concesionario desconocido). Es una reducción respecto a los 24 del diseño inicial.
+- **Alias**: el generador crea `model_alias.csv` con todas las grafías de cada modelo (300 filas), que será el seed de equivalencias en dbt. Así todo nombre sucio se puede resolver a una variante.
+- **Por qué**: control total de la suciedad y de las demostraciones, a coste mínimo de tiempo del usuario.
+
+## D-045 · Revisiones: campaña y líneas de campaña (2026-11-21)
+- **Contexto**: el lógico v4 plantea una campaña con una sola familia, un estado y líneas con campaña y componente.
+- **Comprobación con el fichero real**: unas 76 de las 216 campañas (≈35 %, cálculo aproximado por el prefijo del modelo) afectan a **más de una familia**; por ejemplo, `21V058000` toca más de diez. Y el fichero **no trae estado** de la campaña.
+- **Decisión**: `campaigns` (id, fecha del informe, unidades potenciales) 1—M `campaign_lines` (id, `campaign_id`, `family_id`, `model_year`, `component_id`). La familia y el año van en la línea, no en la campaña. Sin columna de estado.
+- **Por qué**: el componente depende de la combinación familia + año dentro de la campaña, y UC5 lo pide por modelo y año.
+
+## D-046 · Impuesto solo en el país (2026-11-21) (SUSTITUIDA por D-050)
+- **Opciones**: (a) `countries.tax_id` y `taxes.country_id` a la vez; (b) solo `taxes.country_id` con fechas de vigencia; (c) solo `countries.tax_id`.
+- **Decisión**: (c), a petición del usuario.
+- **Consecuencia (limitación)**: cada país apunta a un solo impuesto, el vigente; no hay historial de cambios de tasa por país. Es válido mientras la tasa no cambie en 2021–2025 en los países incluidos (hay que comprobar Suiza, si se incluye) y debe decirse como limitación. Las fechas `valid_from`/`valid_to` de `taxes` se quitan y **no hay snapshot de impuestos** (2026-11-21): el snapshot se reserva para los concesionarios, donde el historial es el objetivo; en una tabla de referencia con una tasa por país no aporta.
+
+## D-047 · Jerarquía geográfica y recogida de datos (2026-11-21)
+- **Decisión**: la jerarquía es venta → concesionario → país → región (el nivel «global» es el total, no una tabla). Sirve para el desglose en Power BI (región → país → concesionario).
+- **Recogida**: no sigue esa jerarquía. Cada **sistema regional envía su propio fichero** (Europa, EE. UU., China), que contiene varios países. La jerarquía se reconstruye en silver con el concesionario de cada venta.
+
+## D-048 · Años del modelo (2026-11-21)
+- **Decisión**: la tabla de modelos guarda `first_model_year` y `last_model_year` (vacío si sigue en producción); cada venta y cada línea de campaña guarda su propio `model_year`.
+- **Por qué**: son dos cosas distintas: cuándo se fabrica una variante y el año modelo de un vehículo concreto. El rango permite validar datos (una venta de una variante antes de que existiera es un error) y describir el ciclo de vida del modelo.
+
+## D-049 · Importes: medida secundaria (2026-11-21) ⏳
+- **Contexto**: los cinco casos de uso **cuentan ventas o revisiones**; ninguno pide importes. Los impuestos y los tipos de cambio solo sirven para el ingreso neto en euros.
+- **Opciones**: (a) solo unidades, sin tablas de impuestos ni tipos de cambio; (b) unidades como medida principal e ingreso neto en EUR como medida secundaria, que se construye al final y solo si hay tiempo.
+- **Recomendación**: (b). Las tablas son pequeñas, aparecen en el modelo y muestran limpieza de precios, conversión de moneda y cálculo del neto. Si falta tiempo, se recorta sin afectar a UC1–UC5.
+- **Pendiente**: confirmación del usuario.
+
+## D-050 · Impuestos con vigencia y aplicados en la venta (2026-11-21)
+- **Contexto**: el usuario quiere que el cálculo del precio neto sea correcto aunque la tasa cambie con el tiempo, y se plantea si los datos podrían llegar ya con el impuesto.
+- **Opciones**: (a) que el origen envíe el impuesto o el precio neto; (b) un solo impuesto por país, el vigente (D-046); (c) tabla de impuestos con vigencia por país y guardar en cada venta el impuesto aplicado.
+- **Decisión**: (c). `taxes` (id, `country_id`, tasa, `valid_from`, `valid_to`) y en `sales` una clave foránea al impuesto aplicado, calculada en silver uniendo por país y por la fecha de la venta. Se quita `tax_id` de `countries`.
+- **Por qué no (a)**: en la simulación los orígenes envían un único precio (con IVA en Europa, China y Japón; sin impuestos en EE. UU.) y no indican la tasa, que es lo habitual cuando el sistema de ventas no calcula impuestos. Mantenerlo así hace útil la tabla y muestra una transformación real. Se podría cambiar el generador para que envíe el neto, pero perdería sentido la tabla.
+- **Detalles**: para EE. UU., cuyo precio ya excluye impuestos, la fila lleva tasa 0, de modo que la fórmula neto = bruto ÷ (1 + tasa) sirve para todos. Tests: que los periodos de un país no se solapen y que cubran todas las fechas de venta; que el país del impuesto coincida con el del concesionario.
+- **Sin snapshot**: la vigencia ya guarda el historial; el snapshot sigue reservado a los concesionarios.
+- **Relación con D-049**: solo se aprovecha si se construye el ingreso neto (medida secundaria).
+
+## D-051 · Monedas en dos tablas en el modelo lógico (2026-11-21)
+- **Opciones**: (a) una sola tabla `exchange_rates` con código de moneda, mes y tasa, y `countries.currency_code` apuntando al código (simplificación defendible, comentada con un profesor); (b) `currencies` (una fila por moneda) y `exchange_rates` (una fila por moneda y mes).
+- **Decisión**: (b) en el lógico, por coherencia con el conceptual. En dbt bastará un seed de tipos de cambio y los países con su código de moneda.
+- **Por qué**: lo que cambia con el tiempo (la tasa) se separa de lo que no cambia (la moneda), y `countries` apunta a una moneda y no a una fila con fecha. El coste es una tabla pequeña.
+- **Justificación de (a), por si se pregunta**: la moneda solo tiene código y nombre, y el código ISO es una clave natural estable; normalizar más no aporta datos nuevos.

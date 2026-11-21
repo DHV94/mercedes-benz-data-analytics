@@ -40,6 +40,27 @@
 - **8 · Resultados:**
 - **9 · Aprendizajes:**
 
+## 2b. Apertura (borrador, 2026-11-21)
+
+Idea del usuario, con ajustes sugeridos. Duración objetivo: **1,5–2 minutos** de los 10–15.
+
+1. **Gancho (10 segundos)**: un comentario de broma corto y seguro. Posible apoyo visual: el **coche Mercedes en miniatura** sobre la mesa.
+2. **Motivación personal**: «desde pequeño me gustan los coches». Conecta de forma natural con el coche en miniatura.
+3. **Modelo de negocio**: cuántos coches vende Mercedes-Benz y **por qué importa este trabajo ahora**: el cambio de motores (combustión, híbridos, eléctricos).
+4. **La pregunta inicial**: de ahí salen los casos de uso. La **carrocería** se explica porque era la pregunta original (qué se vende mejor y dónde); la propulsión, por el cambio de motores.
+
+Datos de contexto ya encontrados (de la web de Mercedes-Benz Group y prensa, ventas de 2025; **comprobar antes de usarlos**): unos 2,16 millones de turismos y furgonetas en total, unos 1,8 millones de turismos; China fue el mayor mercado (~552.000 unidades, ~31 % de los turismos). Fuente: `group.mercedes-benz.com/company/news/sales-2025.html`.
+Para el cambio de motores, busca una cifra o una norma europea concreta y compruébala; no la doy por buena de memoria.
+
+Sugerencias:
+- No ocupes más de 2 minutos: el tribunal espera ver la parte técnica.
+- El **meme del perro** puede encajar mejor más adelante, en el bloque de limpieza de datos («cuando el fichero llega con el VIN vacío»), que al inicio.
+- Cierra la apertura con una frase puente: «con esta pregunta, construí esto».
+
+### Mis notas de la apertura
+- Broma:
+- Frase personal:
+
 ## 3. Decisiones destacadas para la diapositiva 4
 
 Elige 4 o 5; el detalle está en `docs/es/decisions_log.md`.
