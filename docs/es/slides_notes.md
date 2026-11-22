@@ -141,3 +141,8 @@ Guarda cada captura el día que funcione; es lo más difícil de recuperar al fi
 **Idea de diapositiva:** un VIN troceado en colores con una flecha a cada parte.
 
 > Antes de poner estos datos en una diapositiva, compruébalos con una fuente fiable.
+
+## Anécdotas reales para la presentación (con capturas numeradas en `docs/evidence/README.md`)
+1. **Usuario en mayúsculas (capturas 01-02)**: Snowflake convierte a mayúsculas los nombres sin comillas; el usuario `dhv994` hay que escribirlo entre comillas. Diagnóstico con `current_user()`.
+2. **Subida sin carpeta (capturas 05-08)**: el `COPY INTO` decía «0 files processed»; el `list` del stage mostró los ficheros en la raíz en vez de en `batch_1/`. Se diagnosticó con capturas y se corrigió (09-12). Mensaje: leer el estado antes de tocar nada.
+3. **Cifras que cuadran (capturas 11-14)**: 44.733 filas cargadas, 44.072 ventas distintas (661 duplicados puestos a propósito) y 128 concesionarios.

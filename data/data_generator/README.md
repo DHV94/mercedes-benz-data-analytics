@@ -17,14 +17,15 @@ Options: `--seed 42` (reproducibility), `--rows 45000` (clean sales before defec
 
 | File | Content |
 |---|---|
-| `batch_1/sales_eu_2021.csv` … `sales_eu_2025.csv` | Sales history up to 2025-10-31, one file per year. CSV `;`, UTF-8, decimal comma, `dd/mm/yyyy` |
+| `batch_1/sales_eu_2021.csv` … `sales_eu_2025.csv` | Sales history up to 2025-11-30, one file per year. CSV `;`, UTF-8, decimal comma, `dd/mm/yyyy` |
 | `batch_1/dealer_master.csv` | Dealer master (128 dealers, 6 countries). CSV `,`, ISO dates |
-| `batch_2/sales_eu_2025_delta.csv` | **New** sales (Nov–Dec 2025) + **corrections** of old sales (same `sale_id`, status or price changed) + a few **identical re-sent** rows |
-| `batch_2/dealer_master.csv` | Same dealers; some **renamed**, a few **closed** (what the SCD2 snapshot will capture) |
+| `delta_1/` … `delta_6/` | Six small deltas of December 2025 (about 5 days each, 134–180 rows): `sales_eu_2025_delta_N.csv` + `dealer_master.csv`. Each delta tests one thing (new sales, identical re-sent rows, corrections, dealer renames, closures + new dealer, alert rows). See `docs/es/demo_scenarios.md` |
+| `reference/delta_plan.csv`, `alert_rows.csv` | Exact rows and expected effect of every delta; the 10 deliberate alert rows of delta 6 |
+| `reference/tax_types.csv`, `taxes.csv`, `tax_regime_map.csv` | Tax types, rates with validity and every spelling of `tax_regime` (feed the dbt seeds, D-060) |
 | `reference/model_alias.csv` | Every spelling of every model name → `model_variant_code` (feeds the dbt seed) |
 | `manifest.json` | Rows and SHA-256 per file (to prove two runs are identical) |
 
-`config/model_catalog.csv` is the model catalog (49 variants, 3 powertrains: ICE, PHEV, BEV; 7 body types) and will also be the source of the dbt seed `model_catalog`. Prices and availability are fictional approximations.
+`config/model_catalog.csv` is the model catalog (51 variants, 5 powertrains: PETROL, DIESEL, HEV, PHEV, BEV; 7 body types) and will also be the source of the dbt seed `model_catalog`. Prices and availability are fictional approximations.
 
 ## How the data is built / Cómo se construye
 
@@ -37,4 +38,4 @@ Options: `--seed 42` (reproducibility), `--rows 45000` (clean sales before defec
 
 1. Load `batch_1` → run the pipeline → record row counts.
 2. Run the pipeline **again** with no new data → counts must not change (idempotency).
-3. Load `batch_2` → run → new rows appear, corrected sales are updated, re-sent rows are not duplicated, dealer changes create new versions in the snapshot.
+3. Load `delta_1` … `delta_6` one by one (run the pipeline after each) → see `docs/es/demo_scenarios.md` for the expected counts of every step.

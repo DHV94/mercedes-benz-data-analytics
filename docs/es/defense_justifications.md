@@ -53,3 +53,22 @@ Es la pregunta que enlaza los dos casos:
 - **¿Por qué `families` no tiene fechas de primer y último año, como `models`?** El ciclo de vida se guarda donde nace el dato, en el modelo (`first_model_year`, `last_model_year`), y se **deriva hacia arriba**: una familia está vigente mientras tenga algún modelo vigente (`min`/`max` de sus modelos). Guardarlo también en la familia sería un dato redundante que podría contradecirse. Ejemplo: EQA es una familia; cuando dejen de fabricarse sus modelos (EQA 250, EQA 300…), la familia lo refleja sin cambiar nada. Se puede exponer como columna calculada en gold (`dim_family`).
 - **¿Por qué `family_id` está también en `fct_sales` si ya se puede sacar de `dim_model`?** Para mantener una **estrella pura**. Si `dim_family` colgara de `dim_model` sería un copo de nieve (dimensión que cuelga de otra), con más joins y consultas más lentas. Preferimos repetir una clave en el hecho (barato: unas decenas de miles de filas) y protegerla con un test de coherencia. A cambio, `dim_family` es una **dimensión compartida** por ventas y campañas: un selector de familia filtra los dos hechos (D-059). Frase: «hice lo posible por evitar el copo de nieve y dejarlo como estrella».
 - **¿Qué pasa con `delivery_date_id` si la venta no se ha entregado?** Va a una fila «desconocida» de `dim_date` (`date_id = -1`), para no perder la venta ni romper el join.
+
+## 6. Impuestos con tipo (D-060, D-061)
+
+- **¿Por qué hay una tabla de tipos de impuesto?** Porque un país puede aplicar **varias tasas a la vez** (general y reducida). Antes solo había una por país y fecha. Ahora `taxes` indica el tipo y la venta guarda el impuesto aplicado.
+- **¿Cómo sabe el sistema cuál aplicar?** El origen envía el régimen (`tax_regime`), igual que en la vida real. Con país y fecha no basta; deducirlo en silver sería inventarlo. Silver une país + régimen + fecha y comprueba que salga **exactamente un** impuesto.
+- **¿Qué pasa si el régimen llega vacío o mal escrito?** Un seed de equivalencias normaliza las grafías; si sigue sin casar, el test falla y salta la alerta (no se asume en silencio).
+- **¿Y si cambia una tasa?** Se añade una fila con su vigencia y se cierra la anterior. Ejemplo (verificar): IVA de Suiza 7,7 % hasta 2023 y 8,1 % desde 2024. Las ventas antiguas conservan el impuesto que se les aplicó.
+- **¿Por qué `dim_tax` y no una columna en la venta?** Conserva país, tipo, tasa y vigencia del impuesto aplicado sin perder datos, permite filtrar por tipo y mantiene la estrella (sin enlaces entre dimensiones).
+- **¿Por qué no varios impuestos en la misma venta?** Exigiría una tabla puente y medidas por impuesto. Se descarta por tiempo y se cita como mejora (por ejemplo, impuesto de matriculación según emisiones). Los informes usan el IVA, que es lo que no es ingreso de la compañía.
+- **Límite que decir**: el régimen reducido es **simulado**, inspirado en regímenes reales.
+
+## 7. Seguridad y conexión (D-063, D-064)
+
+- **¿Por qué dbt entra con una clave y no con contraseña?** Snowflake obliga a doble factor; un par de claves permite que dbt y los jobs programados entren sin reautenticarse, y la clave privada nunca se guarda en el repositorio.
+- **¿Dónde está la clave privada?** Fuera del repo (en un repositorio aparte de apuntes) y solo se pega en dbt Cloud. El repo ignora `profiles.yml` y `.env`.
+- **¿Es seguro reutilizar tu usuario?** En una cuenta de prueba sí; en un proyecto real se crearía un **usuario de servicio** con su propia clave y el rol mínimo. Se deja como mejora.
+- **¿Por qué un rol distinto para cargar y para transformar?** Mínimo privilegio: `MB_INGEST_ROLE` es el único que escribe en bronze; `DEV_MB_TRANSFORM_ROLE` solo lee bronze y crea objetos en silver y gold de su entorno; reporting solo lee gold.
+- **¿Por qué subida manual a un stage?** Se ve en pantalla y no necesita la clave; `COPY INTO` recuerda los ficheros ya cargados (primera defensa contra duplicados). La subida con la CLI queda como mejora.
+- **¿Por qué dbt v1 «Latest» y no v2?** Menos riesgo con paquetes y menos cambios; la v2 (Fusion) se menciona como evolución.

@@ -334,11 +334,13 @@
 - **Por qué**: separa el estado actual (silver) del historial (snapshot) y mantiene la PK única. Sustituye a la parte de tabla con vigencia de D-042; el punto de mejora futuro (unir por fecha de la venta) sigue igual.
 - **Recordatorio**: las fechas del snapshot significan «detectado el», no «ocurrió el».
 
-## D-053 · Generador basado en cuotas reales de mercado por país (2026-11-21)
-- **Contexto**: el usuario quiere que los datos simulados de Europa se parezcan a datos públicos, al menos en propulsión y, si es fácil, en carrocería.
-- **Decisión (propuesta)**: un fichero de configuración `market_mix.csv` (país, año, cuota ICE / PHEV / BEV) con datos públicos de ACEA y de las oficinas nacionales (KBA en Alemania), que el generador usa para ponderar la elección de modelo. Carrocería: cuota SUV de Alemania (KBA: 30,2 % en 2024 y 33,3 % en 2025) como referencia de tendencia; para otros países no hay dato gratuito equivalente.
-- **Límites a decir en la presentación**: son cuotas del **mercado total** de cada país, no de Mercedes-Benz; la categoría «híbrido» de ACEA incluye híbridos suaves, que aquí cuentan como combustión. Los datos siguen siendo simulados.
-- **Estado**: pendiente de implementar y de recopilar las cifras (ver SESSION_NOTES).
+## D-053 · Generador calibrado con cuotas públicas de mercado, año a año (2026-11-21; implementado 2026-11-22)
+- **Contexto**: el usuario quiere que los datos simulados de Europa se parezcan a datos públicos (propulsión y carrocería), año a año, con un pequeño ajuste para Mercedes.
+- **Decisión**: `data/data_generator/config/market_mix.csv` guarda, para 2021-2025, la cuota europea por propulsión (ACEA, UE) y la cuota SUV (JATO, Europa-28), con fuente y estado (`verified`, `derived`, `estimated`, `to_check`). El generador reajusta los pesos de cada variante del catálogo (ajuste proporcional iterativo) para que cada año salgan esas cuotas. Al final escribe `reference/calibration_report.csv` (cuota de mercado, objetivo Mercedes y cuota generada).
+- **Cinco tipos de propulsión** (a petición del usuario): `BEV` (eléctrico), `PHEV` (híbrido enchufable), `HEV` (híbridos de otro tipo, incluidos los suaves), `PETROL` (gasolina) y `DIESEL`. El catálogo pasa de 3 a 5 valores: 11 variantes de gasolina pasan a HEV (las de tecnología EQ Boost) y las 10 variantes «d» pasan a DIESEL. ACEA publica gasolina y diésel por separado; el pequeño resto (GLP, GNC, ~3 %) se reparte entre gasolina y diésel en proporción.
+- **Ajuste Mercedes**: Mercedes-Benz Cars tuvo un 40 % de electrificados (BEV + PHEV) en Europa en 2025 frente al 26,8 % del mercado (ACEA): factor ×1,49 sobre BEV y PHEV en todos los años (hipótesis; no hay dato de Mercedes para 2021-2023). El resto se reparte entre HEV e ICE con la proporción del mercado. Carrocería: sin dato de Mercedes, se usa la cuota SUV del mercado.
+- **Descartado**: cuotas por país (KBA solo existe para Alemania y no hay dato gratuito equivalente en los otros países); inventar tendencias (lo que hacía la primera versión).
+- **Límites a decir en la presentación**: son cuotas del mercado europeo, ajustadas a Mercedes con un solo dato; SUV 2022 y 2025 estimados; PHEV 2024 por comprobar; «HEV» de ACEA mezcla híbridos completos y suaves y el catálogo usa HEV para los suaves. Los datos siguen siendo simulados, pero calibrados: el informe de calibración muestra que se desvían menos de un punto, salvo ruido del muestreo.
 
 ## D-054 · Criterio para guardar fechas y tipo de cambio mensual (2026-11-21)
 - **Decisión**: se guardan fechas solo en hechos (ventas, campañas) y en valores que cambian con el tiempo (impuestos con intervalo, tipo de cambio mensual, concesionarios con snapshot). Las tablas de referencia guardan solo el estado actual.
@@ -374,3 +376,53 @@
 - **Opciones**: (a) `dim_family` 1—M `dim_model` (copo de nieve, defendible pero rompe la estrella); (b) `dim_family` enlazada directamente a `fct_sales` (con `family_id` en el hecho) y a `fct_campaign_line`; (c) una sola dimensión de modelo con la familia y unir campañas por texto.
 - **Decisión**: (b). `fct_sales` lleva `family_id` (derivable de `model_id`), y `dim_model` conserva `family_id` y `family_name` como atributos, sin enlace a `dim_family`. Un selector de familia filtra ventas y campañas.
 - **Por qué**: estrella pura (ninguna dimensión enlaza con otra) y dimensión conforme. El coste es un dato repetido en el hecho; se protege con un test (el `family_id` del hecho coincide con el de su modelo). Descartado (c) por frágil.
+
+## D-060 · Tipos de impuesto: varias tasas por país y tipo explícito (2026-11-22)
+- **Contexto**: el usuario detecta que `taxes` no indica de qué impuesto se trata y que un país puede tener **varias tasas a la vez** (ejemplo: IVA general del 21 % y reducido del 4 % para familias con hijos con discapacidad). Con solo país y fecha, silver no puede saber qué tasa aplicar: el dato tiene que venir en la venta.
+- **Opciones**: (A) mantener D-050 (una tasa por país y fecha); (B) añadir el catálogo `tax_types`, relacionarlo con `taxes` y que el origen envíe el régimen (`tax_regime`); (C) además, acumular **varios impuestos en una misma venta** (IVA + impuesto de matriculación, por ejemplo) con una tabla puente `sale_taxes`.
+- **Decisión**: (B), con el mayor detalle posible. (C) se descarta por tiempo y queda como mejora futura documentada (una venta con un único impuesto aplicado).
+- **Modelo lógico (v14)**:
+  - Tabla nueva `Tax_types`: `tax_type_id` (PK), `tax_type_code` (ej. `VAT_STANDARD`, `VAT_REDUCED`), `tax_type_name`, `description`.
+  - `Taxes`: se añade `tax_type_id` (FK a `Tax_types`). Columnas: `tax_id` (PK), `country_id` (FK), `tax_type_id` (FK), `tax_value`, `valid_from`, `valid_to`. En el lógico no se dibujan claves candidatas (v14, decisión del usuario: ninguna tabla las lleva); se declaran en el dimensional (`dim_tax`) y como test único en dbt: país + tipo + `valid_from`.
+  - `Sales` no cambia: `tax_id` sigue siendo el **impuesto aplicado** (D-050); el tipo se obtiene por `tax_id` → `Taxes` → `Tax_types`, así no se duplica ni se pierde nada.
+  - Relaciones: `Tax_types` 1—M `Taxes`; `Countries` 1—M `Taxes`; `Taxes` 1—M `Sales`.
+- **Origen**: el CSV europeo gana la columna `tax_regime` (`STD` estándar, `RED` reducido) y una parte de las ventas llega con el régimen reducido. Silver une por país + régimen (traducido a tipo) + fecha de venta y guarda el `tax_id`.
+- **Seed `taxes` (unas 11 filas)**: estándar DE 19 %, GB 20 %, FR 20 %, IT 22 %, ES 21 %, CH 7,7 % hasta 2023-12-31 y 8,1 % desde 2024-01-01 (ejemplo de cambio con vigencia). Reducido **simulado**, inspirado en regímenes reales: ES 4 %, IT 4 %, GB 0 %, FR 5,5 %. DE y CH no tienen reducido. **Verificar las tasas reales antes de afirmarlas en la presentación.**
+- **Tests**: cada venta casa con **exactamente un** impuesto; los periodos de un mismo país y tipo no se solapan y cubren todas las fechas de venta; el país del impuesto coincide con el del concesionario; `tax_regime` solo admite valores del seed de equivalencias.
+- **Por qué no deducirlo en silver**: ningún dato de la venta indica el régimen; inventarlo sería arbitrario. En la vida real lo sabe el sistema de ventas.
+- **Por qué no una columna de régimen en `Sales` silver**: ya se obtiene por `tax_id`; guardarlo dos veces permitiría contradicciones.
+- **Límites a decir**: un solo impuesto por venta; EE. UU. (sin impuestos en el precio) queda para la fase de más regiones; el reducido es simulado.
+- **Documentos afectados**: lógico v14, dimensional v7 (D-061), `source_design.md` (columna y defecto D24), generador.
+
+## D-061 · `dim_tax` en gold (2026-11-22; propuesta a confirmar al dibujar el dimensional v7)
+- **Opciones**: (a) atributo degenerado `tax_type` en `fct_sales`, sin dimensión nueva; (b) dimensión `dim_tax` y clave `tax_id` en `fct_sales`.
+- **Recomendación**: (b). Conserva el impuesto aplicado completo (país, tipo, tasa, vigencia) y permite filtrar ventas por tipo de impuesto, sin perder datos. Sigue siendo **estrella pura**: `dim_tax` lleva el país desnormalizado y no enlaza con ninguna otra dimensión (D-059). Son unas 11 filas.
+- **Columnas**: `tax_id` (PK); CC: `country_code`, `tax_type_code`, `valid_from`; `tax_type_name`, `tax_rate`, `valid_to`.
+- **`fct_sales`**: añade `tax_id` (FK) y mantiene `tax_rate` para calcular el neto sin unir, como valor aplicado en el momento del cálculo.
+- **Si el usuario prefiere (a)**: se cambia por una columna `tax_type_code` en `fct_sales` y se elimina `dim_tax`.
+
+## D-062 · Seis deltas pequeños de diciembre de 2025 y escenario de concesionarios guionizado (2026-11-22)
+- **Contexto**: el usuario tiene que probar la carga incremental en casa, en clase y en directo, y quiere saber exactamente cuántas filas tiene cada prueba. El lote 2 anterior tenía 2.477 filas y un escenario de concesionarios aleatorio.
+- **Opciones**: (a) un solo lote 2 grande y aleatorio; (b) 6 deltas pequeños, cada uno con un propósito, y un escenario de concesionarios fijo.
+- **Decisión**: (b). El histórico (`batch_1`) llega hasta el 30-11-2025 y diciembre de 2025 se reparte en 6 deltas de unos 5 días (134-180 filas): ventas nuevas; reenvío de filas idénticas; correcciones por `sale_id`; renombrado de 3 concesionarios; 2 cierres + un segundo renombrado + un concesionario nuevo; filas de alerta (10 que deben hacer fallar tests).
+- **Por qué diciembre y no una muestra**: así no queda un hueco al final de la serie en Power BI (diciembre de 2025 tiene su volumen real, repartido en 6 cargas).
+- **Escenario de concesionarios fijo** (no aleatorio) para que el resultado sea igual en cada ejecución; DE-0014 acaba con 3 versiones en el snapshot.
+- **Documentación**: `docs/es/demo_scenarios.md` (guion con recuentos exactos de bronze y de silver) y `reference/delta_plan.csv` generado por el script.
+- **Límite**: los recuentos de silver suponen que las filas con defectos se marcan pero no se descartan; si se descartan, el guion se ajusta.
+
+## D-063 · Carga a bronze: stage interno y subida manual desde Snowsight (2026-11-22)
+- **Contexto**: hay que llevar los CSV de Europe a bronze, repetirlo en 4 ensayos y poder mostrarlo.
+- **Opciones**: (a) subida manual desde Snowsight a un stage interno + `COPY INTO`; (b) Snowflake CLI (`snow stage copy`) con clave privada, automatizable; (c) `PUT` desde SnowSQL (no funciona en hojas de Snowsight).
+- **Decisión**: (a) ahora, porque se ve bien en pantalla y no necesita la clave privada. (b) queda como **propuesta de mejora** y se configura solo si sobra tiempo. El `COPY INTO` es el mismo en ambos casos.
+- **Diseño de bronze**: todas las columnas del origen como `varchar` (no se convierte ni se rechaza nada) + `_source_file`, `_file_row_number` y `_loaded_at` (convención del curso). Solo se añaden filas. Un stage por fuente y subcarpetas (`batch_1`, `delta_1`…) para que dos ficheros con el mismo nombre (`dealer_master.csv`) no choquen.
+- **Idempotencia en dos niveles**: `COPY INTO` recuerda qué ficheros ya cargó y no repite el mismo fichero; si llegan filas repetidas dentro de ficheros distintos (reenvíos), las elimina silver por `sale_id`.
+- **Detalles**: formato con `error_on_column_count_mismatch` para notar un cambio de columnas del origen; `on_error = ABORT_STATEMENT` (un fichero mal estructurado no se carga a medias). Script: `snowflake/02_bronze_europe.sql`.
+- **Pendiente de comprobar**: que `truncate table` borra también el historial de ficheros cargados (si no, `force = true`), para el reset entre ensayos.
+
+## D-064 · Conexión de dbt Cloud a Snowflake: clave en lugar de contraseña (2026-11-22)
+- **Contexto**: Snowflake exige doble factor (MFA); con contraseña habría que reautenticarse y los jobs programados no funcionarían.
+- **Opciones**: (a) contraseña (descartada: MFA); (b) par de claves reutilizando el del curso del usuario `dhv994` (su clave pública ya está registrada); (c) usuario de servicio con clave propia (lo correcto en un proyecto real).
+- **Decisión**: (b) ahora, por rapidez y porque es una cuenta de prueba; (c) queda como **propuesta de mejora**. La clave privada y la passphrase viven **fuera de este repositorio** (en el otro repositorio de apuntes) y se pegan solo en dbt Cloud.
+- **Conexión de desarrollo**: base de datos `DEV_MB_SILVER_DB`, warehouse `WH_MB`, rol `DEV_MB_TRANSFORM_ROLE` (mínimo privilegio: lee bronze, crea esquemas solo en silver y gold de DEV). Esquema personal `dbt_dhv994`.
+- **Versión de dbt**: se mantiene D-004, **v1 «Latest»** (no v2/Fusion): menos riesgo con paquetes; comprobar en el entorno que la pista de versión sea «Latest».
+- **Limitación a decir**: reutilizar la clave de un usuario personal no sería aceptable en producción.
