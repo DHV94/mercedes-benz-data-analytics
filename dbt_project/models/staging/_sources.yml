@@ -1,0 +1,18 @@
+version: 2
+
+# Bronze is loaded by Snowflake (COPY INTO), not by dbt. dbt only declares it here and reads it.
+# Bronze exists only in DEV and both environments read it (D-038), so the database is fixed.
+sources:
+  - name: bronze_sales
+    database: DEV_MB_BRONZE_DB
+    schema: sales
+    tables:
+      - name: raw_sales_eu
+        description: "Raw Europe sales, every column VARCHAR, plus _source_file, _file_row_number, _loaded_at."
+
+  - name: bronze_crm
+    database: DEV_MB_BRONZE_DB
+    schema: crm
+    tables:
+      - name: raw_dealer_master
+        description: "Raw dealer master of every delivery (one row per dealer and file)."

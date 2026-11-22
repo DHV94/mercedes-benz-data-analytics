@@ -1,0 +1,3 @@
+tax_type_code,tax_type_name,description
+VAT_STANDARD,VAT standard rate,General value added tax applied to a car sale
+VAT_REDUCED,VAT reduced rate,"Special regime with a reduced rate (simulated, e.g. buyers with disabilities)"
