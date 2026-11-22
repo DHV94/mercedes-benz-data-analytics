@@ -9,9 +9,9 @@
 |---|---|
 | `main` | Production (**PRO**). Deliverable-ready only. Tagged releases. |
 | `develop` | Integration (**DEV**). A feature lands here when it works. |
-| `feature/<topic>` | One task each, e.g. `feature/snowflake-setup`. Created from `develop`. |
+| `feature-<topic>` | One task each, e.g. `feature-snowflake-setup`. Created from `develop`. Written with a hyphen because GitHub Desktop does not accept `feature/` here (a branch named `feature` already exists locally). |
 
-Flow (decision D-038): `feature/*` → `develop` → `main`, by **pull request** (or merge from GitHub Desktop). A feature goes to `develop` when it works; `develop` goes to `main` only after it has been checked there. There is **no `pre` branch** and **no `pro` branch**: `main` is production (PRO). In dbt Cloud the Development environment uses the feature branches, a deployment environment follows `develop` (DEV) and the Production environment follows `main` (PRO).
+Flow (decision D-038): `feature-*` → `develop` → `main`, by **pull request** (or merge from GitHub Desktop). A feature goes to `develop` when it works; `develop` goes to `main` only after it has been checked there. There is **no `pre` branch** and **no `pro` branch**: `main` is production (PRO). In dbt Cloud the Development environment uses the feature branches, a deployment environment follows `develop` (DEV) and the Production environment follows `main` (PRO).
 
 Every commit must be explained by the assistant before the user makes it (message + plain-language explanation).
 

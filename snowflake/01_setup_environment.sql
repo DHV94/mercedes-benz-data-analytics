@@ -33,7 +33,7 @@ create warehouse if not exists WH_MB
 use role accountadmin;
 alter warehouse WH_MB set resource_monitor = RM_MB;
 
--- 2. Databases. Bronze exists only in DEV (PRE/PRO will be clones, like in the course).
+-- 2. Databases. Bronze exists only in DEV and is read by both environments (no PRE: D-038).
 use role sysadmin;
 create database if not exists DEV_MB_BRONZE_DB;
 create schema if not exists DEV_MB_BRONZE_DB.sales;   -- regional sales feeds (EU, US, CN, JP, KR)
@@ -42,22 +42,18 @@ create schema if not exists DEV_MB_BRONZE_DB.nhtsa;   -- public recall data
 
 create database if not exists DEV_MB_SILVER_DB;
 create database if not exists DEV_MB_GOLD_DB;
-create database if not exists PRE_MB_SILVER_DB;
-create database if not exists PRE_MB_GOLD_DB;
 create database if not exists PRO_MB_SILVER_DB;
 create database if not exists PRO_MB_GOLD_DB;
 
 -- 3. Roles
 use role securityadmin;
 create role if not exists DEV_MB_TRANSFORM_ROLE;
-create role if not exists PRE_MB_TRANSFORM_ROLE;
 create role if not exists PRO_MB_TRANSFORM_ROLE;
 create role if not exists MB_INGEST_ROLE;
 create role if not exists MB_REPORTING_ROLE;
 
 -- SYSADMIN inherits the functional roles (Snowflake best practice)
 grant role DEV_MB_TRANSFORM_ROLE to role sysadmin;
-grant role PRE_MB_TRANSFORM_ROLE to role sysadmin;
 grant role PRO_MB_TRANSFORM_ROLE to role sysadmin;
 grant role MB_INGEST_ROLE to role sysadmin;
 grant role MB_REPORTING_ROLE to role sysadmin;
@@ -65,14 +61,12 @@ grant role MB_REPORTING_ROLE to role sysadmin;
 -- In the trial your user plays every role. In a real project jobs use a
 -- service user with key-pair authentication (see docs, security section).
 grant role DEV_MB_TRANSFORM_ROLE to user <YOUR_USER>;
-grant role PRE_MB_TRANSFORM_ROLE to user <YOUR_USER>;
 grant role PRO_MB_TRANSFORM_ROLE to user <YOUR_USER>;
 grant role MB_INGEST_ROLE to user <YOUR_USER>;
 grant role MB_REPORTING_ROLE to user <YOUR_USER>;
 
 -- 4. Warehouse usage
 grant usage on warehouse WH_MB to role DEV_MB_TRANSFORM_ROLE;
-grant usage on warehouse WH_MB to role PRE_MB_TRANSFORM_ROLE;
 grant usage on warehouse WH_MB to role PRO_MB_TRANSFORM_ROLE;
 grant usage on warehouse WH_MB to role MB_INGEST_ROLE;
 grant usage on warehouse WH_MB to role MB_REPORTING_ROLE;
@@ -90,16 +84,20 @@ grant usage on all schemas in database DEV_MB_BRONZE_DB to role DEV_MB_TRANSFORM
 grant select on all tables in database DEV_MB_BRONZE_DB to role DEV_MB_TRANSFORM_ROLE;
 grant select on future tables in database DEV_MB_BRONZE_DB to role DEV_MB_TRANSFORM_ROLE;
 
+-- PRO reads the same bronze (single raw copy), but still writes only in PRO silver/gold.
+grant usage on database DEV_MB_BRONZE_DB to role PRO_MB_TRANSFORM_ROLE;
+grant usage on all schemas in database DEV_MB_BRONZE_DB to role PRO_MB_TRANSFORM_ROLE;
+grant select on all tables in database DEV_MB_BRONZE_DB to role PRO_MB_TRANSFORM_ROLE;
+grant select on future tables in database DEV_MB_BRONZE_DB to role PRO_MB_TRANSFORM_ROLE;
+
 grant usage, create schema on database DEV_MB_SILVER_DB to role DEV_MB_TRANSFORM_ROLE;
 grant usage, create schema on database DEV_MB_GOLD_DB   to role DEV_MB_TRANSFORM_ROLE;
-grant usage, create schema on database PRE_MB_SILVER_DB to role PRE_MB_TRANSFORM_ROLE;
-grant usage, create schema on database PRE_MB_GOLD_DB   to role PRE_MB_TRANSFORM_ROLE;
 grant usage, create schema on database PRO_MB_SILVER_DB to role PRO_MB_TRANSFORM_ROLE;
 grant usage, create schema on database PRO_MB_GOLD_DB   to role PRO_MB_TRANSFORM_ROLE;
 
 -- 7. Reporting role: nothing yet. Read grants on gold are added later (see day 7 of
 --    the course: grant_select_on_gold macro) once gold models exist.
 
--- 8. Check: you should see 7 databases with the MB prefix
+-- 8. Check: you should see 5 databases with the MB prefix (1 bronze + DEV/PRO silver and gold)
 use role sysadmin;
 show databases like '%_MB_%';
