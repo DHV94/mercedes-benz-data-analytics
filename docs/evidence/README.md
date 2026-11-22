@@ -23,5 +23,7 @@
 | 16 | `dbt/16_dbt_cloud_connection_test_complete.png` | Test de conexión de dbt Cloud completado: clave y passphrase tapadas, estado «COMPLETE» | 2026-11-22 |
 | 17 | `dbt/17_github_recommends_apps_over_deploy_key.png` | Aviso de GitHub: recomienda GitHub Apps en lugar de deploy keys (decisión D-065) | 2026-11-22 |
 | 18 | `dbt/18_dbt_cloud_project_ready.png` | dbt Cloud: «Your project is ready!» con la conexión y el repositorio configurados | 2026-11-22 |
+| 19 | `dbt/19_snowflake_seed_tables_in_silver.png` | Snowflake: las 5 tablas de referencia creadas por `dbt seed` en `DEV_MB_SILVER_DB` (esquema personal de desarrollo): 300, 51, 11, 8 y 2 filas | 2026-11-22 |
+| 20 | `dbt/20_dbt_seed_success.png` | dbt Cloud IDE: `dbt seed` en verde, rama `feature-dbt-setup`, versión v1 Latest, estado Parsed | 2026-11-22 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (19 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (21 en adelante).
