@@ -19,5 +19,6 @@
 | 12 | `snowflake/12_snowflake_copy_dealers_batch_1_loaded.png` | `COPY INTO` de concesionarios: 128 filas, 0 errores | 2026-11-22 |
 | 13 | `snowflake/13_snowflake_bronze_sales_counts.png` | Bronce de ventas: 44.733 filas y 44.072 ventas distintas | 2026-11-22 |
 | 14 | `snowflake/14_snowflake_bronze_dealers_count.png` | Bronce de concesionarios: 128 filas | 2026-11-22 |
+| 15 | `dbt/15_dbt_cloud_connection_form.png` | Formulario de conexión de dbt Cloud a Snowflake (cuenta tapada): base de datos `DEV_MB_SILVER_DB`, warehouse `WH_MB` | 2026-11-22 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (15 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (16 en adelante).
