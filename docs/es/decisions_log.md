@@ -409,3 +409,20 @@
 - **Escenario de concesionarios fijo** (no aleatorio) para que el resultado sea igual en cada ejecución; DE-0014 acaba con 3 versiones en el snapshot.
 - **Documentación**: `docs/es/demo_scenarios.md` (guion con recuentos exactos de bronze y de silver) y `reference/delta_plan.csv` generado por el script.
 - **Límite**: los recuentos de silver suponen que las filas con defectos se marcan pero no se descartan; si se descartan, el guion se ajusta.
+
+## D-063 · Carga a bronze: stage interno y subida manual desde Snowsight (2026-11-22)
+- **Contexto**: hay que llevar los CSV de Europe a bronze, repetirlo en 4 ensayos y poder mostrarlo.
+- **Opciones**: (a) subida manual desde Snowsight a un stage interno + `COPY INTO`; (b) Snowflake CLI (`snow stage copy`) con clave privada, automatizable; (c) `PUT` desde SnowSQL (no funciona en hojas de Snowsight).
+- **Decisión**: (a) ahora, porque se ve bien en pantalla y no necesita la clave privada. (b) queda como **propuesta de mejora** y se configura solo si sobra tiempo. El `COPY INTO` es el mismo en ambos casos.
+- **Diseño de bronze**: todas las columnas del origen como `varchar` (no se convierte ni se rechaza nada) + `_source_file`, `_file_row_number` y `_loaded_at` (convención del curso). Solo se añaden filas. Un stage por fuente y subcarpetas (`batch_1`, `delta_1`…) para que dos ficheros con el mismo nombre (`dealer_master.csv`) no choquen.
+- **Idempotencia en dos niveles**: `COPY INTO` recuerda qué ficheros ya cargó y no repite el mismo fichero; si llegan filas repetidas dentro de ficheros distintos (reenvíos), las elimina silver por `sale_id`.
+- **Detalles**: formato con `error_on_column_count_mismatch` para notar un cambio de columnas del origen; `on_error = ABORT_STATEMENT` (un fichero mal estructurado no se carga a medias). Script: `snowflake/02_bronze_europe.sql`.
+- **Pendiente de comprobar**: que `truncate table` borra también el historial de ficheros cargados (si no, `force = true`), para el reset entre ensayos.
+
+## D-064 · Conexión de dbt Cloud a Snowflake: clave en lugar de contraseña (2026-11-22)
+- **Contexto**: Snowflake exige doble factor (MFA); con contraseña habría que reautenticarse y los jobs programados no funcionarían.
+- **Opciones**: (a) contraseña (descartada: MFA); (b) par de claves reutilizando el del curso del usuario `dhv994` (su clave pública ya está registrada); (c) usuario de servicio con clave propia (lo correcto en un proyecto real).
+- **Decisión**: (b) ahora, por rapidez y porque es una cuenta de prueba; (c) queda como **propuesta de mejora**. La clave privada y la passphrase viven **fuera de este repositorio** (en el otro repositorio de apuntes) y se pegan solo en dbt Cloud.
+- **Conexión de desarrollo**: base de datos `DEV_MB_SILVER_DB`, warehouse `WH_MB`, rol `DEV_MB_TRANSFORM_ROLE` (mínimo privilegio: lee bronze, crea esquemas solo en silver y gold de DEV). Esquema personal `dbt_dhv994`.
+- **Versión de dbt**: se mantiene D-004, **v1 «Latest»** (no v2/Fusion): menos riesgo con paquetes; comprobar en el entorno que la pista de versión sea «Latest».
+- **Limitación a decir**: reutilizar la clave de un usuario personal no sería aceptable en producción.

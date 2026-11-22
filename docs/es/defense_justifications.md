@@ -63,3 +63,12 @@ Es la pregunta que enlaza los dos casos:
 - **¿Por qué `dim_tax` y no una columna en la venta?** Conserva país, tipo, tasa y vigencia del impuesto aplicado sin perder datos, permite filtrar por tipo y mantiene la estrella (sin enlaces entre dimensiones).
 - **¿Por qué no varios impuestos en la misma venta?** Exigiría una tabla puente y medidas por impuesto. Se descarta por tiempo y se cita como mejora (por ejemplo, impuesto de matriculación según emisiones). Los informes usan el IVA, que es lo que no es ingreso de la compañía.
 - **Límite que decir**: el régimen reducido es **simulado**, inspirado en regímenes reales.
+
+## 7. Seguridad y conexión (D-063, D-064)
+
+- **¿Por qué dbt entra con una clave y no con contraseña?** Snowflake obliga a doble factor; un par de claves permite que dbt y los jobs programados entren sin reautenticarse, y la clave privada nunca se guarda en el repositorio.
+- **¿Dónde está la clave privada?** Fuera del repo (en un repositorio aparte de apuntes) y solo se pega en dbt Cloud. El repo ignora `profiles.yml` y `.env`.
+- **¿Es seguro reutilizar tu usuario?** En una cuenta de prueba sí; en un proyecto real se crearía un **usuario de servicio** con su propia clave y el rol mínimo. Se deja como mejora.
+- **¿Por qué un rol distinto para cargar y para transformar?** Mínimo privilegio: `MB_INGEST_ROLE` es el único que escribe en bronze; `DEV_MB_TRANSFORM_ROLE` solo lee bronze y crea objetos en silver y gold de su entorno; reporting solo lee gold.
+- **¿Por qué subida manual a un stage?** Se ve en pantalla y no necesita la clave; `COPY INTO` recuerda los ficheros ya cargados (primera defensa contra duplicados). La subida con la CLI queda como mejora.
+- **¿Por qué dbt v1 «Latest» y no v2?** Menos riesgo con paquetes y menos cambios; la v2 (Fusion) se menciona como evolución.

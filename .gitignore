@@ -34,3 +34,6 @@ logs/.token_state.json
 Thumbs.db
 .vscode/
 .idea/
+
+# Screenshots that show the Snowflake account identifier (blur before publishing)
+docs/evidence/private/
