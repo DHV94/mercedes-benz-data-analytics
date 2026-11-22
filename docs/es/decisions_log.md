@@ -426,3 +426,10 @@
 - **Conexión de desarrollo**: base de datos `DEV_MB_SILVER_DB`, warehouse `WH_MB`, rol `DEV_MB_TRANSFORM_ROLE` (mínimo privilegio: lee bronze, crea esquemas solo en silver y gold de DEV). Esquema personal `dbt_dhv994`.
 - **Versión de dbt**: se mantiene D-004, **v1 «Latest»** (no v2/Fusion): menos riesgo con paquetes; comprobar en el entorno que la pista de versión sea «Latest».
 - **Limitación a decir**: reutilizar la clave de un usuario personal no sería aceptable en producción.
+- **Actualización D-064 (2026-11-22) · IMPORTANTE**: la conexión de dbt Cloud con clave **solo funcionó cuando en `Username` se puso el correo de la cuenta de Snowflake (su `LOGIN_NAME`), no el nombre de objeto `dhv994`**. Antes daba `JWT token is invalid`. Comprobación: `desc user "dhv994";` muestra `NAME` (`dhv994`) y `LOGIN_NAME` (el correo). En dbt Cloud el usuario de las credenciales de desarrollo = `LOGIN_NAME`. En las sentencias SQL (`grant ... to user`, `alter user`) sigue usándose `"dhv994"`. El correo real no se escribe en el repositorio.
+
+## D-065 · Repositorio de dbt Cloud conectado por «Git clone» (deploy key) (2026-11-22)
+- **Contexto**: el enlace con GitHub por la app de dbt Cloud dio «Account in use»: una cuenta de GitHub solo puede estar asociada a **un** usuario de dbt, y ya lo estaba a la cuenta del curso.
+- **Opciones**: (a) desenlazar GitHub de la cuenta antigua y usar la app de GitHub; (b) «Git clone» por SSH con una clave de despliegue (*deploy key*) con permiso de escritura, sin tocar la otra cuenta; (c) repositorio gestionado por dbt (descartado: perdería el historial y el flujo de ramas).
+- **Decisión**: (b). Es reversible y no arriesga el proyecto del curso. GitHub avisa de que recomienda GitHub Apps (control fino y más seguridad): se cita como mejora si la otra cuenta deja de usarse.
+- **Límite**: sin la integración nativa no se lanza CI automáticamente al abrir un PR (no se necesita para la demo).
