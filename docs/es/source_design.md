@@ -36,7 +36,8 @@
 | `currency` | EUR, GBP, USD, CNY, JPY |
 | `sale_status` | vendida / devuelta / cancelada |
 | `customer_type` | particular / flota / empresa |
-| `gross_price` / `tax_rate` / `net_price` | Se **calculan en silver** a partir de `sale_price` y del seed `tax_rates` |
+| `tax_regime` | Régimen de impuesto que aplica a la venta: `STD` (estándar) o `RED` (reducido). Lo envía el origen (D-060) |
+| `gross_price` / `tax_rate` / `net_price` | Se **calculan en silver** a partir de `sale_price` y del impuesto aplicado, que se busca en `taxes` por país + `tax_regime` + fecha de venta |
 
 Cada región nombra y formatea estos campos a su manera (siguiente sección).
 
@@ -45,9 +46,9 @@ Cada región nombra y formatea estos campos a su manera (siguiente sección).
 ### S1 · Europa (`sales_eu`)
 - Países: DE, FR, IT, ES (EUR), GB (GBP) y CH (CHF). Así hay tres monedas en la misma región. Más países no aportan nada nuevo y solo alargan el generador.
 - CSV con `;`, UTF-8, cabecera en inglés, **decimal con coma** (`54321,50`), **fecha `dd/mm/yyyy`**.
-- Columnas: `sale_id; vin; model_name; model_year; sale_date; delivery_date; dealer_code; country; sale_price; currency; sale_status; customer_type`
+- Columnas: `sale_id; vin; model_name; model_year; sale_date; delivery_date; dealer_code; country; sale_price; currency; sale_status; customer_type; tax_regime`
 - Estados: `sold`, `returned`, `cancelled`.
-- Particularidad: el precio **incluye IVA**.
+- Particularidad: el precio **incluye IVA**, con la tasa que corresponda al régimen (`tax_regime`): estándar en la mayoría de las ventas y reducido en una pequeña parte (ES, IT, GB, FR; DE y CH no tienen reducido).
 
 ### S2 · EE. UU. (`sales_us`)
 - CSV con `,`, UTF-8, columnas con otros nombres, **fecha `mm/dd/yyyy`**.
@@ -129,6 +130,7 @@ Porcentajes orientativos sobre las filas de cada región. Cada defecto debe tene
 | D22 | Zona horaria: el timestamp chino cruza medianoche al convertir a UTC | CN | ~2 | staging (decisión documentada) | – |
 
 | D23 | Precio en unidades de 10.000 KRW en vez de KRW | KR | 100 | staging (×10.000) | `accepted_range` |
+| D24 | `tax_regime` con otra grafía (`std`, `Standard`, `Reduced`) en ~3 %; vacío o desconocido (`XXX`) solo en las filas de alerta del delta 6 | EU | ~3 | staging (seed `tax_regime_map`); si no casa, el test falla (no se asume el estándar en silencio) | `accepted_values`, un impuesto por venta |
 
 > D09–D13 son las que más "lucen": limpieza de precios y unificación de estados y monedas.
 > D21 es opcional y la dejo para el final si da tiempo: es un buen ejemplo de *schema drift*.
@@ -136,7 +138,7 @@ Porcentajes orientativos sobre las filas de cada región. Cada defecto debe tene
 ## 6. Reglas de negocio a documentar
 
 1. **Moneda**: se conserva `sale_price_local` y `currency`; en gold se calcula `sale_price_eur` con `fx_rates` (tipo mensual) y, si hay tiempo, `sale_price_usd`, etc.
-2. **Impuestos (decidido)**: los orígenes envían el precio tal cual (con IVA en EU, JP y CN; sin impuestos en US). En silver se guardan `gross_price`, `tax_rate` y `net_price` usando el seed `tax_rates` (país, tasa, `valid_from`, `valid_to`; las tasas cambian con el tiempo). Los informes usan `net_price` (el IVA no es ingreso de la compañía). **Verificar las tasas reales al crear el seed.**
+2. **Impuestos (decidido)**: los orígenes envían el precio tal cual (con IVA en EU, JP y CN; sin impuestos en US). En silver se guardan `gross_price`, `tax_rate` y `net_price` usando el seed `taxes` (país, **tipo de impuesto**, tasa, `valid_from`, `valid_to`; las tasas cambian con el tiempo y un país puede tener varias a la vez: D-060). Los informes usan `net_price` (el IVA no es ingreso de la compañía). **Verificar las tasas reales al crear el seed.**
 5. **Consumo semanal (decidido)**: los directivos consultan los datos los **martes por la mañana**. Los ficheros llegan como tarde el lunes; un job de dbt Cloud programado el martes de madrugada reconstruye gold, y se vigila con `dbt source freshness` (aviso si el último `_loaded_at` tiene más de 8 días).
 3. **Ventas válidas** para ingresos: `sold`; `returned` y `cancelled` se cuentan aparte.
 4. **Fecha de venta**: hora local de cada región.
