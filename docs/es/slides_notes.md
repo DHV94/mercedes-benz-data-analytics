@@ -61,6 +61,24 @@ Sugerencias:
 - Broma:
 - Frase personal:
 
+## 2c. Explicar modelo, familia, carrocería y propulsión (obligatorio en la presentación)
+
+Una diapositiva corta con un ejemplo, porque el tribunal no conoce el vocabulario del automóvil:
+
+| Concepto | Qué es | Ejemplo |
+|---|---|---|
+| **Familia** | Gama comercial de coches parecidos | Clase C, Clase A, GLA |
+| **Modelo** (variante) | Versión concreta que se vende: familia + motor | C 220 d, C 200, GLA 250 e |
+| **Carrocería** | Forma del coche | Sedán, compacto, SUV, todoterreno |
+| **Propulsión** | Cómo se mueve | Combustión (gasolina/diésel), híbrido enchufable, eléctrico |
+| **Año modelo** | Año de la edición del coche (no el de la venta) | Un 2024 puede venderse en 2023 |
+
+Frase clave: «una familia tiene muchos modelos; un modelo tiene una carrocería y una propulsión; una venta es de un modelo». Las revisiones (recalls) se publican por familia y año modelo, no por VIN: por eso la tabla de líneas de campaña apunta a la familia.
+Dibujo sugerido: Clase C → C 220 d (sedán, diésel) y C 300 e (sedán, híbrido enchufable).
+
+## 2d. Diseño de las diapositivas
+- Google Slides, con tonos de Mercedes-Benz: negro, plata/grises y blanco, con un acento frío. Buscar una paleta pública; si no, que la proponga ChatGPT. No usar el logotipo como decoración excesiva.
+
 ## 3. Decisiones destacadas para la diapositiva 4
 
 Elige 4 o 5; el detalle está en `docs/es/decisions_log.md`.
@@ -72,6 +90,7 @@ Elige 4 o 5; el detalle está en `docs/es/decisions_log.md`.
 | Una fuente de extremo a extremo antes de ampliar (D-021) | Construir las cinco regiones a la vez | Pocas funcionalidades bien hechas |
 | Precio sin impuestos y en EUR, conservando el bruto (D-011, D-012) | Guardar todo ya en EUR | Los orígenes no son comparables entre sí |
 | Predicción de ventas fuera de alcance (D-002) | Modelo predictivo | Es ciencia de datos, no ingeniería de datos |
+| Estrella pura: `family_id` también en el hecho, sin copo de nieve (D-059) | `dim_family` colgando de `dim_model` | Menos joins y una dimensión compartida entre ventas y campañas |
 | Flujo `feature/*` → `develop` → `main`, sin rama `pre` (D-038) | `feature/*` → `develop` → `pre` → `main` | Cada tarea aislada, con dos entornos (DEV y PRO); un tercero cuesta más de lo que aporta |
 | Revisiones NHTSA desde fichero plano, no desde la API (D-033) | API de la NHTSA | Tiempo del proyecto: una descarga reproducible en lugar de construir y probar una extracción; sin dependencia externa en la demo |
 

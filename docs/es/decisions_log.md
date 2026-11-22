@@ -327,3 +327,50 @@
 - **Decisión**: (b) en el lógico, por coherencia con el conceptual. En dbt bastará un seed de tipos de cambio y los países con su código de moneda.
 - **Por qué**: lo que cambia con el tiempo (la tasa) se separa de lo que no cambia (la moneda), y `countries` apunta a una moneda y no a una fila con fecha. El coste es una tabla pequeña.
 - **Justificación de (a), por si se pregunta**: la moneda solo tiene código y nombre, y el código ISO es una clave natural estable; normalizar más no aporta datos nuevos.
+
+## D-052 · Historial de concesionarios solo en el snapshot, no en el lógico (2026-11-21)
+- **Contexto**: en el lógico v10 `dealers` llevaba `valid_from` y `valid_to` y `dealer_id` como PK. Si cada versión fuera una fila, `dealer_id` se repetiría y dejaría de ser clave.
+- **Decisión**: `dealers` en silver guarda **una fila por concesionario (estado actual)**; las versiones las crea el snapshot de dbt (SCD2) con sus propias columnas `dbt_valid_from` / `dbt_valid_to`. Se quitan `valid_from`/`valid_to` del lógico.
+- **Por qué**: separa el estado actual (silver) del historial (snapshot) y mantiene la PK única. Sustituye a la parte de tabla con vigencia de D-042; el punto de mejora futuro (unir por fecha de la venta) sigue igual.
+- **Recordatorio**: las fechas del snapshot significan «detectado el», no «ocurrió el».
+
+## D-053 · Generador basado en cuotas reales de mercado por país (2026-11-21)
+- **Contexto**: el usuario quiere que los datos simulados de Europa se parezcan a datos públicos, al menos en propulsión y, si es fácil, en carrocería.
+- **Decisión (propuesta)**: un fichero de configuración `market_mix.csv` (país, año, cuota ICE / PHEV / BEV) con datos públicos de ACEA y de las oficinas nacionales (KBA en Alemania), que el generador usa para ponderar la elección de modelo. Carrocería: cuota SUV de Alemania (KBA: 30,2 % en 2024 y 33,3 % en 2025) como referencia de tendencia; para otros países no hay dato gratuito equivalente.
+- **Límites a decir en la presentación**: son cuotas del **mercado total** de cada país, no de Mercedes-Benz; la categoría «híbrido» de ACEA incluye híbridos suaves, que aquí cuentan como combustión. Los datos siguen siendo simulados.
+- **Estado**: pendiente de implementar y de recopilar las cifras (ver SESSION_NOTES).
+
+## D-054 · Criterio para guardar fechas y tipo de cambio mensual (2026-11-21)
+- **Decisión**: se guardan fechas solo en hechos (ventas, campañas) y en valores que cambian con el tiempo (impuestos con intervalo, tipo de cambio mensual, concesionarios con snapshot). Las tablas de referencia guardan solo el estado actual.
+- **Tipo de cambio mensual** en lugar de diario: análisis comercial, menos ruido, unas 180 filas en vez de ~5.500, fácil de cargar como seed. Mejora futura: tasa diaria.
+- **Detalle y respuestas preparadas**: `docs/es/defense_justifications.md`.
+
+## D-055 · El ciclo de vida se guarda en el modelo y se deriva a la familia (2026-11-21)
+- **Contexto**: el usuario se plantea poner fechas de primer y último año también en las familias (ejemplo: EQA dejaría de fabricarse).
+- **Opciones**: (a) fechas también en `families`; (b) solo en `models` y derivar la vigencia de la familia.
+- **Decisión**: (b). Una familia está vigente mientras tenga algún modelo vigente; se calcula en gold si hace falta.
+- **Por qué**: evita un dato redundante que podría contradecirse con el de sus modelos. Respuesta preparada en `docs/es/defense_justifications.md` §5.
+
+## D-056 · Construcción por cortes verticales: primero ventas de Europa (2026-11-22)
+- **Contexto**: queda poco tiempo y hay riesgo de que Snowflake o dbt Cloud den problemas; el usuario prefiere tener algo funcional antes que algo amplio.
+- **Opciones**: (a) construir todo por bloques (todas las capas de todas las fuentes y los dos hechos a la vez); (b) corte vertical: ventas de Europa de extremo a extremo y, si hay tiempo, revisiones después.
+- **Decisión**: (b). Fase 1: ventas de Europa (Snowflake, bronze, staging, silver, gold, tests, snapshot de concesionarios, demo de doble ejecución y segundo lote). Fase 2, si hay tiempo: revisiones, que reutilizan `dim_model` y `dim_date`. Fase 3, extra: más regiones o Power BI ampliado.
+- **Por qué**: un trabajo completo y demostrable pesa más que uno amplio e incompleto; la fase 2 es más barata porque ya se conoce el método. Refuerza D-021 y D-036.
+- **Modelado**: el dimensional recoge ambos hechos (estructura compartida), pero solo se construye el de ventas en la fase 1.
+
+## D-057 · Claves del dimensional: `id_` como en el curso y claves candidatas marcadas (2026-11-22)
+- **Contexto**: en el dimensional propuse nombres `_key` para las claves sustitutas. El usuario prefiere la convención del curso: PK llamada `..._id` y columnas marcadas como clave candidata (CC) en cada tabla.
+- **Decisión**: PK `..._id` (sustituta, generada por nuestro modelo) y CC para la clave natural del origen. Ejemplo: `dim_dealer.dealer_id` (PK) y `dealer_code` (CC).
+- **Por qué**: el nombre es solo una convención; lo importante es que la PK de la dimensión no dependa del origen y que la clave natural quede identificada como CC y con un test de unicidad. En el snapshot, un mismo concesionario tiene varias versiones: cada versión necesita su propia PK, y la CC (`dealer_code`) se repite.
+
+## D-058 · Vigencia del concesionario como atributos y `units_affected` (2026-11-22)
+- **Contexto**: duda sobre si `dim_dealer` debe enlazar con `dim_date` por las fechas del snapshot, y sobre el nombre de `potential_units`.
+- **Decisión**: `dim_dealer` lleva `valid_from`, `valid_to` e `is_current` como **atributos** (vienen del snapshot), sin clave foránea a `dim_date`. La CC es `dealer_code` + `valid_from`. La venta apunta a una versión (la vigente, D-042). `potential_units` pasa a `units_affected` en el dimensional.
+- **Por qué no enlazar a `dim_date`**: las fechas describen el periodo de validez de la fila, no un hecho; un intervalo no es un punto del calendario, y una dimensión que enlaza con otra es un copo de nieve. Del mismo modo, `dim_model` no enlaza con `dim_date`: `first_model_year`/`last_model_year` son números atributo.
+- **Aviso**: `units_affected` es el dato que informa el fabricante (potencial) y no se suma por líneas de la misma campaña; se decide cómo tratarlo en la fase 2.
+
+## D-059 · `dim_family` como dimensión compartida enlazada directamente a los dos hechos (2026-11-22)
+- **Contexto**: las campañas se publican por familia y año modelo, y las ventas por variante. `dim_model` ya contiene la familia, pero una familia no es única por fila de `dim_model`, así que no se puede unir una campaña a `dim_model` sin duplicar.
+- **Opciones**: (a) `dim_family` 1—M `dim_model` (copo de nieve, defendible pero rompe la estrella); (b) `dim_family` enlazada directamente a `fct_sales` (con `family_id` en el hecho) y a `fct_campaign_line`; (c) una sola dimensión de modelo con la familia y unir campañas por texto.
+- **Decisión**: (b). `fct_sales` lleva `family_id` (derivable de `model_id`), y `dim_model` conserva `family_id` y `family_name` como atributos, sin enlace a `dim_family`. Un selector de familia filtra ventas y campañas.
+- **Por qué**: estrella pura (ninguna dimensión enlaza con otra) y dimensión conforme. El coste es un dato repetido en el hecho; se protege con un test (el `family_id` del hecho coincide con el de su modelo). Descartado (c) por frágil.
