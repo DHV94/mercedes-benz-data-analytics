@@ -43,5 +43,7 @@
 | 36 | `dbt/36_dbt_pro_docs_unused_gold_warning.png` | Generación de docs en PRO: mismo aviso de `gold` sin modelos | 2026-11-23 |
 | 37 | `snowflake/37_snowflake_pre_schemas_duplicated_by_macro_bug.png` | `PRE_MB_SILVER_DB` con 12 esquemas: los limpios (`CORE`, `STAGING`, `REFERENCE`, `SNAPSHOTS`, `DBT_TEST__AUDIT`) y los 5 `CORE_*` antiguos que dejó el macro vacío | 2026-11-24 |
 | 38 | `snowflake/38_snowflake_pro_schemas_duplicated_by_macro_bug.png` | Lo mismo en `PRO_MB_SILVER_DB`: esquemas limpios y `CORE_*` antiguos pendientes de borrar | 2026-11-24 |
+| 39 | `snowflake/39_snowflake_pre_schemas_clean_after_drop.png` | `PRE_MB_SILVER_DB` tras borrar los `CORE_*`: quedan los 5 esquemas limpios más `INFORMATION_SCHEMA` y `PUBLIC` (7) | 2026-11-24 |
+| 40 | `snowflake/40_snowflake_pro_schemas_clean_after_drop.png` | `PRO_MB_SILVER_DB` tras borrar los `CORE_*`: mismos 7 esquemas | 2026-11-24 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (39 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (41 en adelante).
