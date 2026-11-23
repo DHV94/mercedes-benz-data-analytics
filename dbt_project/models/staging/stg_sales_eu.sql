@@ -1,3 +1,6 @@
+-- Author: Daniel Herrera
+-- Version: 1.0
+
 with source as (
 
     select * from {{ source('bronze_sales', 'raw_sales_eu') }}
