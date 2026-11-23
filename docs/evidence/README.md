@@ -27,5 +27,8 @@
 | 20 | `dbt/20_dbt_seed_success.png` | dbt Cloud IDE: `dbt seed` en verde, rama `feature-dbt-setup`, versión v1 Latest, estado Parsed | 2026-11-22 |
 | 21 | `dbt/21_bronze_bad_sale_date_formats.png` | Bronce: fechas de venta que `DD/MM/YYYY` no entiende. Tres tipos: `31/02/AAAA` (imposible), `AAAA-MM-DD` y `DD.MM.AA` (válidas en otro formato) | 2026-11-23 |
 | 22 | `dbt/22_stg_sales_eu_counts_after_date_fix.png` | `stg_sales_eu` tras probar tres formatos de fecha: 44.733 filas, 44.654 fechas de venta (solo quedan nulas las 79 imposibles), 43.412 entregas, 44.733 precios | 2026-11-23 |
+| 23 | `dbt/23_dbt_delta1_merge_156_rows.png` | Log de dbt tras cargar el delta 1: el `merge` de `silver_sales` procesa **156** filas (solo las nuevas) | 2026-11-23 |
+| 24 | `dbt/24_dbt_delta1_rerun_0_rows.png` | Segunda ejecución sin datos nuevos: el `merge` procesa **0** filas (idempotencia) | 2026-11-23 |
+| 25 | `dbt/25_silver_sales_44228_after_delta1.png` | Silver tras el delta 1: 44.228 filas y 44.228 `sale_id` distintos (44.072 + 156, sin duplicados) | 2026-11-23 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (23 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (26 en adelante).
