@@ -45,5 +45,8 @@
 | 38 | `snowflake/38_snowflake_pro_schemas_duplicated_by_macro_bug.png` | Lo mismo en `PRO_MB_SILVER_DB`: esquemas limpios y `CORE_*` antiguos pendientes de borrar | 2026-11-24 |
 | 39 | `snowflake/39_snowflake_pre_schemas_clean_after_drop.png` | `PRE_MB_SILVER_DB` tras borrar los `CORE_*`: quedan los 5 esquemas limpios más `INFORMATION_SCHEMA` y `PUBLIC` (7) | 2026-11-24 |
 | 40 | `snowflake/40_snowflake_pro_schemas_clean_after_drop.png` | `PRO_MB_SILVER_DB` tras borrar los `CORE_*`: mismos 7 esquemas | 2026-11-24 |
+| 41 | `dbt/41_dbt_gold_build_33_pass.png` | `dbt build -s gold` en el IDE (rama `feature-dbt-gold`): 6 modelos y sus tests, 33 correctos, 0 avisos, 0 errores | 2026-11-24 |
+| 42 | `dbt/42_dbt_gold_tests_dimensions.png` | Detalle del build de gold: tests `not_null` y `unique` de las dimensiones (familia, fecha, impuesto, modelo) | 2026-11-24 |
+| 43 | `dbt/43_dbt_gold_tests_fct_sales.png` | Detalle del build de gold: tests de `fct_sales` (claves únicas y no nulas, y `relationships` con las dimensiones) | 2026-11-24 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (41 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (44 en adelante).
