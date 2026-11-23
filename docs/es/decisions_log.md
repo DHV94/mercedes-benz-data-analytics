@@ -443,3 +443,12 @@
   4. **La corrección real se hace en el origen**: el sistema de ventas reenvía la venta con el mismo `sale_id` y la fecha buena, y el incremental actualiza la fila (mismo mecanismo que las correcciones del delta 3).
 - **Por qué**: un test **avisa, no cambia el dato**; corregir un dato sin conocer el valor real sería inventarlo. Descartado: mandarlas a `date_id = -1` (contamina las gráficas por año) y borrarlas (se pierde información).
 - **Evidencias**: 21 (formatos en bronce) y 22 (conteos tras la corrección: 44.654 fechas de 44.733).
+
+## D-067 · Tres entornos (DEV / PRE / PRO) y variables de entorno de dbt Cloud (2026-11-23)
+- **Contexto**: D-038 había descartado `pre` por tiempo. Se decide recuperarlo: un amigo que hizo el curso y trabaja en el sector lo considera la práctica habitual, y las variables de entorno se han visto en el curso.
+- **Opciones**: (a) mantener DEV y PRO; (b) añadir PRE con **una rama más** (`pre`); (c) añadir PRE **sin rama nueva**: el entorno PRE ejecuta la rama `develop` y el entorno PRO ejecuta `main`.
+- **Decisión**: (c). Flujo: `feature-*` → PR → `develop` (se prueba en PRE) → PR → `main` (se ejecuta en PRO). DEV es el IDE de dbt Cloud sobre la rama de trabajo. Snowflake: `PRE_MB_SILVER_DB`, `PRE_MB_GOLD_DB` y `PRE_MB_TRANSFORM_ROLE` (script `snowflake/03_pre_environment.sql`); el bronce sigue siendo uno solo en DEV.
+- **Variables de entorno** (dbt Cloud): `DBT_ENV_NAME` (`DEV` por defecto, `PRE`, `PRO`) elige la base de silver y gold en el macro `generate_database_name`; `DBT_BRONZE_DB` indica la base del bronce en `_sources.yml`. Las dos tienen valor por defecto, así que el IDE sigue funcionando sin configurar nada.
+- **Por qué**: el mismo código se despliega en los tres entornos y solo cambia la configuración, como en una empresa; no cambia el incremental ni el snapshot, que es lo que se muestra en la demo. Sustituye a la idea previa de usar `target.name`.
+- **Coste y riesgo**: unos 45–60 min (Snowflake, dos entornos de despliegue con sus credenciales, un job por entorno). Se hace **después** de tener silver y gold, para no retrasar lo esencial. Si el martes por la tarde no cabe, se recorta PRE y se queda DEV/PRO.
+- **Actualiza**: D-038 (flujo de ramas y entornos).
