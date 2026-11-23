@@ -1,3 +1,6 @@
+-- Author: Daniel Herrera
+-- Version: 1.0
+
 with dealers as (
 
     select * from {{ ref('stg_dealer_master') }}
