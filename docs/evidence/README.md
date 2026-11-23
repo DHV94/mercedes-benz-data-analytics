@@ -30,5 +30,16 @@
 | 23 | `dbt/23_dbt_delta1_merge_156_rows.png` | Log de dbt tras cargar el delta 1: el `merge` de `silver_sales` procesa **156** filas (solo las nuevas) | 2026-11-23 |
 | 24 | `dbt/24_dbt_delta1_rerun_0_rows.png` | Segunda ejecución sin datos nuevos: el `merge` procesa **0** filas (idempotencia) | 2026-11-23 |
 | 25 | `dbt/25_silver_sales_44228_after_delta1.png` | Silver tras el delta 1: 44.228 filas y 44.228 `sale_id` distintos (44.072 + 156, sin duplicados) | 2026-11-23 |
+| 26 | `dbt/26_bronze_dealers_256_after_delta4.png` | Bronce de concesionarios tras cargar el `dealer_master.csv` del delta 4: 256 filas (128 + 128) | 2026-11-23 |
+| 27 | `snowflake/27_snowflake_pre_roles.png` | Los 5 roles `MB_` tras ejecutar `03_pre_environment.sql`, con `PRE_MB_TRANSFORM_ROLE` (D-067) | 2026-11-23 |
+| 28 | `snowflake/28_snowflake_pre_databases.png` | Las 7 bases `_MB_`: bronce, y silver y gold de DEV, PRE y PRO (D-067) | 2026-11-23 |
+| 29 | `dbt/29_dbt_cloud_environment_variables.png` | dbt Cloud: variables de entorno `DBT_ENV_NAME` (DEV por defecto, PRE en PRE, PRO en PRO) y `DBT_BRONZE_DB` (D-067) | 2026-11-23 |
+| 30 | `dbt/30_dbt_pre_test_warn_78_sale_date.png` | Job de PRE: el test `not_null` de `sale_date` avisa con 78 filas y las guarda en `PRE_MB_SILVER_DB.core_dbt_test__audit` (D-066) | 2026-11-23 |
+| 31 | `dbt/31_dbt_pre_job_success.png` | Job `PRE · build` en Success: clone, deps, `dbt build` (con aviso) y generación de docs | 2026-11-23 |
+| 32 | `dbt/32_dbt_pre_docs_unused_gold_warning.png` | Generación de docs en PRE: 4 modelos, 1 snapshot, 5 seeds, 5 tests; aviso esperado de que `gold` aún no tiene modelos | 2026-11-23 |
+| 33 | `dbt/33_dbt_cloud_extended_attributes_warning.png` | Aviso de dbt Cloud en las credenciales: no poner claves sensibles en *Extended attributes* (se ven en texto plano) | 2026-11-23 |
+| 34 | `dbt/34_dbt_pro_job_success.png` | Job `PRO · build` en Success sobre el entorno PRO (rama `main`) | 2026-11-23 |
+| 35 | `dbt/35_dbt_pro_test_warn_78_sale_date.png` | Job de PRO: mismo aviso de 78 filas, guardadas en `PRO_MB_SILVER_DB.core_dbt_test__audit` | 2026-11-23 |
+| 36 | `dbt/36_dbt_pro_docs_unused_gold_warning.png` | Generación de docs en PRO: mismo aviso de `gold` sin modelos | 2026-11-23 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (26 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (37 en adelante).
