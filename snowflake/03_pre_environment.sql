@@ -33,6 +33,7 @@ grant select on future tables in database DEV_MB_BRONZE_DB to role PRE_MB_TRANSF
 grant usage, create schema on database PRE_MB_SILVER_DB to role PRE_MB_TRANSFORM_ROLE;
 grant usage, create schema on database PRE_MB_GOLD_DB   to role PRE_MB_TRANSFORM_ROLE;
 
--- 6. Check: 4 transform roles in total (DEV, PRE, PRO + ingest/reporting = 5 with MB_)
+-- 6. Check: 5 roles with MB_ (DEV, PRE and PRO transform + ingest + reporting) and
+--    7 databases with _MB_ (bronze + DEV/PRE/PRO silver and gold)
 show roles like '%MB_%';
 show databases like '%_MB_%';
