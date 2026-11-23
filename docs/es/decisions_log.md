@@ -433,3 +433,13 @@
 - **Opciones**: (a) desenlazar GitHub de la cuenta antigua y usar la app de GitHub; (b) «Git clone» por SSH con una clave de despliegue (*deploy key*) con permiso de escritura, sin tocar la otra cuenta; (c) repositorio gestionado por dbt (descartado: perdería el historial y el flujo de ramas).
 - **Decisión**: (b). Es reversible y no arriesga el proyecto del curso. GitHub avisa de que recomienda GitHub Apps (control fino y más seguridad): se cita como mejora si la otra cuenta deja de usarse.
 - **Límite**: sin la integración nativa no se lanza CI automáticamente al abrir un PR (no se necesita para la demo).
+
+## D-066 · Fechas de venta rotas: recuperar el formato, avisar de las imposibles (2026-11-23)
+- **Contexto**: en bronce, 258 `sale_date` no se entendían con `DD/MM/YYYY`. Al mirarlas aparecen tres casos del defecto `bad_date` (D06): `31/02/AAAA` (fecha imposible, 79 filas), `AAAA-MM-DD` y `DD.MM.AA` (fechas válidas en otro formato).
+- **Decisión**:
+  1. **Staging** prueba los tres formatos con `coalesce(try_to_date(...), ...)`. Recupera las 179 fechas válidas y deja en **nulo** las 79 imposibles. Solo es limpieza de formato: no se inventa ningún día.
+  2. **Silver** conserva esas filas con la fecha nula y un test `not_null` de la fecha de venta con severidad `warn` y `store_failures` (una tabla en Snowflake lista las ventas afectadas = **alerta**).
+  3. **Gold** no incluye las ventas sin fecha hasta que se corrijan: no se pueden colocar en una serie temporal y la fila `date_id = -1` ensuciaría los totales por año.
+  4. **La corrección real se hace en el origen**: el sistema de ventas reenvía la venta con el mismo `sale_id` y la fecha buena, y el incremental actualiza la fila (mismo mecanismo que las correcciones del delta 3).
+- **Por qué**: un test **avisa, no cambia el dato**; corregir un dato sin conocer el valor real sería inventarlo. Descartado: mandarlas a `date_id = -1` (contamina las gráficas por año) y borrarlas (se pierde información).
+- **Evidencias**: 21 (formatos en bronce) y 22 (conteos tras la corrección: 44.654 fechas de 44.733).
