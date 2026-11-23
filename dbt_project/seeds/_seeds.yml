@@ -1,0 +1,66 @@
+version: 2
+
+seeds:
+  - name: model_alias
+    description: "Todas las grafías de cada modelo y su clave estable (300 filas). Se compara sin distinguir mayúsculas."
+    columns:
+      - name: raw_name
+        description: "Nombre del modelo escrito de una forma concreta (C 300 e, c300e, Mercedes-Benz C 300 E...)."
+      - name: model_variant_code
+        description: "Clave estable de la variante (por ejemplo C300E)."
+
+  - name: model_catalog
+    description: "Catálogo de 51 variantes de modelo, con 7 carrocerías y 5 motorizaciones. Precios y disponibilidad ficticios."
+    columns:
+      - name: model_variant_code
+        description: "Clave estable de la variante."
+      - name: model_family
+        description: "Familia (A-Class, C-Class, GLC...)."
+      - name: variant_name
+        description: "Nombre limpio de la variante, el que se muestra en gold."
+      - name: body_type
+        description: "Carrocería (Hatchback, SUV, Sedan...)."
+      - name: powertrain
+        description: "Motorización: BEV, PHEV, HEV, PETROL o DIESEL."
+      - name: available_from
+        description: "Primer año en que se vende."
+      - name: available_to
+        description: "Último año en que se vende."
+      - name: base_price_eur
+        description: "Precio base aproximado en euros."
+      - name: popularity
+        description: "Peso relativo para generar los datos."
+
+  - name: tax_types
+    description: "Tipos de impuesto (2): IVA estándar e IVA reducido (simulado)."
+    columns:
+      - name: tax_type_code
+        description: "Código del tipo (VAT_STANDARD, VAT_REDUCED)."
+      - name: tax_type_name
+        description: "Nombre del tipo."
+      - name: description
+        description: "Explicación del tipo."
+
+  - name: taxes
+    description: "Tasa de cada tipo de impuesto por país y vigencia (11 filas). Base de dim_tax."
+    columns:
+      - name: country_code
+        description: "País al que se aplica."
+      - name: tax_type_code
+        description: "Tipo de impuesto."
+      - name: tax_value
+        description: "Tasa en porcentaje."
+      - name: valid_from
+        description: "Primer día en que vale."
+      - name: valid_to
+        description: "Último día en que vale. Vacío si sigue vigente."
+
+  - name: tax_regime_map
+    description: "Traduce cada grafía del régimen de impuesto a su código y su tipo (8 filas). Se compara sin distinguir mayúsculas."
+    columns:
+      - name: raw_regime
+        description: "Régimen tal como llega (STD, std, Standard, RED, Reduced...)."
+      - name: regime_code
+        description: "Código normalizado: STD o RED."
+      - name: tax_type_code
+        description: "Tipo de impuesto que le corresponde."

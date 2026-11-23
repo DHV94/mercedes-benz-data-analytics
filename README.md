@@ -15,7 +15,7 @@ Source files → Snowflake stage → BRONZE (COPY INTO) → dbt: staging → sil
 | Path | Content |
 |---|---|
 | `snowflake/` | Setup scripts (roles, warehouse, databases) |
-| `data_generator/` | Simulated source systems (EU, US, CN, JP) |
+| `data/data_generator/` | Simulated source systems (EU, US, CN, JP) |
 | `dbt_project/` | dbt models, seeds, tests, macros |
 | `powerbi/` | Power BI report |
 | `docs/es`, `docs/en` | Documentation |

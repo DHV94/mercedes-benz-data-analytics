@@ -13,7 +13,7 @@ Dirección explica cómo trabajan:
 2. Cada vehículo es de una **variante de modelo** (por ejemplo, *GLC 300 e 4MATIC*). Varias variantes forman una **familia** (*GLC*). La **carrocería** (SUV, berlina, coupé…) y la **propulsión** (combustión, híbrido enchufable, eléctrico…) dependen de la variante.
 3. Los **concesionarios** pertenecen a un país y una región. Pueden **cerrar** o **cambiar de nombre** con el tiempo.
 4. Cada región cobra en **su moneda**, y los precios incluyen o no impuestos según el país.
-5. Una **campaña de revisión** afecta a uno o varios modelos y años modelo, y señala un componente defectuoso. Los componentes se clasifican en **software/electrónica**, **mecánica** u **otros**.
+5. Una **campaña de revisión** afecta a uno o varios modelos y años modelo, y señala uno o varios componentes defectuosos. Los componentes se clasifican en **software/electrónica**, **mecánica** u **otros**.
 
 ## 2. Las tablas de partida
 
@@ -31,7 +31,7 @@ Tamaños orientativos del proyecto final (muestra de demostración).
 | `fx_rates` | Tipo de cambio mensual a EUR | ~300 | 3 |
 | `tax_rates` | Impuesto por país con fechas de validez | ~12 | 4 |
 | `status_map` | Estados de cada origen → estado único | ~12 | 3 |
-| `nhtsa_recalls` | Campañas de revisión (reales, Mercedes-Benz) | por determinar al descargar | ver abajo |
+| `nhtsa_recalls` | Campañas de revisión (reales, turismos Mercedes-Benz, informes 2021–2025) | ~45.000 (≈ 220 campañas) | 29 (ver 2.6) |
 | `nhtsa_component_map` | Componente NHTSA → grupo | ~100 | 2 |
 
 ### 2.1 `sales_eu` (CSV con `;`, decimal con coma, fecha `dd/mm/yyyy`)
@@ -130,20 +130,29 @@ Tamaños orientativos del proyecto final (muestra de demostración).
 
 ### 2.6 Revisiones (NHTSA)
 
-`nhtsa_recalls` (columnas simplificadas; **los nombres reales se comprueban al descargar el fichero**). Una campaña puede aparecer en **varias filas**.
+Datos **reales** del fichero plano de la NHTSA (`data/nhtsa/raw/`, descripción de campos en `RCL.txt`). Es un fichero separado por tabuladores, **sin cabecera**, con 29 campos y fechas `yyyymmdd`. Aquí ves solo los campos que nos interesan. Una misma campaña aparece en **varias filas**.
 
-| campaign_number | manufacturer | model | model_year | component | report_received_date | potentially_affected_units |
-|---|---|---|---|---|---|---|
-| 24V-1001 | Mercedes-Benz USA, LLC | C 300 | 2022 | ELECTRICAL SYSTEM | 2024-02-12 | 5200 |
-| 24V-1001 | Mercedes-Benz USA, LLC | C 300 | 2023 | ELECTRICAL SYSTEM | 2024-02-12 | 5200 |
-| 24V-1001 | Mercedes-Benz USA, LLC | GLC 300 | 2023 | ELECTRICAL SYSTEM | 2024-02-12 | 5200 |
-| 24V-2040 | Mercedes-Benz USA, LLC | G 550 | 2023 | POWER TRAIN | 2024-04-03 | 800 |
+`nhtsa_recalls` (campos reales; se muestran 4 filas de la campaña `21V232000`)
 
-`nhtsa_component_map`
+| RECORD_ID | CAMPNO | MAKETXT | MODELTXT | YEARTXT | COMPNAME | MFGNAME | POTAFF | RCDATE |
+|---|---|---|---|---|---|---|---|---|
+| 197388 | 21V232000 | MERCEDES-BENZ | GLB 250 | 2020 | STRUCTURE:BODY | Mercedes-Benz USA, LLC | 2362 | 20210401 |
+| 197389 | 21V232000 | MERCEDES-BENZ | GLB 250 | 2020 | STRUCTURE:BODY | Mercedes-Benz USA, LLC | 2362 | 20210401 |
+| 197390 | 21V232000 | MERCEDES-BENZ | GLB 250 | 2021 | STRUCTURE:BODY | Mercedes-Benz USA, LLC | 2362 | 20210401 |
+| 197391 | 21V232000 | MERCEDES-BENZ | GLB 250 | 2021 | STRUCTURE:BODY | Mercedes-Benz USA, LLC | 2362 | 20210401 |
 
-| component | component_group |
+Observaciones del fichero real:
+- `POTAFF` = unidades potencialmente afectadas. `RCDATE` = fecha en que se recibe el informe. `YEARTXT` = año modelo (`9999` si se desconoce).
+- `COMPNAME` es un texto **jerárquico** separado por `:` (por ejemplo `ELECTRICAL SYSTEM:SOFTWARE`). Hay unos 130 valores distintos solo en el periodo 2021–2025.
+- `MODELTXT` viene como cada fabricante lo escribe, con variantes tipo `GLS450` y `GLS 450`, o `AMG C43`. No coincide con nuestro catálogo de variantes.
+- `MAKETXT` aparece como `MERCEDES-BENZ`, `MERCEDES BENZ` y `MERCEDES-MAYBACH`. El fichero completo incluye otras marcas (incluidos camiones y autobuses de Daimler), que no son de nuestro alcance. No hay VIN.
+- Hay campañas con una sola fila y otras con cientos.
+
+`nhtsa_component_map` (lo mantenemos nosotros; el mapeo completo se hace sobre los componentes reales)
+
+| component_pattern | component_group |
 |---|---|
-| ELECTRICAL SYSTEM | software_electronics |
+| ELECTRICAL SYSTEM:SOFTWARE | software_electronics |
 | POWER TRAIN | mechanical |
 | BACK OVER PREVENTION | other |
 
@@ -153,7 +162,7 @@ Tamaños orientativos del proyecto final (muestra de demostración).
 - **UC2** · ¿Y por **carrocería**, entre 2021 y 2025?
 - **UC3** · ¿Y por **propulsión**, entre 2021 y 2025?
 - **UC4** · ¿Cuáles son las **3 familias más vendidas** por región en 2025?
-- **UC5** · ¿Cómo han evolucionado las campañas de revisión por **software/electrónica frente a mecánicas**, por modelo y año?
+- **UC5** · ¿Cómo han evolucionado las campañas de revisión en **EE. UU.** por **software/electrónica frente a mecánicas**, por modelo y año, junto a las ventas de EE. UU.?
 
 Todas las ventas se analizan por **región y país**, con importes **sin impuestos y en EUR**.
 
@@ -189,12 +198,12 @@ La capa gold se diseña a partir de las preguntas de negocio. Resuélvelas **en 
 
 ### Pregunta 3 · «¿Cómo evolucionan las revisiones por software frente a mecánicas?»
 1. ¿Puede responderla la tabla de ventas? ¿Por qué?
-2. Mira la campaña `24V-1001`: ¿cuántas filas tiene y cuántas unidades afectadas hay realmente? Si sumas `potentially_affected_units` fila a fila, ¿cuánto suma? ¿Cuánto debería sumar? ¿Qué ha pasado?
+2. Mira la campaña `21V232000` de la tabla 2.6: ¿cuántas filas tiene y cuántas unidades afectadas hay realmente? Si sumas `POTAFF` fila a fila, ¿cuánto suma? ¿Cuánto debería sumar? ¿Qué ha pasado? ¿Y qué ocurre con la campaña si afecta a dos modelos distintos?
 3. Propón una solución: ¿qué tabla de hechos necesitas, qué representa cada fila y qué medidas guarda?
 4. ¿Qué dimensiones comparte con la de ventas? ¿Cuál es nueva?
 
 ### Pregunta 4 · «¿Podemos mostrar ventas y revisiones en un mismo informe?»
-1. ¿Qué dimensión permite filtrar los dos hechos con el mismo selector de modelo? ¿Cómo se llama esa propiedad en un esquema en estrella?
+1. ¿Qué dimensión permite filtrar los dos hechos con el mismo selector de modelo? ¿Cómo se llama esa propiedad en un esquema en estrella? Pista: las ventas se registran por **variante** y las revisiones por el **texto de modelo** de la NHTSA (`GLB 250`, `GLS450`…). ¿A qué nivel puedes unirlas y con qué tabla de apoyo?
 2. Las ventas son simuladas y las revisiones reales. ¿Es correcto dividir unas entre otras? ¿Qué mostrarías en su lugar?
 
 ## 6. Entrega

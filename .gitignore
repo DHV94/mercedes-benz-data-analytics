@@ -19,8 +19,11 @@ __pycache__/
 .venv/
 venv/
 
-# Generated source data (reproducible with data_generator/)
-data_generator/output/
+# Generated source data (reproducible with data/data_generator/)
+data/data_generator/output/
+
+# Unzipped NHTSA file (314 MB, over GitHub's 100 MB limit; the 15 MB zip IS committed, see D-033)
+data/nhtsa/raw/FLAT_RCL_POST_2010/
 
 # Local state of the token hook
 logs/.token_state.json
@@ -31,3 +34,9 @@ logs/.token_state.json
 Thumbs.db
 .vscode/
 .idea/
+
+# Screenshots that show the Snowflake account identifier (blur before publishing)
+docs/evidence/private/
+
+# Token usage log: written by a Stop hook and always dirty, so it is kept local only (not tracked)
+logs/token_log.csv

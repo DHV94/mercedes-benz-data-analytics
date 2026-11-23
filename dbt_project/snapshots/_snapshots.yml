@@ -1,0 +1,30 @@
+version: 2
+
+snapshots:
+  - name: snap_dealers
+    description: "Historial (SCD2) de los concesionarios: una fila por versión. La versión vigente tiene dbt_valid_to nulo."
+    columns:
+      - name: dealer_code
+        description: "Código del concesionario (clave natural)."
+      - name: dealer_name
+        description: "Nombre comercial en esa versión."
+      - name: country_code
+        description: "País."
+      - name: city
+        description: "Ciudad en esa versión."
+      - name: region
+        description: "Región en esa versión."
+      - name: opening_date
+        description: "Fecha de apertura."
+      - name: closing_date
+        description: "Fecha de cierre en esa versión. Nulo si estaba abierto."
+      - name: is_active
+        description: "Si estaba abierto en esa versión."
+      - name: dbt_valid_from
+        description: "Cuándo detectó dbt esta versión (no el día real del cambio)."
+      - name: dbt_valid_to
+        description: "Cuándo dejó de valer. Nulo = versión vigente."
+      - name: dbt_scd_id
+        description: "Identificador técnico de la versión."
+      - name: dbt_updated_at
+        description: "Fecha técnica de actualización."

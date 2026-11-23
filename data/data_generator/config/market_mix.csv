@@ -1,0 +1,36 @@
+year,dimension,group,market_share_pct,source,status,note
+2021,powertrain,BEV,9.1,ACEA EU full-year 2021,verified,
+2021,powertrain,PHEV,8.9,ACEA EU full-year 2021,verified,
+2021,powertrain,HEV,19.6,ACEA EU full-year 2021,verified,"Hybrid electric: ACEA counts full and mild hybrids together"
+2021,powertrain,PETROL,40.0,ACEA EU full-year 2021,verified,
+2021,powertrain,DIESEL,19.6,ACEA EU full-year 2021,verified,
+2021,powertrain,OTHER,2.8,ACEA EU full-year 2021,derived,"100 minus the rest (LPG, CNG, flex-fuel). The generator folds it into petrol and diesel"
+2022,powertrain,BEV,12.1,ACEA EU full-year 2022,verified,
+2022,powertrain,PHEV,9.4,ACEA EU full-year 2022,verified,
+2022,powertrain,HEV,22.6,ACEA EU full-year 2022,verified,
+2022,powertrain,PETROL,36.4,ACEA EU full-year 2022,verified,
+2022,powertrain,DIESEL,16.4,ACEA EU full-year 2022,verified,
+2022,powertrain,OTHER,3.1,ACEA EU full-year 2022,derived,
+2023,powertrain,BEV,14.6,ACEA EU full-year 2023,verified,
+2023,powertrain,PHEV,7.7,ACEA EU full-year 2023,verified,
+2023,powertrain,HEV,25.8,ACEA EU full-year 2023,verified,
+2023,powertrain,PETROL,35.3,ACEA EU full-year 2023,verified,
+2023,powertrain,DIESEL,13.6,ACEA EU full-year 2023,verified,
+2023,powertrain,OTHER,3.0,ACEA EU full-year 2023,derived,
+2024,powertrain,BEV,13.6,ACEA EU full-year 2024,verified,
+2024,powertrain,PHEV,7.2,ACEA EU full-year 2025 release (says 'up from 7.2%'),to_check,"One secondary source said 8.3%. Check the ACEA 2024 release before the presentation"
+2024,powertrain,HEV,30.9,ACEA EU full-year 2024,verified,
+2024,powertrain,PETROL,33.3,ACEA EU full-year 2024,verified,
+2024,powertrain,DIESEL,11.9,ACEA EU full-year 2024,verified,
+2024,powertrain,OTHER,3.1,ACEA EU full-year 2024,derived,
+2025,powertrain,BEV,17.4,ACEA EU full-year 2025,verified,
+2025,powertrain,PHEV,9.4,ACEA EU full-year 2025,verified,
+2025,powertrain,HEV,34.5,ACEA EU full-year 2025,verified,
+2025,powertrain,PETROL,26.6,ACEA EU full-year 2025,verified,
+2025,powertrain,DIESEL,8.9,ACEA EU full-year 2025,verified,
+2025,powertrain,OTHER,3.2,ACEA EU full-year 2025,derived,
+2021,body_type,SUV,45.5,JATO Dynamics Europe-28 full-year 2021,verified,"Europe-28 scope (EU + UK, Norway, Switzerland)"
+2022,body_type,SUV,48.5,Interpolation between 2021 and 2023,estimated,"No full-year JATO figure found. JATO monthly data: January 2022 = 49.7"
+2023,body_type,SUV,51.0,Automotive News Europe via Motor1,verified,"ICCT reports 48% with a different scope"
+2024,body_type,SUV,54.0,JATO Dynamics Europe-28 full-year 2024,verified,"Record share"
+2025,body_type,SUV,55.0,Extrapolation of the 2021-2024 trend,estimated,"No full-year 2025 Europe figure found. Replace if found"

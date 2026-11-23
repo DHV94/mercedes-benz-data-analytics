@@ -1,0 +1,41 @@
+name: mercedes_benz_analytics
+version: "1.0.0"
+config-version: 2
+
+# The profile name is only used by dbt Core. In dbt Cloud the connection comes from the project settings.
+profile: mercedes_benz_analytics
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+clean-targets: ["target", "dbt_packages"]
+
+# Layers (medallion). The database of every layer is chosen by the macro generate_database_name:
+#   dev  -> DEV_MB_<LAYER>_DB      prod -> PRO_MB_<LAYER>_DB
+models:
+  mercedes_benz_analytics:
+    staging:
+      +materialized: view      # light cleaning of the raw text, no storage cost
+      +database: silver
+      +schema: staging
+    silver:
+      +materialized: table     # clean current-state tables (incremental where it pays off)
+      +database: silver
+      +schema: core
+    gold:
+      +materialized: table     # star schema for Power BI
+      +database: gold
+      +schema: sales
+
+seeds:
+  mercedes_benz_analytics:
+    +database: silver
+    +schema: reference         # small lookup tables that come from files in the repo
+
+snapshots:
+  mercedes_benz_analytics:
+    +database: silver
+    +schema: snapshots
