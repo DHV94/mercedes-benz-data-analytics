@@ -1,9 +1,21 @@
 -- Author: Daniel Herrera
 -- Version: 1.0
 
+{{
+    config(
+        materialized='incremental',
+        unique_key='sale_id',
+        incremental_strategy='merge'
+    )
+}}
+
 with sales as (
 
     select * from {{ ref('stg_sales_eu') }}
+
+    {% if is_incremental() %}
+    where _loaded_at > (select max(_loaded_at) from {{ this }})
+    {% endif %}
 
 ),
 
