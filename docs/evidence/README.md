@@ -48,5 +48,6 @@
 | 41 | `dbt/41_dbt_gold_build_33_pass.png` | `dbt build -s gold` en el IDE (rama `feature-dbt-gold`): 6 modelos y sus tests, 33 correctos, 0 avisos, 0 errores | 2026-11-24 |
 | 42 | `dbt/42_dbt_gold_tests_dimensions.png` | Detalle del build de gold: tests `not_null` y `unique` de las dimensiones (familia, fecha, impuesto, modelo) | 2026-11-24 |
 | 43 | `dbt/43_dbt_gold_tests_fct_sales.png` | Detalle del build de gold: tests de `fct_sales` (claves únicas y no nulas, y `relationships` con las dimensiones) | 2026-11-24 |
+| 44 | `snowflake/44_snowflake_fct_sales_counts_after_delta2.png` | `fct_sales` en DEV tras el delta 2: 44.382 ventas (= silver), todas con modelo, 44.170 con concesionario, 44.304 con impuesto y 78 con fecha desconocida (-1) | 2026-11-24 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (44 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (45 en adelante).

@@ -131,6 +131,9 @@ models:
       - name: model_id
         description: "Variante de modelo. Nulo si el nombre del modelo no se pudo traducir."
         data_tests:
+          - not_null:
+              config:
+                severity: warn
           - relationships:
               arguments:
                 to: ref('dim_model')
@@ -149,6 +152,9 @@ models:
       - name: dealer_id
         description: "Versión vigente del concesionario. Nulo si el código no existe en el maestro."
         data_tests:
+          - not_null:
+              config:
+                severity: warn
           - relationships:
               arguments:
                 to: ref('dim_dealer')
@@ -172,6 +178,9 @@ models:
       - name: tax_id
         description: "Impuesto aplicado. Nulo si el régimen no existe para ese país y fecha (alerta)."
         data_tests:
+          - not_null:
+              config:
+                severity: warn
           - relationships:
               arguments:
                 to: ref('dim_tax')
