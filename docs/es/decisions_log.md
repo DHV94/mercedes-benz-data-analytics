@@ -426,3 +426,29 @@
 - **Conexión de desarrollo**: base de datos `DEV_MB_SILVER_DB`, warehouse `WH_MB`, rol `DEV_MB_TRANSFORM_ROLE` (mínimo privilegio: lee bronze, crea esquemas solo en silver y gold de DEV). Esquema personal `dbt_dhv994`.
 - **Versión de dbt**: se mantiene D-004, **v1 «Latest»** (no v2/Fusion): menos riesgo con paquetes; comprobar en el entorno que la pista de versión sea «Latest».
 - **Limitación a decir**: reutilizar la clave de un usuario personal no sería aceptable en producción.
+- **Actualización D-064 (2026-11-22) · IMPORTANTE**: la conexión de dbt Cloud con clave **solo funcionó cuando en `Username` se puso el correo de la cuenta de Snowflake (su `LOGIN_NAME`), no el nombre de objeto `dhv994`**. Antes daba `JWT token is invalid`. Comprobación: `desc user "dhv994";` muestra `NAME` (`dhv994`) y `LOGIN_NAME` (el correo). En dbt Cloud el usuario de las credenciales de desarrollo = `LOGIN_NAME`. En las sentencias SQL (`grant ... to user`, `alter user`) sigue usándose `"dhv994"`. El correo real no se escribe en el repositorio.
+
+## D-065 · Repositorio de dbt Cloud conectado por «Git clone» (deploy key) (2026-11-22)
+- **Contexto**: el enlace con GitHub por la app de dbt Cloud dio «Account in use»: una cuenta de GitHub solo puede estar asociada a **un** usuario de dbt, y ya lo estaba a la cuenta del curso.
+- **Opciones**: (a) desenlazar GitHub de la cuenta antigua y usar la app de GitHub; (b) «Git clone» por SSH con una clave de despliegue (*deploy key*) con permiso de escritura, sin tocar la otra cuenta; (c) repositorio gestionado por dbt (descartado: perdería el historial y el flujo de ramas).
+- **Decisión**: (b). Es reversible y no arriesga el proyecto del curso. GitHub avisa de que recomienda GitHub Apps (control fino y más seguridad): se cita como mejora si la otra cuenta deja de usarse.
+- **Límite**: sin la integración nativa no se lanza CI automáticamente al abrir un PR (no se necesita para la demo).
+
+## D-066 · Fechas de venta rotas: recuperar el formato, avisar de las imposibles (2026-11-23)
+- **Contexto**: en bronce, 258 `sale_date` no se entendían con `DD/MM/YYYY`. Al mirarlas aparecen tres casos del defecto `bad_date` (D06): `31/02/AAAA` (fecha imposible, 79 filas), `AAAA-MM-DD` y `DD.MM.AA` (fechas válidas en otro formato).
+- **Decisión**:
+  1. **Staging** prueba los tres formatos con `coalesce(try_to_date(...), ...)`. Recupera las 179 fechas válidas y deja en **nulo** las 79 imposibles. Solo es limpieza de formato: no se inventa ningún día.
+  2. **Silver** conserva esas filas con la fecha nula y un test `not_null` de la fecha de venta con severidad `warn` y `store_failures` (una tabla en Snowflake lista las ventas afectadas = **alerta**).
+  3. **Gold** no incluye las ventas sin fecha hasta que se corrijan: no se pueden colocar en una serie temporal y la fila `date_id = -1` ensuciaría los totales por año.
+  4. **La corrección real se hace en el origen**: el sistema de ventas reenvía la venta con el mismo `sale_id` y la fecha buena, y el incremental actualiza la fila (mismo mecanismo que las correcciones del delta 3).
+- **Por qué**: un test **avisa, no cambia el dato**; corregir un dato sin conocer el valor real sería inventarlo. Descartado: mandarlas a `date_id = -1` (contamina las gráficas por año) y borrarlas (se pierde información).
+- **Evidencias**: 21 (formatos en bronce) y 22 (conteos tras la corrección: 44.654 fechas de 44.733).
+
+## D-067 · Tres entornos (DEV / PRE / PRO) y variables de entorno de dbt Cloud (2026-11-23)
+- **Contexto**: D-038 había descartado `pre` por tiempo. Se decide recuperarlo: un amigo que hizo el curso y trabaja en el sector lo considera la práctica habitual, y las variables de entorno se han visto en el curso.
+- **Opciones**: (a) mantener DEV y PRO; (b) añadir PRE con **una rama más** (`pre`); (c) añadir PRE **sin rama nueva**: el entorno PRE ejecuta la rama `develop` y el entorno PRO ejecuta `main`.
+- **Decisión**: (c). Flujo: `feature-*` → PR → `develop` (se prueba en PRE) → PR → `main` (se ejecuta en PRO). DEV es el IDE de dbt Cloud sobre la rama de trabajo. Snowflake: `PRE_MB_SILVER_DB`, `PRE_MB_GOLD_DB` y `PRE_MB_TRANSFORM_ROLE` (script `snowflake/03_pre_environment.sql`); el bronce sigue siendo uno solo en DEV.
+- **Variables de entorno** (dbt Cloud): `DBT_ENV_NAME` (`DEV` por defecto, `PRE`, `PRO`) elige la base de silver y gold en el macro `generate_database_name`; `DBT_BRONZE_DB` indica la base del bronce en `_sources.yml`. Las dos tienen valor por defecto, así que el IDE sigue funcionando sin configurar nada.
+- **Por qué**: el mismo código se despliega en los tres entornos y solo cambia la configuración, como en una empresa; no cambia el incremental ni el snapshot, que es lo que se muestra en la demo. Sustituye a la idea previa de usar `target.name`.
+- **Coste y riesgo**: unos 45–60 min (Snowflake, dos entornos de despliegue con sus credenciales, un job por entorno). Se hace **después** de tener silver y gold, para no retrasar lo esencial. Si el martes por la tarde no cabe, se recorta PRE y se queda DEV/PRO.
+- **Actualiza**: D-038 (flujo de ramas y entornos).

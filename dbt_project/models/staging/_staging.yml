@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: stg_sales_eu
+    description: "Ventas de Europa con tipos correctos y texto limpio. Una fila por fila de bronce (no quita ninguna; los duplicados se quitan en silver)."
+    columns:
+      - name: sale_id
+        description: "Identificador de la venta (EU-AAAA-NNNNNN). Puede repetirse por duplicados y reenvíos."
+      - name: vin
+        description: "Número de bastidor, en mayúsculas. Nulo si venía vacío."
+      - name: model_name
+        description: "Nombre del modelo tal como llegó (varias grafías). Se normaliza en silver con el seed model_alias."
+      - name: model_year
+        description: "Año modelo del vehículo."
+      - name: sale_date
+        description: "Fecha de la venta. Se prueban tres formatos; nulo si la fecha es imposible (31/02), ver D-066."
+      - name: delivery_date
+        description: "Fecha de entrega. Nulo si aún no se ha entregado."
+      - name: dealer_code
+        description: "Código del concesionario (PAÍS-NNNN), en mayúsculas."
+      - name: country
+        description: "País de la venta: DE, GB, FR, IT, ES o CH."
+      - name: currency
+        description: "Moneda de la venta, en mayúsculas."
+      - name: sale_status
+        description: "Estado de la venta: SOLD, RETURNED o CANCELLED."
+      - name: customer_type
+        description: "Tipo de cliente: PRIVATE, COMPANY o FLEET. Nulo si venía vacío."
+      - name: tax_regime
+        description: "Régimen de impuesto tal como llegó (STD, RED y otras grafías). Se traduce en silver."
+      - name: sale_price
+        description: "Precio con impuestos, en moneda local. Sin símbolos ni separador de miles."
+      - name: _source_file
+        description: "Archivo de bronce del que viene la fila."
+      - name: _file_row_number
+        description: "Línea dentro de ese archivo. Distingue duplicados exactos."
+      - name: _loaded_at
+        description: "Momento de la carga en Snowflake. Base del filtro del incremental."
+
+  - name: stg_dealer_master
+    description: "Maestro de concesionarios con tipos correctos. Una fila por concesionario y entrega (no quita ninguna)."
+    columns:
+      - name: dealer_code
+        description: "Código del concesionario (clave natural), en mayúsculas."
+      - name: dealer_name
+        description: "Nombre comercial. Cambia cuando se renombra el concesionario."
+      - name: country_code
+        description: "País del concesionario."
+      - name: city
+        description: "Ciudad."
+      - name: region
+        description: "Región."
+      - name: opening_date
+        description: "Fecha de apertura."
+      - name: closing_date
+        description: "Fecha de cierre. Nulo si sigue abierto."
+      - name: is_active
+        description: "Verdadero si el concesionario sigue abierto."
+      - name: _source_file
+        description: "Archivo de bronce del que viene la fila."
+      - name: _file_row_number
+        description: "Línea dentro de ese archivo."
+      - name: _loaded_at
+        description: "Momento de la carga en Snowflake."
