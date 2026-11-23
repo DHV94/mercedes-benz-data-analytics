@@ -25,5 +25,7 @@
 | 18 | `dbt/18_dbt_cloud_project_ready.png` | dbt Cloud: «Your project is ready!» con la conexión y el repositorio configurados | 2026-11-22 |
 | 19 | `dbt/19_snowflake_seed_tables_in_silver.png` | Snowflake: las 5 tablas de referencia creadas por `dbt seed` en `DEV_MB_SILVER_DB` (esquema personal de desarrollo): 300, 51, 11, 8 y 2 filas | 2026-11-22 |
 | 20 | `dbt/20_dbt_seed_success.png` | dbt Cloud IDE: `dbt seed` en verde, rama `feature-dbt-setup`, versión v1 Latest, estado Parsed | 2026-11-22 |
+| 21 | `dbt/21_bronze_bad_sale_date_formats.png` | Bronce: fechas de venta que `DD/MM/YYYY` no entiende. Tres tipos: `31/02/AAAA` (imposible), `AAAA-MM-DD` y `DD.MM.AA` (válidas en otro formato) | 2026-11-23 |
+| 22 | `dbt/22_stg_sales_eu_counts_after_date_fix.png` | `stg_sales_eu` tras probar tres formatos de fecha: 44.733 filas, 44.654 fechas de venta (solo quedan nulas las 79 imposibles), 43.412 entregas, 44.733 precios | 2026-11-23 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (21 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (23 en adelante).
