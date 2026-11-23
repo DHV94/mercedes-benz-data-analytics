@@ -72,3 +72,13 @@ Es la pregunta que enlaza los dos casos:
 - **¿Por qué un rol distinto para cargar y para transformar?** Mínimo privilegio: `MB_INGEST_ROLE` es el único que escribe en bronze; `DEV_MB_TRANSFORM_ROLE` solo lee bronze y crea objetos en silver y gold de su entorno; reporting solo lee gold.
 - **¿Por qué subida manual a un stage?** Se ve en pantalla y no necesita la clave; `COPY INTO` recuerda los ficheros ya cargados (primera defensa contra duplicados). La subida con la CLI queda como mejora.
 - **¿Por qué dbt v1 «Latest» y no v2?** Menos riesgo con paquetes y menos cambios; la v2 (Fusion) se menciona como evolución.
+
+## 8. Silver de ventas (`silver_sales`): lecciones para defender
+
+- **¿Por qué una fila por `sale_id` y cómo se elige?** `row_number() over (partition by sale_id order by _loaded_at desc, _source_file desc, _file_row_number desc) = 1`. `row_number` y no `rank`: con un empate `rank` deja dos filas con el 1 y reaparece el duplicado. El tercer criterio existe porque los duplicados exactos comparten fecha de carga y archivo; solo los distingue la línea del archivo.
+- **Bronce 44.733 → silver 44.072**: 661 duplicados exactos (defecto D01). Es la cuenta que se enseña.
+- **Nombre del modelo (D05)**: se casa con el seed `model_alias` comparando en **mayúsculas por los dos lados** y con `distinct` en el seed. Sin `distinct`, `GLC 200` y `glc 200` coinciden en mayúsculas y la venta se **duplica sin error** (el conteo sube en silencio). Se guarda el nombre original; en gold se muestra el `variant_name` limpio del catálogo.
+- **`left join` y no `join`**: las ventas mandan; si un nombre o régimen no casa, la venta se queda con el campo vacío y un test avisa, en vez de desaparecer.
+- **Régimen de impuesto**: se traduce a `tax_type_code` y **no se asume el estándar en silencio**. La tasa se resuelve en gold (depende de país y fecha).
+- **Incremental (`merge` por `sale_id`)**: filtra bronce por `_loaded_at` mayor que el máximo ya cargado. El merge inserta las ventas nuevas y actualiza las existentes (correcciones). El resto de la lógica no cambia porque se aplica solo al lote nuevo. `--full-refresh` reconstruye todo (reset de la demo).
+- **Dónde investigar si algo falla**: el log de `dbt run` (varias sentencias SQL: tabla temporal, `merge`, limpieza; el `0` es el merge sin filas nuevas), los conteos en bronce (`count(*)` y `count(distinct sale_id)`) y silver, y `_source_file` para saber de qué lote viene una fila.
