@@ -30,5 +30,8 @@
 | 23 | `dbt/23_dbt_delta1_merge_156_rows.png` | Log de dbt tras cargar el delta 1: el `merge` de `silver_sales` procesa **156** filas (solo las nuevas) | 2026-11-23 |
 | 24 | `dbt/24_dbt_delta1_rerun_0_rows.png` | Segunda ejecución sin datos nuevos: el `merge` procesa **0** filas (idempotencia) | 2026-11-23 |
 | 25 | `dbt/25_silver_sales_44228_after_delta1.png` | Silver tras el delta 1: 44.228 filas y 44.228 `sale_id` distintos (44.072 + 156, sin duplicados) | 2026-11-23 |
+| 26 | `dbt/26_bronze_dealers_256_after_delta4.png` | Bronce de concesionarios tras cargar el `dealer_master.csv` del delta 4: 256 filas (128 + 128) | 2026-11-23 |
+| 27 | `snowflake/27_snowflake_pre_roles.png` | Los 5 roles `MB_` tras ejecutar `03_pre_environment.sql`, con `PRE_MB_TRANSFORM_ROLE` (D-067) | 2026-11-23 |
+| 28 | `snowflake/28_snowflake_pre_databases.png` | Las 7 bases `_MB_`: bronce, y silver y gold de DEV, PRE y PRO (D-067) | 2026-11-23 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (26 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (29 en adelante).
