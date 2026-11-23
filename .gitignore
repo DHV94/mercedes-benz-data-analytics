@@ -37,3 +37,6 @@ Thumbs.db
 
 # Screenshots that show the Snowflake account identifier (blur before publishing)
 docs/evidence/private/
+
+# Token usage log: written by a Stop hook and always dirty, so it is kept local only (not tracked)
+logs/token_log.csv
