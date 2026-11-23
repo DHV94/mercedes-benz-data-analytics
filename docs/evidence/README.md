@@ -34,12 +34,14 @@
 | 27 | `snowflake/27_snowflake_pre_roles.png` | Los 5 roles `MB_` tras ejecutar `03_pre_environment.sql`, con `PRE_MB_TRANSFORM_ROLE` (D-067) | 2026-11-23 |
 | 28 | `snowflake/28_snowflake_pre_databases.png` | Las 7 bases `_MB_`: bronce, y silver y gold de DEV, PRE y PRO (D-067) | 2026-11-23 |
 | 29 | `dbt/29_dbt_cloud_environment_variables.png` | dbt Cloud: variables de entorno `DBT_ENV_NAME` (DEV por defecto, PRE en PRE, PRO en PRO) y `DBT_BRONZE_DB` (D-067) | 2026-11-23 |
-| 30 | `dbt/30_dbt_pre_test_warn_78_sale_date.png` | Job de PRE: el test `not_null` de `sale_date` avisa con 78 filas y las guarda en `PRE_MB_SILVER_DB.core_dbt_test__audit` (D-066) | 2026-11-23 |
-| 31 | `dbt/31_dbt_pre_job_success.png` | Job `PRE · build` en Success: clone, deps, `dbt build` (con aviso) y generación de docs | 2026-11-23 |
+| 30 | `dbt/30_dbt_pre_test_warn_78_sale_date.png` | Job de PRE (antes de arreglar el macro de esquemas; el esquema de auditoría aún era `core_dbt_test__audit`): el test `not_null` de `sale_date` avisa con 78 filas y las guarda en `PRE_MB_SILVER_DB.core_dbt_test__audit` (D-066) | 2026-11-23 |
+| 31 | `dbt/31_dbt_pre_job_success.png` | Job `PRE · build` en Success tras arreglar el macro de esquemas: clone, deps, `dbt build` (con aviso) y generación de docs | 2026-11-23 |
 | 32 | `dbt/32_dbt_pre_docs_unused_gold_warning.png` | Generación de docs en PRE: 4 modelos, 1 snapshot, 5 seeds, 5 tests; aviso esperado de que `gold` aún no tiene modelos | 2026-11-23 |
 | 33 | `dbt/33_dbt_cloud_extended_attributes_warning.png` | Aviso de dbt Cloud en las credenciales: no poner claves sensibles en *Extended attributes* (se ven en texto plano) | 2026-11-23 |
-| 34 | `dbt/34_dbt_pro_job_success.png` | Job `PRO · build` en Success sobre el entorno PRO (rama `main`) | 2026-11-23 |
-| 35 | `dbt/35_dbt_pro_test_warn_78_sale_date.png` | Job de PRO: mismo aviso de 78 filas, guardadas en `PRO_MB_SILVER_DB.core_dbt_test__audit` | 2026-11-23 |
+| 34 | `dbt/34_dbt_pro_job_success.png` | Job `PRO · build` en Success sobre el entorno PRO (rama `main`) tras arreglar el macro de esquemas | 2026-11-23 |
+| 35 | `dbt/35_dbt_pro_test_warn_78_sale_date.png` | Job de PRO (antes de arreglar el macro de esquemas, esquema antiguo `core_dbt_test__audit`): mismo aviso de 78 filas, guardadas en `PRO_MB_SILVER_DB.core_dbt_test__audit` | 2026-11-23 |
 | 36 | `dbt/36_dbt_pro_docs_unused_gold_warning.png` | Generación de docs en PRO: mismo aviso de `gold` sin modelos | 2026-11-23 |
+| 37 | `snowflake/37_snowflake_pre_schemas_duplicated_by_macro_bug.png` | `PRE_MB_SILVER_DB` con 12 esquemas: los limpios (`CORE`, `STAGING`, `REFERENCE`, `SNAPSHOTS`, `DBT_TEST__AUDIT`) y los 5 `CORE_*` antiguos que dejó el macro vacío | 2026-11-24 |
+| 38 | `snowflake/38_snowflake_pro_schemas_duplicated_by_macro_bug.png` | Lo mismo en `PRO_MB_SILVER_DB`: esquemas limpios y `CORE_*` antiguos pendientes de borrar | 2026-11-24 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (37 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (39 en adelante).
