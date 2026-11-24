@@ -1,0 +1,189 @@
+version: 2
+
+models:
+  - name: dim_family
+    description: "Una fila por familia de modelos (A-Class, C-Class, GLC...). Dimensión compartida enlazada directamente al hecho (D-059)."
+    columns:
+      - name: family_id
+        description: "Clave sustituta: hash del nombre de la familia ya normalizado."
+        data_tests: [unique, not_null]
+      - name: family_name
+        description: "Nombre de la familia."
+        data_tests: [not_null]
+
+  - name: dim_model
+    description: "Una fila por variante de modelo (51). Incluye familia, carrocería y motorización como atributos."
+    columns:
+      - name: model_id
+        description: "Clave sustituta: hash del código de variante."
+        data_tests: [unique, not_null]
+      - name: model_variant_code
+        description: "Código estable de la variante (clave candidata, con el que casa silver)."
+        data_tests: [unique, not_null]
+      - name: model_name
+        description: "Nombre limpio de la variante que se muestra en los informes."
+      - name: family_id
+        description: "Familia de la variante (atributo, sin enlace a dim_family, D-059)."
+        data_tests: [not_null]
+      - name: family_name
+        description: "Nombre de la familia."
+      - name: bodywork
+        description: "Carrocería (Hatchback, SUV, Sedan...)."
+      - name: propulsion
+        description: "Motorización: BEV, PHEV, HEV, PETROL o DIESEL."
+      - name: first_model_year
+        description: "Primer año en que se vende."
+      - name: last_model_year
+        description: "Último año en que se vende."
+
+  - name: dim_tax
+    description: "Una fila por tasa de impuesto con su periodo de vigencia (11 filas). El valor nulo de valid_to significa que sigue vigente."
+    columns:
+      - name: tax_id
+        description: "Clave sustituta: hash de país, tipo de impuesto y fecha de inicio."
+        data_tests: [unique, not_null]
+      - name: country_code
+        description: "País al que se aplica."
+        data_tests: [not_null]
+      - name: tax_type_code
+        description: "Tipo de impuesto (VAT_STANDARD, VAT_REDUCED)."
+        data_tests: [not_null]
+      - name: tax_type_name
+        description: "Nombre del tipo de impuesto."
+      - name: tax_rate
+        description: "Tasa en porcentaje."
+        data_tests: [not_null]
+      - name: valid_from
+        description: "Primer día en que vale."
+      - name: valid_to
+        description: "Último día en que vale. Nulo si sigue vigente."
+
+  - name: dim_date
+    description: "Calendario diario de 2020 a 2027 más una fila desconocida (date_id = -1) para ventas sin fecha válida o sin entregar."
+    columns:
+      - name: date_id
+        description: "La fecha como número AAAAMMDD (por ejemplo 20250131). -1 = desconocida."
+        data_tests: [unique, not_null]
+      - name: full_date
+        description: "Fecha completa. Nula en la fila desconocida."
+      - name: year
+        description: "Año."
+      - name: month
+        description: "Número de mes."
+      - name: month_name
+        description: "Nombre del mes."
+      - name: quarter
+        description: "Trimestre."
+
+  - name: dim_dealer
+    description: "Una fila por versión de concesionario, leída del snapshot (SCD2). Un renombrado genera una fila nueva."
+    columns:
+      - name: dealer_id
+        description: "Clave sustituta: hash del código y del momento en que dbt detectó la versión."
+        data_tests: [unique, not_null]
+      - name: dealer_code
+        description: "Código del concesionario (clave candidata junto con valid_from)."
+        data_tests: [not_null]
+      - name: dealer_name
+        description: "Nombre comercial en esa versión."
+      - name: city
+        description: "Ciudad."
+      - name: region_name
+        description: "Región."
+      - name: country_code
+        description: "Código de país."
+      - name: country_name
+        description: "Nombre del país."
+      - name: status
+        description: "ACTIVE o CLOSED en esa versión."
+      - name: valid_from
+        description: "Cuándo detectó dbt esta versión."
+      - name: valid_to
+        description: "Cuándo dejó de valer. Nulo = versión vigente."
+      - name: is_current
+        description: "Verdadero si es la versión vigente."
+
+  - name: fct_sales
+    description: "Una fila por venta (grano = sale_id), solo Europa. Enlaza con las dimensiones por sus claves."
+    columns:
+      - name: sale_id
+        description: "Clave sustituta: hash del sistema origen y del identificador de la venta."
+        data_tests: [unique, not_null]
+      - name: source_system
+        description: "Sistema de origen (EU)."
+      - name: source_sale_id
+        description: "Identificador de la venta en el origen (clave candidata)."
+        data_tests: [not_null]
+      - name: sale_date_id
+        description: "Fecha de la venta. -1 si no hay fecha válida (D-066)."
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+      - name: delivery_date_id
+        description: "Fecha de entrega. -1 si aún no se ha entregado."
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+      - name: model_id
+        description: "Variante de modelo. Nulo si el nombre del modelo no se pudo traducir."
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('dim_model')
+                field: model_id
+              config:
+                severity: warn
+      - name: family_id
+        description: "Familia del modelo (repetida aquí para enlazar con dim_family, D-059)."
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_family')
+                field: family_id
+              config:
+                severity: warn
+      - name: dealer_id
+        description: "Versión vigente del concesionario. Nulo si el código no existe en el maestro."
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('dim_dealer')
+                field: dealer_id
+              config:
+                severity: warn
+      - name: vin
+        description: "Número de bastidor."
+      - name: status
+        description: "Estado de la venta: SOLD, RETURNED o CANCELLED."
+      - name: units_sold
+        description: "1 si la venta está cerrada (SOLD), 0 si fue devuelta o cancelada."
+      - name: price_local
+        description: "Precio con impuestos en moneda local."
+      - name: local_currency
+        description: "Moneda local (EUR, GBP, CHF)."
+      - name: tax_rate
+        description: "Tasa de impuesto aplicada en porcentaje. Nula si no se encontró (alerta)."
+      - name: price_net_local
+        description: "Precio sin impuestos en moneda local."
+      - name: tax_id
+        description: "Impuesto aplicado. Nulo si el régimen no existe para ese país y fecha (alerta)."
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('dim_tax')
+                field: tax_id
+              config:
+                severity: warn
