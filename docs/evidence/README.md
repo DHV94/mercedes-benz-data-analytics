@@ -95,5 +95,6 @@
 | 88 | `dbt/88_snowflake_pro_fct_sales_44382_with_loaded_at.png` | Snowflake: `fct_sales` de PRO ya tiene `_loaded_at`: 44.382 filas | 2026-11-24 |
 | 89 | `dbt/89_dbt_pro_fct_sales_incremental_0_rows.png` | `PRO · build` con el comando normal: `fct_sales` incremental procesa 0 filas | 2026-11-24 |
 | 90 | `dbt/90_dbt_pro_job_success_incremental_gold.png` | Run de `PRO · build` en Success (rama `main`, commit 472a6404) con el gold de ventas incremental: lo que lee Power BI | 2026-11-24 |
+| 91 | `powerbi/91_powerbi_uc1_map_and_bars_first_version.png` | Primera versión del informe de Power BI en casa: mapa y barras de unidades vendidas por país (UC1); el grupo «(En blanco)» son las ventas sin concesionario en el maestro | 2026-11-24 |
 
 Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (80 en adelante).
