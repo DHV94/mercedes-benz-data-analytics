@@ -2,29 +2,107 @@ version: 2
 
 models:
   - name: silver_sales
-    description: "Una fila por venta (sale_id), con el modelo y el tipo de impuesto resueltos."
+    description: "Una fila por venta (sale_id): la versión más reciente de cada venta, con el modelo y el tipo de impuesto resueltos. Tabla incremental con merge por sale_id."
     columns:
       - name: sale_id
+        description: "Identificador de la venta (EU-AAAA-NNNNNN). Único: los duplicados y reenvíos se resuelven quedándose con la carga más reciente."
         data_tests:
           - unique
           - not_null
 
+      - name: vin
+        description: "Número de bastidor en mayúsculas. Nulo si venía vacío."
+
+      - name: model_name
+        description: "Nombre del modelo tal como llegó, con sus distintas grafías. La clave estable es model_variant_code."
+
+      - name: model_year
+        description: "Año modelo del vehículo."
+
       - name: sale_date
+        description: "Fecha de la venta. Nula si era imposible (31/02), con aviso de test (D-066)."
         data_tests:
           - not_null:
               config:
                 severity: warn
                 store_failures: true
 
+      - name: delivery_date
+        description: "Fecha de entrega. Nula si aún no se ha entregado."
+
+      - name: dealer_code
+        description: "Código del concesionario que hizo la venta (PAÍS-NNNN). Puede no existir en el maestro."
+
+      - name: country
+        description: "País de la venta: DE, GB, FR, IT, ES o CH. Se usa para elegir la tasa de impuesto."
+
+      - name: sale_price
+        description: "Precio con impuestos en moneda local, ya como número."
+
+      - name: currency
+        description: "Moneda de la venta (EUR, GBP o CHF, con variantes como el símbolo del euro)."
+
+      - name: sale_status
+        description: "Estado de la venta: SOLD, RETURNED o CANCELLED."
+
+      - name: customer_type
+        description: "Tipo de cliente: PRIVATE, COMPANY o FLEET. Nulo si venía vacío."
+
+      - name: tax_regime
+        description: "Régimen de impuesto tal como llegó del origen (STD, std, Standard, RED...)."
+
+      - name: _source_file
+        description: "Archivo de bronce del que viene la versión elegida de la venta."
+
+      - name: _file_row_number
+        description: "Línea dentro de ese archivo."
+
+      - name: _loaded_at
+        description: "Momento de la carga en Snowflake. Es la base del filtro incremental."
+
       - name: model_variant_code
+        description: "Clave estable de la variante (por ejemplo C300E), obtenida cruzando el nombre con el seed model_alias sin distinguir mayúsculas."
         data_tests:
           - not_null
-      
+
+      - name: regime_code
+        description: "Régimen normalizado: STD o RED. Nulo si el régimen no está en el seed tax_regime_map (alerta)."
+
       - name: tax_type_code
+        description: "Tipo de impuesto que corresponde al régimen. La tasa se resuelve en gold con país y fecha."
         data_tests:
           - accepted_values:
               arguments:
                 values: ['VAT_STANDARD', 'VAT_REDUCED']
+
+  - name: silver_dealers
+    description: "Una fila por concesionario: la entrega más reciente del maestro. El historial de cambios vive en el snapshot snap_dealers."
+    columns:
+      - name: dealer_code
+        description: "Código del concesionario (clave natural)."
+        data_tests:
+          - unique
+          - not_null
+      - name: dealer_name
+        description: "Nombre comercial en la entrega más reciente."
+      - name: country_code
+        description: "País del concesionario."
+      - name: city
+        description: "Ciudad."
+      - name: region
+        description: "Región."
+      - name: opening_date
+        description: "Fecha de apertura."
+      - name: closing_date
+        description: "Fecha de cierre. Nula si sigue abierto."
+      - name: is_active
+        description: "Verdadero si el concesionario está abierto."
+      - name: _source_file
+        description: "Archivo de bronce del que viene la versión elegida."
+      - name: _file_row_number
+        description: "Línea dentro de ese archivo."
+      - name: _loaded_at
+        description: "Momento de la carga en Snowflake."
 
 
   - name: silver_campaign_lines
