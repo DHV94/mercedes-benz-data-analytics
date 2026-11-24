@@ -93,3 +93,27 @@ Es la pregunta que enlaza los dos casos:
 - *¿Por qué un seed y no un `case when` en el modelo?* Porque es una decisión de negocio: se ve, se revisa y se cambia sin tocar el código.
 - *¿Y si aparece un sistema nuevo?* Cae en `UNCLASSIFIED` y un test avisa.
 
+## 10. Un entorno de trabajo internacional simulado (por qué hay cosas en inglés)
+**Qué decir:** «He trabajado como en un equipo internacional: el código (modelos, columnas, ramas), los mensajes de commit y los títulos de los pull requests están en inglés, con el formato de *Conventional Commits* (`feat:`, `fix:`, `docs:`, `test:`), y la documentación va en español e inglés. Así cualquier persona de otro país podría leer y revisar el repositorio.»
+
+**Qué se ve en el repositorio:**
+- Mensajes de commit como `feat(dbt): add gold star schema for Europe sales` o `fix(dbt): restore generate_schema_name macro`.
+- Pull requests con título y comentario descriptivo, y un flujo con revisión de entornos: `feature` → `develop` → `pre` → `main`.
+- Un `CONTRIBUTING.md` con las convenciones, y un registro de decisiones numerado (`D-001` en adelante).
+
+**Por qué es un plus:** en una empresa real el código lo leen y lo mantienen otras personas; un estilo común y un historial legible valen tanto como el código.
+
+## 11. Qué aporta el autor frente a una IA (conocimiento de negocio)
+**Qué decir:** «Una IA puede escribir mucho código, pero no sabe qué decisión de negocio es la correcta. Esas decisiones las he tomado yo, con conocimiento de coches y del entorno de trabajo, y están escritas con fecha en el registro de decisiones.»
+
+**Ejemplos concretos, todos en el repositorio (D-xxx):**
+- **Vocabulario del automóvil:** que una *familia* (Clase C) no es un *modelo* (C 300 e), y que el año modelo no es el de la venta. De ahí sale el grano de las tablas y que `dim_family` se comparta entre ventas y campañas (D-059).
+- **Propulsión y carrocería** como ejes del análisis por el cambio de motores (combustión, híbrido, eléctrico).
+- **El CLS es un turismo** y debía estar en los defectos, aunque no estuviera en el catálogo de ventas; las furgonetas y autobuses no.
+- **Airbags e iluminación no son ni mecánicos ni electrónicos**, y **eléctrico no es electrónico** (D-071): la clasificación de los defectos salió de esas dos objeciones.
+- **Reglas de negocio:** impuestos con régimen estándar y reducido según el país (D-060), concesionarios que se renombran o cierran (D-052), precio sin impuestos y en euros con el tipo de cambio del mes de la venta (D-069).
+- **Qué se avisa y qué se corrige:** no corregir en silencio un dato dudoso (D-066, D-070).
+- **Alcance:** qué se deja fuera (predicción de ventas, más regiones) para terminar bien lo esencial.
+
+**Mensaje:** la IA aceleró la escritura; el criterio, el alcance y la comprobación de que los números tienen sentido fueron míos. Un proyecto de datos sin conocimiento del negocio da números correctos que no significan nada.
+

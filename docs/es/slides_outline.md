@@ -32,6 +32,8 @@ Suma: unos 15 min si se va despacio. Para llegar a 12, acorta 2 (motivación), 5
 - **Aprendizajes:** una pipeline reproducible importa más que una consulta bonita; los defectos de datos hay que verlos y medirlos, no esconderlos; separar entornos y roles evita errores caros.
 - **Límites (dilos tú):** las ventas son simuladas; una sola región terminada (Europa); los defectos son de EE. UU. y las ventas de Europa, por eso no se dividen (D-020, D-039); la carga es manual; todos los roles los usa una sola persona; los tipos de cambio son simulados.
 - **Futuro:** más regiones (el mismo patrón: su bronce, staging y silver, y el mismo gold); carga semanal automática; usuarios de servicio y SSO; un bronce por entorno.
+- **Equipo internacional simulado:** código, commits y pull requests en inglés con formato *Conventional Commits*; documentación en español e inglés (`defense_justifications.md`, apartado 10).
+- **Qué aportas tú frente a una IA:** el conocimiento del automóvil y del negocio, que decidió el grano, la clasificación de defectos y las reglas (`defense_justifications.md`, apartado 11).
 - **Sobre el uso de IA (dilo con naturalidad):** el repositorio incluye el registro de decisiones y el de colaboración con la IA. La IA explicó, revisó y escribió parte del código; **las decisiones de diseño son tuyas** y puedes defenderlas.
 
 ## Las 5 decisiones que mejor enseñan criterio (diapositivas 4, 6 y 10)
