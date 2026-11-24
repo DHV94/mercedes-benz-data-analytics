@@ -82,3 +82,14 @@ Es la pregunta que enlaza los dos casos:
 - **Régimen de impuesto**: se traduce a `tax_type_code` y **no se asume el estándar en silencio**. La tasa se resuelve en gold (depende de país y fecha).
 - **Incremental (`merge` por `sale_id`)**: filtra bronce por `_loaded_at` mayor que el máximo ya cargado. El merge inserta las ventas nuevas y actualiza las existentes (correcciones). El resto de la lógica no cambia porque se aplica solo al lote nuevo. `--full-refresh` reconstruye todo (reset de la demo).
 - **Dónde investigar si algo falla**: el log de `dbt run` (varias sentencias SQL: tabla temporal, `merge`, limpieza; el `0` es el merge sin filas nuevas), los conteos en bronce (`count(*)` y `count(distinct sale_id)`) y silver, y `_source_file` para saber de qué lote viene una fila.
+
+## 9. Cómo se decidió la clasificación de los defectos (UC5, D-071)
+**Historia para contar (es un buen ejemplo de criterio propio):** «La primera clasificación era por sistema y metía todo el sistema eléctrico en electrónica y software. Al revisarla vi que **eléctrico no es lo mismo que electrónico**, y que el airbag no es ni mecánico ni electrónico. Miré los datos y descubrí que NHTSA da un segundo nivel de detalle: de las 5.845 filas del sistema eléctrico, 4.129 dicen literalmente "software" y el resto son baterías y cableado. Así que la regla usa primero el nombre del componente y después una tabla por sistema. Lo que no se puede clasificar con honestidad va a una categoría aparte.»
+
+**Mensaje:** una clasificación de negocio no se adivina, se revisa con los datos; y es mejor una categoría «mixta» honesta que forzar cada defecto a un lado.
+
+**Preguntas probables:**
+- *¿Por qué no separas software de electrónica?* NHTSA no indica si un defecto se corrige con una actualización; la etiqueta SOFTWARE solo aparece en una parte de los componentes. Separarlos obligaría a inventar.
+- *¿Por qué un seed y no un `case when` en el modelo?* Porque es una decisión de negocio: se ve, se revisa y se cambia sin tocar el código.
+- *¿Y si aparece un sistema nuevo?* Cae en `UNCLASSIFIED` y un test avisa.
+
