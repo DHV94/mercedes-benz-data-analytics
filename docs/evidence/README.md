@@ -57,5 +57,18 @@
 | 50 | `snowflake/50_snowflake_recalls_copy_14603_rows_loaded.png` | `COPY INTO` tras subir el CSV: 14.603 filas leídas y cargadas, 0 errores | 2026-11-24 |
 | 51 | `snowflake/51_snowflake_recalls_bronze_14603_rows_181_campaigns.png` | Bronce de recalls: 14.603 filas y 181 campañas distintas | 2026-11-24 |
 | 52 | `dbt/52_dbt_recalls_build_26_pass.png` | `dbt build -s +fct_campaign_line`: 26 correctos (staging, silver, dimensiones, hecho y tests), 0 avisos, 0 errores | 2026-11-24 |
+| 53 | `snowflake/53_snowflake_gold_campaign_lines_525_141_campaigns.png` | `fct_campaign_line` en DEV: 525 líneas y 141 campañas distintas (coincide con lo previsto, D-068) | 2026-11-24 |
+| 54 | `snowflake/54_snowflake_gold_dim_component_100.png` | `dim_component`: 100 componentes | 2026-11-24 |
+| 55 | `snowflake/55_snowflake_gold_dim_family_23.png` | `dim_family`: 23 familias (22 del catálogo de ventas más el CLS, que solo tiene defectos) | 2026-11-24 |
+| 56 | `dbt/56_dbt_pre_job_success_with_gold_and_recalls.png` | Job `PRE · build` en Success con gold y recalls (71 tests, con avisos esperados) | 2026-11-24 |
+| 57 | `dbt/57_dbt_pre_warn_78_sale_date_71_tests.png` | PRE: aviso de 78 fechas de venta nulas, guardadas en `PRE_MB_SILVER_DB.dbt_test__audit` (esquema limpio, sin `core_`) | 2026-11-24 |
+| 58 | `dbt/58_dbt_pre_warn_212_sales_without_dealer.png` | PRE: aviso de 212 ventas sin concesionario en `fct_sales` | 2026-11-24 |
+| 59 | `dbt/59_dbt_pre_warn_78_sales_without_tax.png` | PRE: aviso de 78 ventas sin impuesto en `fct_sales` | 2026-11-24 |
+| 60 | `dbt/60_dbt_pro_job_success_with_gold_and_recalls.png` | Job `PRO · build` en Success con gold y recalls: ya hay gold en `PRO_MB_GOLD_DB` para Power BI | 2026-11-24 |
+| 61 | `dbt/61_dbt_job_pro_semanal_schedule_monday_6_utc.png` | Configuración del job `PRO · semanal`: *Run on schedule*, a las 6:00 UTC, solo los lunes | 2026-11-24 |
+| 62 | `dbt/62_dbt_job_pro_semanal_next_run_monday_7_cet.png` | Job `PRO · semanal` creado en el entorno PRO: próxima ejecución el lunes 30/11/2026 a las 7:00 CET (6:00 UTC) | 2026-11-24 |
+| 63 | `dbt/63_dbt_seed_fx_rates_success.png` | `dbt seed -s fx_rates` en verde: tipos de cambio mensuales simulados cargados (D-069) | 2026-11-24 |
+| 64 | `dbt/64_dbt_fct_sales_build_with_net_eur_3_warnings.png` | `dbt build -s fct_sales` con el neto en EUR: 14 resultados, 11 correctos y 3 avisos esperados (concesionario, tipo de cambio e impuesto) | 2026-11-24 |
+| 65 | `snowflake/65_snowflake_net_eur_average_by_currency.png` | Control de cordura del neto en EUR por moneda: EUR 31.949 ventas (media 52.386), GBP 9.561 (52.805) y CHF 2.872 (58.482); suman 44.382 | 2026-11-24 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (53 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (66 en adelante).

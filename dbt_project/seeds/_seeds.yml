@@ -64,3 +64,14 @@ seeds:
         description: "Código normalizado: STD o RED."
       - name: tax_type_code
         description: "Tipo de impuesto que le corresponde."
+
+  - name: fx_rates
+    description: "Tipo de cambio mensual a euros de EUR, GBP y CHF (180 filas, 2021-2025). Valores SIMULADOS, cercanos a los usados para generar los precios; no son cotizaciones reales."
+    columns:
+      - name: month_start
+        description: "Primer día del mes al que se aplica el tipo."
+      - name: currency
+        description: "Moneda de origen (EUR, GBP o CHF)."
+      - name: rate_to_eur
+        description: "Euros que vale una unidad de la moneda en ese mes. El euro vale 1."
+
