@@ -65,5 +65,7 @@
 | 58 | `dbt/58_dbt_pre_warn_212_sales_without_dealer.png` | PRE: aviso de 212 ventas sin concesionario en `fct_sales` | 2026-11-24 |
 | 59 | `dbt/59_dbt_pre_warn_78_sales_without_tax.png` | PRE: aviso de 78 ventas sin impuesto en `fct_sales` | 2026-11-24 |
 | 60 | `dbt/60_dbt_pro_job_success_with_gold_and_recalls.png` | Job `PRO · build` en Success con gold y recalls: ya hay gold en `PRO_MB_GOLD_DB` para Power BI | 2026-11-24 |
+| 61 | `dbt/61_dbt_job_pro_semanal_schedule_monday_6_utc.png` | Configuración del job `PRO · semanal`: *Run on schedule*, a las 6:00 UTC, solo los lunes | 2026-11-24 |
+| 62 | `dbt/62_dbt_job_pro_semanal_next_run_monday_7_cet.png` | Job `PRO · semanal` creado en el entorno PRO: próxima ejecución el lunes 30/11/2026 a las 7:00 CET (6:00 UTC) | 2026-11-24 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (61 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (63 en adelante).
