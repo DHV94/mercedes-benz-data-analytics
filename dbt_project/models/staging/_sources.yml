@@ -17,3 +17,10 @@ sources:
     tables:
       - name: raw_dealer_master
         description: "Raw dealer master of every delivery (one row per dealer and file)."
+
+  - name: bronze_nhtsa
+    database: "{{ env_var('DBT_BRONZE_DB', 'DEV_MB_BRONZE_DB') }}"
+    schema: nhtsa
+    tables:
+      - name: raw_recalls
+        description: "Real NHTSA recalls of Mercedes-Benz vehicles (2021-2025), one row per campaign, model text, year and component. Text as it comes."
