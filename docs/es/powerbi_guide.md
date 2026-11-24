@@ -69,6 +69,12 @@ CALCULATE(COUNTROWS(fct_sales), fct_sales[status] IN {"RETURNED", "CANCELLED"})
 
 Precio medio (moneda local) = AVERAGE(fct_sales[price_local])
 
+Ingresos netos EUR =
+CALCULATE(SUM(fct_sales[price_net_eur]), fct_sales[status] = "SOLD")
+
+Precio medio neto EUR =
+CALCULATE(AVERAGE(fct_sales[price_net_eur]), fct_sales[status] = "SOLD")
+
 Unidades entregadas =
 CALCULATE([Unidades vendidas], USERELATIONSHIP(dim_date[date_id], fct_sales[delivery_date_id]))
 
@@ -77,16 +83,17 @@ Campañas = DISTINCTCOUNT(fct_campaign_line[campaign_id])
 Líneas de campaña = COUNTROWS(fct_campaign_line)
 ```
 
-**Aviso importante (importes):** `price_local` está en **tres monedas** (EUR, GBP, CHF) y todavía no hay tipo de cambio en gold, así que **no sumes importes de todos los países**. Usa unidades, recuentos y el precio medio **segmentado por moneda**. (El importe neto en EUR es la mejora D-049, pendiente.)
+**Importes:** `price_local` está en **tres monedas** (EUR, GBP, CHF): **no lo sumes entre países**. Para ingresos totales usa `price_net_eur` (precio sin impuestos en euros, con el tipo de cambio mensual del seed `fx_rates`, valores simulados). Solo se cuentan las ventas en estado `SOLD`. Las ventas sin fecha válida (78) no tienen tipo de cambio y quedan sin neto en EUR: es un aviso de dbt esperado.
 
 **No sumes `units_affected`** de las campañas: es la cifra de la campaña repetida en cada línea (D-058). Cuenta campañas y líneas.
 
 ## 5. Informe propuesto
 **Página 1 · Ventas**
-- Tarjetas: Unidades vendidas, Ventas registradas, % devoluciones y cancelaciones.
+- Tarjetas: Unidades vendidas, Ingresos netos EUR, Ventas registradas, % devoluciones y cancelaciones.
 - Columnas: Unidades vendidas por mes (`dim_date[month_name]`, con `year` en el eje o como segmentación).
 - Barras: Unidades vendidas por `dim_family[family_name]`.
 - Barras: por `dim_model[propulsion]` (BEV, PHEV, HEV...).
+- Columnas o líneas: Ingresos netos EUR por mes y por país (`dim_dealer[country_name]`).
 - Segmentaciones: año, país (`dim_dealer[country_name]`), moneda (`fct_sales[local_currency]`).
 
 **Página 2 · Defectos (campañas NHTSA)**
@@ -105,6 +112,7 @@ Líneas de campaña = COUNTROWS(fct_campaign_line)
 | Dato | Esperado (tras el delta 2) |
 |---|---|
 | `fct_sales` filas | 44.382 |
+| Sin `exchange_rate` | 78 (las de fecha imposible) |
 | Con `sale_date_id = -1` | 78 |
 | Sin `dealer_id` | 212 |
 | Sin `tax_id` | 78 |

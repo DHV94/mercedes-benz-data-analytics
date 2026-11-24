@@ -19,7 +19,7 @@ Cómo quiero que trabajes (acuerdo del repositorio, CLAUDE.md):
 Qué hacer hoy, en orden:
 1. Comprobar la conexión a Snowflake desde Power BI (rol MB_REPORTING_ROLE, almacén WH_MB, PRO_MB_GOLD_DB.SALES). Si falla, usar el Plan B con CSV de la guía.
 2. Importar las 8 tablas y crear las relaciones (la relación de delivery_date_id es inactiva a propósito).
-3. Crear las medidas DAX de la guía. Aviso: NO sumar importes de países distintos (hay EUR, GBP y CHF sin tipo de cambio) y NO sumar units_affected.
+3. Crear las medidas DAX de la guía. Aviso: NO sumar price_local entre países (hay EUR, GBP y CHF); para ingresos usar price_net_eur (neto en euros, tipo de cambio mensual simulado) y NO sumar units_affected.
 4. Montar las páginas: Ventas, Defectos (campañas NHTSA) y, si hay tiempo, Calidad del dato.
 5. Hacer capturas de cada página para las diapositivas y guardar el .pbix en mi Drive.
 

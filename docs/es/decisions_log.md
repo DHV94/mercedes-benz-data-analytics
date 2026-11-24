@@ -468,3 +468,9 @@
 - **`units_affected` no se suma**: NHTSA repite la cifra de la campaña en cada fila, y al juntar modelos de una misma familia se toma el máximo (D-058).
 - **Por qué un script en Python y no cargar el fichero entero**: 15 MB comprimidos con 248.000 filas de otras marcas no aportan nada; filtrar antes de bronce simplifica y deja un fichero que se sube a mano en un minuto.
 - **Límite a decir**: datos reales de EE. UU. aplicados a un catálogo europeo ficticio; sirven como ejemplo de una segunda fuente conectada por la familia, no como análisis real de defectos.
+
+## D-069 · Neto en euros con tipo de cambio mensual simulado (2026-11-24; cierra D-049)
+- **Contexto**: las ventas están en EUR, GBP y CHF, y sin conversión no se pueden sumar importes entre países en Power BI. D-049 dejaba el neto en EUR como medida opcional.
+- **Decisión**: seed `fx_rates` (180 filas: EUR, GBP y CHF por mes, 2021-2025, valores **simulados** cercanos a los del generador) y en `fct_sales`: `exchange_rate` y `price_net_eur = precio local / (1 + tasa) × tipo del mes de la venta`. Las variantes de moneda (`eur`, `€`, `£`) se normalizan en el hecho.
+- **Por qué el tipo del mes de la venta y no el de hoy**: una venta de 2023 debe valer lo que valía entonces; con el tipo de hoy, los ingresos históricos cambiarían cada vez que se mueve el mercado. El detalle mensual (en vez de diario) es la decisión D-054: menos filas y menos ruido para un análisis comercial.
+- **Límite a decir**: los tipos no son reales; con datos reales se cargarían desde una fuente externa. Las 78 ventas sin fecha válida no tienen tipo y quedan sin neto en EUR (aviso `not_null` de `exchange_rate`).

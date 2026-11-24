@@ -175,6 +175,14 @@ models:
         description: "Tasa de impuesto aplicada en porcentaje. Nula si no se encontró (alerta)."
       - name: price_net_local
         description: "Precio sin impuestos en moneda local."
+      - name: exchange_rate
+        description: "Tipo de cambio a euros del mes de la venta (seed fx_rates, simulado). Nulo si la venta no tiene fecha."
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: price_net_eur
+        description: "Precio sin impuestos en euros: precio local sin impuestos por el tipo de cambio del mes de la venta. Es la medida que se puede sumar entre países."
       - name: tax_id
         description: "Impuesto aplicado. Nulo si el régimen no existe para ese país y fecha (alerta)."
         data_tests:
