@@ -491,3 +491,11 @@
 - **Límite a decir**: es una clasificación simplificada del autor y sus límites son discutibles; por eso lo ambiguo va a una categoría aparte en vez de forzarlo a un lado, y la cifra de electrónica y software es una cota conservadora.
 - **Periodo de UC5 (decisión del autor, 2026-11-24)**: **2021 a 2025**, cinco años completos, igual que las ventas. 2026 queda en los datos, pero se excluye del informe: solo llega hasta el 2/10/2026 (8 campañas, y una de ellas, la de julio, concentra el 80 % de las filas) y el filtro por año modelo 2021-2025 deja fuera los modelos 2026-2027, así que ese año está incompleto y sesgado. 2020 (3 campañas de modelos 2021) tampoco se muestra. Es más fácil de justificar: mismo periodo que las ventas, sin años parciales que parezcan una caída.
 
+## D-072 · `fct_sales` incremental también en gold (2026-11-24)
+- **Contexto**: hasta hoy `fct_sales` era una tabla que se reconstruía entera en cada ejecución (unas 44.000 filas), con silver incremental. Se llevó la duda a los profesores.
+- **Opciones**: (a) mantener la reconstrucción en gold; (b) hacer `fct_sales` incremental con `merge` por `sale_id`.
+- **Decisión**: (b). Los profesores indican que no tiene sentido que el hecho sea incremental en silver y no en gold; solo se justificaría no serlo en pocos casos en los que los agregados dieran problemas, y aquí no es el caso. Las dimensiones siguen como tablas (D-022: no se impone a todas).
+- **Por qué**: coherencia del flujo de extremo a extremo; la reconstrucción solo se había mantenido por el bajo volumen. D-022 ya pedía incremental hasta gold.
+- **A comprobar al implementarlo** (riesgos que la reconstrucción evitaba): (1) `dealer_id` cambia cuando el concesionario cambia de nombre (D-058): las ventas ya cargadas conservarían la clave de la versión antigua; (2) un cambio en los seeds de tipos de cambio o de impuestos no llegaría al histórico sin `--full-refresh`; (3) una corrección de silver en una venta antigua debe actualizar su fila en gold (`merge` por `sale_id`).
+- **Estado**: se implementa en una rama de feature propia y se promociona por `develop` → `pre` → `main` (D-067). Se da por cerrada cuando esté probada.
+- **Nota**: D-022 no se modifica; esta decisión la aplica a `fct_sales`.
