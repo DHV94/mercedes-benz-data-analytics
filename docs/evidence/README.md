@@ -53,5 +53,9 @@
 | 46 | `dbt/46_dbt_gold_warn_212_sales_without_dealer.png` | Aviso de `not_null_fct_sales_dealer_id`: 212 ventas con un concesionario que no existe en el maestro (D15) | 2026-11-24 |
 | 47 | `dbt/47_dbt_gold_warn_78_sales_without_tax.png` | Aviso de `not_null_fct_sales_tax_id`: 78 ventas sin impuesto (las de fecha imposible, D-066) | 2026-11-24 |
 | 48 | `snowflake/48_snowflake_reporting_role_grants_on_gold.png` | `show grants` de `MB_REPORTING_ROLE` tras `04_reporting_grants.sql`: usage en las bases gold y select en las tablas | 2026-11-24 |
+| 49 | `snowflake/49_snowflake_recalls_copy_0_files_before_upload.png` | `COPY INTO` de los recalls ejecutado antes de subir el fichero: "0 files processed" (no falla, simplemente no hay nada que cargar) | 2026-11-24 |
+| 50 | `snowflake/50_snowflake_recalls_copy_14603_rows_loaded.png` | `COPY INTO` tras subir el CSV: 14.603 filas leídas y cargadas, 0 errores | 2026-11-24 |
+| 51 | `snowflake/51_snowflake_recalls_bronze_14603_rows_181_campaigns.png` | Bronce de recalls: 14.603 filas y 181 campañas distintas | 2026-11-24 |
+| 52 | `dbt/52_dbt_recalls_build_26_pass.png` | `dbt build -s +fct_campaign_line`: 26 correctos (staging, silver, dimensiones, hecho y tests), 0 avisos, 0 errores | 2026-11-24 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (49 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (53 en adelante).
