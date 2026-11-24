@@ -26,6 +26,9 @@ Qué hacer hoy, en orden:
 Cifras de control (deben coincidir): fct_sales 44.382 filas (tras el delta 2), 78 con sale_date_id = -1, 212 sin dealer_id, 78 sin tax_id; fct_campaign_line 525 líneas y 141 campañas; dim_component 100; dim_family 23.
 ```
 
+## Preguntas para clase
+Están preparadas en `docs/es/class_questions.md` (dos principales y cinco de apoyo, con la respuesta que defiendo). Anota ahí lo que te contesten.
+
 ## Después de la sesión de Power BI
 - Sube las capturas y el índice de evidencias (git: tú haces push/PR).
 - Anota en `docs/SESSION_NOTES.md` qué se hizo y qué falta.
