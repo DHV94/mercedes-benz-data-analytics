@@ -79,5 +79,12 @@
 | 72 | `snowflake/72_snowflake_demo_start_bronze_sales_45051.png` | Estado de partida de la demo: bronce de ventas con 45.051 filas y 44.382 `sale_id` distintos (tras el delta 2) | 2026-11-24 |
 | 73 | `snowflake/73_snowflake_demo_start_bronze_dealers_256.png` | Estado de partida de la demo: bronce de concesionarios con 256 filas (lote 1 y delta 4) | 2026-11-24 |
 | 74 | `snowflake/74_snowflake_demo_start_snapshot_131_128.png` | Estado de partida de la demo: snapshot con 131 versiones y 128 vigentes | 2026-11-24 |
+| 75 | `dbt/75_dbt_seed_component_type_map_27_rows.png` | `dbt seed -s component_type_map`: 27 sistemas con su categoría cargados (D-071) | 2026-11-24 |
+| 76 | `dbt/76_dbt_build_dim_component_6_pass.png` | `dbt build -s dim_component` con la categoría nueva: 6 resultados correctos, incluido el test de valores aceptados | 2026-11-24 |
+| 77 | `snowflake/77_snowflake_uc5_lines_by_component_category.png` | UC5: líneas y campañas por categoría: mecánico 204 (66), electrónica y software 166 (34), eléctrico 128 (41), mixto 27 (14) | 2026-11-24 |
+| 78 | `dbt/78_dbt_pre_job_success_with_uc5.png` | Job `PRE · build` en Success con UC5 (rama `pre`, commit 9fd5915) | 2026-11-24 |
+| 79 | `dbt/79_dbt_pro_job_success_with_uc5.png` | Job `PRO · build` en Success con UC5 (rama `main`, commit 9a62758): el gold que lee Power BI | 2026-11-24 |
+| 80 | `dbt/80_dbt_fct_sales_incremental_full_refresh_44382.png` | `fct_sales` ahora incremental en gold (D-072): `dbt build --full-refresh -s fct_sales` carga 44.382 filas (rama `feature-gold-incremental`) | 2026-11-24 |
+| 81 | `dbt/81_dbt_fct_sales_incremental_rerun_0_rows.png` | Segunda ejecución sin `--full-refresh`: `fct_sales` procesa **0 filas** (no hay lotes nuevos); los 3 avisos esperados siguen siendo avisos | 2026-11-24 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (75 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (80 en adelante).

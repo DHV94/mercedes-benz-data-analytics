@@ -1,6 +1,16 @@
 -- One row per sale (grain = sale_id), Europe only (D-056). Keys point to the gold dimensions.
 -- Missing dates use the "unknown" date -1. A model, dealer or tax that cannot be matched stays null
 -- on purpose: the relationships tests in _gold.yml report it instead of hiding it.
+
+{{
+    config(
+        materialized='incremental',
+        unique_key='sale_id',
+        incremental_strategy='merge'
+    )
+}}
+
+
 with sales as (
     select
         *,
@@ -11,6 +21,11 @@ with sales as (
             else currency
         end as currency_code
     from {{ ref('silver_sales') }}
+
+     {% if is_incremental() %}
+    -- only new or corrected sales: silver gives a corrected sale a newer _loaded_at
+    where _loaded_at > (select max(_loaded_at) from {{ this }})
+    {% endif %}
 ),
 
 models as (
@@ -49,7 +64,8 @@ select
     round(s.sale_price / (1 + t.tax_rate / 100), 2)                      as price_net_local,
     fx.rate_to_eur                                                       as exchange_rate,
     round(s.sale_price / (1 + t.tax_rate / 100) * fx.rate_to_eur, 2)     as price_net_eur,
-    t.tax_id
+    t.tax_id,
+    s._loaded_at
 from sales as s
 left join models as m
     on s.model_variant_code = m.model_variant_code
