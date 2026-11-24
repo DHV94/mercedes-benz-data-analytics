@@ -105,6 +105,7 @@ CALCULATE([Líneas de campaña], dim_component[component_category] = "ELECTRONIC
 - Tarjetas: Campañas, Líneas de campaña.
 - Barras: Líneas de campaña por `dim_family[family_name]`.
 - Barras: por `dim_component[component_type]`.
+- **Periodo de UC5 y de las campañas: 2021 a 2025** (D-071). Pon en la página un filtro `dim_date[year]` entre 2021 y 2025 y deja fuera 2020 y 2026: 2026 llega solo hasta el 2/10 y es parcial. Dilo en una nota del gráfico.
 - **UC5 (la pregunta del proyecto):** columnas apiladas de líneas de campaña por año (`dim_date[year]`) con la leyenda `dim_component[component_category]` (electrónica y software, eléctrico, mecánico y mixto/otros), y la tarjeta `% electrónica y software`.
 - Línea: campañas por año (`dim_date[year]`).
 - Segmentación: familia (`dim_family`). Como la familia es compartida, la misma segmentación puede filtrar ventas y campañas.
