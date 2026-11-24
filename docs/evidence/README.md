@@ -76,5 +76,8 @@
 | 69 | `snowflake/69_snowflake_reporting_role_reads_pro_campaign_lines.png` | Con `MB_REPORTING_ROLE` se lee `FCT_CAMPAIGN_LINE` de PRO: 525 líneas (Power BI podrá conectarse) | 2026-11-24 |
 | 70 | `dbt/70_dbt_test_price_positive_fails_124_rows_d10.png` | El test de precio positivo falla con 124 filas en los datos normales: es el defecto D10 (precio cero o negativo, ~0,3 %), que ya viene en el generador | 2026-11-24 |
 | 71 | `dbt/71_dbt_test_silver_sales_8_pass_2_warn.png` | `dbt test -s silver_sales` con los tests de alerta: 10 tests, 8 correctos, 2 avisos (78 fechas nulas y 124 precios no positivos) y 0 errores | 2026-11-24 |
+| 72 | `snowflake/72_snowflake_demo_start_bronze_sales_45051.png` | Estado de partida de la demo: bronce de ventas con 45.051 filas y 44.382 `sale_id` distintos (tras el delta 2) | 2026-11-24 |
+| 73 | `snowflake/73_snowflake_demo_start_bronze_dealers_256.png` | Estado de partida de la demo: bronce de concesionarios con 256 filas (lote 1 y delta 4) | 2026-11-24 |
+| 74 | `snowflake/74_snowflake_demo_start_snapshot_131_128.png` | Estado de partida de la demo: snapshot con 131 versiones y 128 vigentes | 2026-11-24 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (72 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (75 en adelante).
