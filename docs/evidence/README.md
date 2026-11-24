@@ -70,5 +70,7 @@
 | 63 | `dbt/63_dbt_seed_fx_rates_success.png` | `dbt seed -s fx_rates` en verde: tipos de cambio mensuales simulados cargados (D-069) | 2026-11-24 |
 | 64 | `dbt/64_dbt_fct_sales_build_with_net_eur_3_warnings.png` | `dbt build -s fct_sales` con el neto en EUR: 14 resultados, 11 correctos y 3 avisos esperados (concesionario, tipo de cambio e impuesto) | 2026-11-24 |
 | 65 | `snowflake/65_snowflake_net_eur_average_by_currency.png` | Control de cordura del neto en EUR por moneda: EUR 31.949 ventas (media 52.386), GBP 9.561 (52.805) y CHF 2.872 (58.482); suman 44.382 | 2026-11-24 |
+| 66 | `dbt/66_dbt_pre_job_success_with_net_eur.png` | Job `PRE · build` en Success tras la segunda promoción (neto en EUR y descripciones de silver) | 2026-11-24 |
+| 67 | `dbt/67_dbt_pro_job_success_with_net_eur.png` | Job `PRO · build` en Success con el neto en EUR: es el gold que lee Power BI | 2026-11-24 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (66 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (68 en adelante).
