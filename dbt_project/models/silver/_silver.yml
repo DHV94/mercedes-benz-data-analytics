@@ -25,3 +25,35 @@ models:
           - accepted_values:
               arguments:
                 values: ['VAT_STANDARD', 'VAT_REDUCED']
+
+
+  - name: silver_campaign_lines
+    description: "Una fila por línea de campaña: campaña, familia, año modelo y componente. Las furgonetas y autobuses (Sprinter, Metris, Tourrider) quedan fuera; el CLS se queda."
+    columns:
+      - name: campaign_number
+        description: "Número de campaña de NHTSA."
+        data_tests:
+          - not_null
+      - name: family_name
+        description: "Familia de nuestro catálogo, traducida del texto del modelo con el macro model_to_family."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['A-Class', 'AMG GT', 'B-Class', 'C-Class', 'CLA', 'CLE', 'CLS', 'E-Class', 'EQA', 'EQB', 'EQC', 'EQE', 'EQE SUV', 'EQS', 'EQS SUV', 'G-Class', 'GLA', 'GLB', 'GLC', 'GLE', 'GLS', 'S-Class', 'SL']
+      - name: model_year
+        description: "Año modelo afectado."
+        data_tests:
+          - not_null
+      - name: component_name
+        description: "Componente defectuoso."
+        data_tests:
+          - not_null
+      - name: component_type
+        description: "Sistema principal del componente (la primera parte antes de los dos puntos)."
+      - name: campaign_date
+        description: "Fecha en que se presentó el informe. La más antigua si varias filas la repiten."
+      - name: units_affected
+        description: "Unidades afectadas que informa el fabricante. Es el máximo de la línea: no se suma entre líneas (D-058)."
+      - name: source_rows
+        description: "Cuántas filas de NHTSA se juntaron en esta línea (modelos distintos de la misma familia)."

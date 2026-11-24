@@ -62,3 +62,29 @@ models:
         description: "Línea dentro de ese archivo."
       - name: _loaded_at
         description: "Momento de la carga en Snowflake."
+
+  - name: stg_recalls
+    description: "Campañas de defectos reales de NHTSA para Mercedes-Benz (2021-2025), con tipos correctos y texto limpio. Una fila por fila de bronce (14.603); no se quita ninguna."
+    columns:
+      - name: record_id
+        description: "Número de registro de NHTSA."
+      - name: campaign_number
+        description: "Número de campaña de NHTSA (por ejemplo 20V671000). Se repite en cada modelo, año y componente afectado."
+      - name: make
+        description: "Marca (MERCEDES-BENZ o MERCEDES-MAYBACH)."
+      - name: model_text
+        description: "Modelo tal como lo escribe NHTSA (GLE 350, AMG GLC43 4MATIC...). Se traduce a familia en silver."
+      - name: model_year
+        description: "Año modelo afectado."
+      - name: component_name
+        description: "Componente defectuoso, con el sistema y las piezas separados por dos puntos."
+      - name: units_affected
+        description: "Unidades potencialmente afectadas que informa el fabricante para la campaña. Se repite en cada fila de la campaña."
+      - name: campaign_date
+        description: "Fecha en que el fabricante presentó el informe a NHTSA."
+      - name: _source_file
+        description: "Archivo de bronce del que viene la fila."
+      - name: _file_row_number
+        description: "Línea dentro de ese archivo."
+      - name: _loaded_at
+        description: "Momento de la carga en Snowflake."
