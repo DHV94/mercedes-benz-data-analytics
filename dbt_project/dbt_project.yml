@@ -39,3 +39,7 @@ snapshots:
   mercedes_benz_analytics:
     +database: silver
     +schema: snapshots
+
+# Project variables. max_sale_date is the last day of the simulated data: a sale after it is an alert.
+vars:
+  max_sale_date: "2025-12-31"

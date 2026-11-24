@@ -14,7 +14,7 @@ Cómo quiero que trabajes (acuerdo del repositorio, CLAUDE.md):
 - Idioma del chat: español.
 - No pongas secretos en el repositorio (cuentas, usuarios, claves, .pbix con credenciales).
 - Tú NO haces push, PR ni merge. Puedes crear commits locales solo después de explicarme en español qué contienen. Nunca añadas coautoría ni atribución de Claude en los commits.
-- Las capturas que te pase son evidencias: guárdalas en docs/evidence/ con número correlativo (la siguiente es la 61; mira docs/evidence/README.md) y un nombre descriptivo en español, y añade su fila al índice.
+- Las capturas que te pase son evidencias: guárdalas en docs/evidence/ con número correlativo (mira el último número de docs/evidence/README.md y usa el siguiente) y un nombre descriptivo en español, y añade su fila al índice.
 
 Qué hacer hoy, en orden:
 1. Comprobar la conexión a Snowflake desde Power BI (rol MB_REPORTING_ROLE, almacén WH_MB, PRO_MB_GOLD_DB.SALES). Si falla, usar el Plan B con CSV de la guía.

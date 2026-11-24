@@ -44,6 +44,10 @@ models:
 
       - name: sale_status
         description: "Estado de la venta: SOLD, RETURNED o CANCELLED."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['SOLD', 'RETURNED', 'CANCELLED']
 
       - name: customer_type
         description: "Tipo de cliente: PRIVATE, COMPANY o FLEET. Nulo si venía vacío."
@@ -67,6 +71,8 @@ models:
 
       - name: regime_code
         description: "Régimen normalizado: STD o RED. Nulo si el régimen no está en el seed tax_regime_map (alerta)."
+        data_tests:
+          - not_null
 
       - name: tax_type_code
         description: "Tipo de impuesto que corresponde al régimen. La tasa se resuelve en gold con país y fecha."
