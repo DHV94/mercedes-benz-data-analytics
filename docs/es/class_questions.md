@@ -41,6 +41,11 @@ Estado que puedes contar en una frase: *«Bronce, staging, silver (incremental y
 ## Después de preguntar
 Anota las respuestas aquí abajo y se las llevas a Claude para decidir si cambia algo del modelo antes del miércoles.
 
-- Respuesta a la 1:
-- Respuesta a la 2:
-- Otras:
+## Respuestas de los profesores (martes 24/11)
+Las tres preguntas que se llevaron finalmente (versión corta de las anteriores).
+
+1. **Dos claves de fecha en `fct_sales` contra una sola `dim_date`.** Sin problema. En el modelado se queda con una única `dim_date`. Solo en Power BI se duplica (una copia para cada fecha) si hace falta aplicar filtros a ambas a la vez.
+2. **Fechas en `dim_dealer` y `dim_model` sin enlazar a `dim_date`.** Sin problema: es justificable (estrella, no copo de nieve). Aviso: en `dim_dealer` una de las fechas forma parte de la clave candidata (`dealer_code` + `valid_from`), y eso puede dar problemas al hacer **agregados**, porque un mismo concesionario tiene varias filas (una por versión). Hay que contar por `dealer_code` distinto y no por filas.
+3. **Gold de ventas: ¿reconstruir o incremental?** Debe ser **incremental también en gold**. No tiene sentido que lo sea en silver y no en gold. Solo se justificaría no hacerlo en pocos casos en los que los agregados dieran problemas, y aquí no es el caso. → decisión D-072 y rama de feature para hacerlo.
+
+Pendiente de Claude: ninguno.
