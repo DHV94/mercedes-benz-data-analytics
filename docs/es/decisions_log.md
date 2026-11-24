@@ -497,5 +497,14 @@
 - **Decisión**: (b). Los profesores indican que no tiene sentido que el hecho sea incremental en silver y no en gold; solo se justificaría no serlo en pocos casos en los que los agregados dieran problemas, y aquí no es el caso. Las dimensiones siguen como tablas (D-022: no se impone a todas).
 - **Por qué**: coherencia del flujo de extremo a extremo; la reconstrucción solo se había mantenido por el bajo volumen. D-022 ya pedía incremental hasta gold.
 - **A comprobar al implementarlo** (riesgos que la reconstrucción evitaba): (1) `dealer_id` cambia cuando el concesionario cambia de nombre (D-058): las ventas ya cargadas conservarían la clave de la versión antigua; (2) un cambio en los seeds de tipos de cambio o de impuestos no llegaría al histórico sin `--full-refresh`; (3) una corrección de silver en una venta antigua debe actualizar su fila en gold (`merge` por `sale_id`).
-- **Estado**: se implementa en una rama de feature propia y se promociona por `develop` → `pre` → `main` (D-067). Se da por cerrada cuando esté probada.
+- **Estado**: se implementa en una rama de feature propia y se promociona por `develop` → `pre` → `main` (D-067). **Cerrada (2026-11-24):** probada en DEV, PRE y PRO (evidencias 80 a 90). La primera ejecución de cada entorno necesitó `--full-refresh -s fct_sales`, porque la tabla existente no tenía `_loaded_at`; sin ello el job falla (evidencia 85). Para PRO se creó un job aparte, `PRO · full refresh fct_sales`, que también servirá para el reset de la demo.
 - **Nota**: D-022 no se modifica; esta decisión la aplica a `fct_sales`.
+
+## D-073 · `dim_date` generada con el `generator()` de Snowflake, sin paquete (2026-11-24)
+- **Contexto**: existen paquetes de dbt para generar una dimensión de fechas: `dbt_utils` (macro `date_spine`, que genera la secuencia de días) y `dbt_date` (además añade atributos de calendario). El proyecto no usa ningún paquete (no hay `packages.yml`).
+- **Opciones**: (a) `dbt_utils.date_spine`; (b) paquete `dbt_date`; (c) generar el calendario con SQL nativo de Snowflake (`table(generator(rowcount => ...))`).
+- **Decisión**: (c). `dim_date` cubre del 2020-01-01 al 2027-12-31 (2.922 días), con `date_id` en formato `yyyymmdd`, año, mes, nombre del mes y trimestre, más una fila `-1` «Unknown».
+- **Por qué**: para no añadir una dependencia externa a un proyecto pequeño; el calendario son pocas líneas de SQL y se entiende entero. Ya está desplegado en los tres entornos y Power BI se apoya en él.
+- **Coste**: hay que mantener a mano el rango de fechas y los atributos del calendario (por ejemplo, día de la semana o semana del año, que no están).
+- **Mejora futura**: pasar a `dbt_utils.date_spine` (una línea para generar los días, sin contar filas a mano) o a `dbt_date` si hacen falta más atributos. No se cambia antes de la exposición: no aporta nada visible.
+- **Si lo preguntan**: «Sé que hay un paquete para esto. Lo hice nativo para no depender de otro paquete; el cambio a `date_spine` es sencillo».

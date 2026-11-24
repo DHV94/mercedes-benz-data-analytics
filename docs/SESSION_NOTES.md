@@ -3,25 +3,30 @@
 > **Rule: whoever works on the project (Claude, ChatGPT or the user) updates this file before the last commit of every work session.** It must always reflect the real state of the repo, so any session can resume from it alone.
 > Read order for a new session: `CLAUDE.md` → this file → `docs/PROJECT_CONTEXT.md` → `docs/es/decisions_log.md` → (when relevant) `docs/es/source_design.md`.
 
-- **Last updated:** 2026-11-20, work PC (by Claude, Sonnet 5.5)
+- **Last updated:** 2026-11-24, evening, class PC (Power BI session; by Claude, Sonnet 5.5)
 - **Copy-paste prompt to start any new session:** `docs/HANDOFF_PROMPT.md`
-- **Branch of reference:** `develop`. Flow `feature/*` → `develop` → `main` (D-038). No `pre` and no `pro` branch (`main` is PRO, also in dbt Cloud). `origin/pre` exists on GitHub but is unused (see `CONTRIBUTING.md`).
+- **Branch of reference:** `develop`. Flow `feature-*` → `develop` → `pre` → `main` (**D-067 reversed the "no `pre`" of D-038**: `pre` is the branch of the PRE environment in dbt Cloud; `main` is PRO; there is no `pro` branch).
 - Slide notes: `docs/es/slides_notes.md` (script, evidence checklist, questions for the teachers).
 
-## 1. Real state of the repo (audit 2026-11-20)
+## 0. Right now (2026-11-24 evening, Power BI at the class PC)
+- Connected to `PRO_MB_GOLD_DB.SALES` with `MB_REPORTING_ROLE`; 8 tables imported; 9 relations OK (delivery date inactive on purpose; the automatic `dim_family`–`dim_model` relation was removed, see defence §14); `MONTH_NAME` sorted by `MONTH`; date table NOT marked (the `-1` row has a null date, defence §15 to write).
+- Measures created (English names, table `Medidas`): `Units sold`, `Recorded sales`, `Returns and cancellations`. **Pending:** the 4 UC5 measures (`Campaign lines`, `Campaigns`, `Electronics and software lines`, `% electronics and software`).
+- Report: page UC1 with a map + chart. Plan: duplicate the page for UC2, UC3, UC4 (map as selector, top 3 filter and year 2025 in UC4) and a UC5 page. Report in English.
+- **The `.pbix` is NOT in the repo** (it carries the connection data). It lives in the author's Drive; export to PDF/screenshots into `docs/evidence/` instead.
+- **Before presenting:** promote the docs commits `feature-gold-incremental` → `develop` → `pre` → `main` by PR (docs only, no job rerun needed). Wednesday: try `demo_reset.md`, add the gold step to the demo script, write defence §15, slides.
+
+## 1. Real state of the repo (updated 2026-11-24 evening; sections 2–5 below are partly historical from 2026-11-20, the session log §6 is the up-to-date story)
 
 | Area | State |
 |---|---|
-| Repo, branches (`main`, `develop`), README, CONTRIBUTING, `.gitignore` | ✅ Done |
-| Token log (`scripts/log_tokens.py` + hook in `.claude/settings.json`) | ✅ Working; `logs/token_log.csv` is committed |
-| Context, decision log (D-001…D-031), source design | ✅ Written (source design is a **draft**, see §3) |
-| `snowflake/01_setup_environment.sql` | ✍️ Written and committed. **Confirmed by the user: NOT run yet.** Nothing exists in Snowflake. No data generated, dbt not used yet. |
-| `docs/es/exercise_dimensional_model.md` | ✍️ Written: modelling exercise (course-style statement, no solution). **The user designs the model first**; Claude reviews. |
-| Stages / file formats / bronze tables (`02_…`, `03_…`) | ❌ Not started |
-| Data generator (`data/data_generator/`) | ✅ **Europe only, written and tested (2026-11-21, by Claude, not yet explained to the user)**: `generate_europe.py`, `config/model_catalog.csv`, `README.md`. Reproducible (same seed ⇒ identical SHA-256), batch 1 (history to 2025-11-30) + 6 small December deltas (see D-062 and docs/es/demo_scenarios.md), `tax_regime` column (D-060), 5 powertrains calibrated with public shares (D-053). US and China not done. |
-| dbt Cloud project (`dbt_project/`) | ❌ Not started. New dbt Cloud account exists. |
-| `docs/es/business_context.md`, English docs (`docs/en/`) | ❌ Not started |
-| Power BI (`powerbi/`) | ❌ Not started |
+| Snowflake (`snowflake/01…04`), bronze loads, roles and reporting grants | ✅ Done; batch 1 and deltas loaded; DEV/PRE/PRO databases |
+| Data generator (`data/data_generator/`, Europe only) and NHTSA (`data/nhtsa/`, `prepare_recalls.py`) | ✅ Done (US/China/Japan/Korea not built) |
+| dbt Cloud project (`dbt_project/`): staging → silver (`silver_sales` incremental, `snap_dealers` SCD2) → gold (star: `fct_sales` **incremental, D-072**, `fct_campaign_line`, 6 dims) | ✅ Done, tested, deployed in DEV, PRE and PRO (jobs `PRE · build`, `PRO · build`, `PRO · full refresh fct_sales`) |
+| Decision log (D-001…D-073), defence notes, evidence 01–90 | ✅ Written |
+| Demo scripts (`demo_jueves.md`, `demo_reset.md`) | ✍️ Written; reset NOT tried yet; they do not yet include the incremental gold step or the `--full-refresh -s fct_sales` job |
+| Power BI | 🚧 **In progress, not saved yet** (see §0) |
+| Slides | ❌ To do (outline in `docs/es/slides_outline.md`, with the author's guidance: focus on decisions, solved problems, close with an AI block stressing the human value) |
+| `docs/en/` English docs | ❌ Partial/not started |
 
 Japan and Korea are **only designed on paper**, nothing is implemented for them.
 
@@ -103,3 +108,4 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 - 2026-11-24 (Claude, 00:20): Environments DONE: PRE (branch `pre`) and PRO (branch `main`) in dbt Cloud, env vars DBT_ENV_NAME / DBT_BRONZE_DB, jobs `PRE · build` and `PRO · build` (`dbt build` + docs, manual, no source freshness) both Success with the expected 78-row sale_date warn. INCIDENT: `generate_schema_name` reached develop/pre/main EMPTY and without `.sql`, so PRE/PRO built CORE_* schemas; fixed with generate_schema_name.sql, jobs rerun, old CORE_* schemas dropped (evidence 37-40). Gold written by Claude at the user's request (dim_family, dim_model, dim_tax, dim_date, dim_dealer, fct_sales + _gold.yml) and committed locally on `feature-dbt-gold`; NOT yet run in dbt (user must Fetch/Pull/Push, then `dbt build -s gold`). Next: run gold, fix errors, review gold with the user (mentor questions), PR chain, silver YAML descriptions, delta 3/6 rehearsals, real data (NHTSA), Power BI, slides.
 - 2026-11-24 (Claude, midday): GOLD DONE and deployed: sales star (dim_family, dim_model, dim_tax, dim_date, dim_dealer, fct_sales) with 2 expected warns (212 sales without dealer, 78 without tax) + recalls (real NHTSA, D-068: prepare_recalls.py -> bronze nhtsa.raw_recalls 14,603 rows / 181 campaigns -> stg_recalls -> silver_campaign_lines via macro model_to_family -> dim_component 100, fct_campaign_line 525; dim_family 23 incl. CLS without sales). PRE and PRO jobs Success (71 tests). Reporting grants (04_reporting_grants.sql) done. Evidence 41-60. docs/es/powerbi_guide.md + docs/HANDOFF_POWERBI.md written for the work PC. Pending: Power BI (afternoon, class), Wednesday: alerts with delta 6 (singular tests needed), reset script and demo script review, slides; weekly scheduled PRO job; silver column descriptions; optional net-EUR (D-049, needs exchange-rate seed).
 - 2026-11-24 (Claude, afternoon, end of home session): UC5 done (D-071: component_type_map seed + keyword rule in dim_component; 4 categories ELECTRONICS_SOFTWARE 166 / ELECTRICAL 128 / MECHANICAL 204 / MIXED_OTHER 27 lines; period 2021-2025, 2026 and 2020 out of the report). Alert tests added (price as warn, D-070). Demo script (demo_jueves.md: delta_3 incremental, delta_5 snapshot) and reset script (demo_reset.md, NOT tried yet) written. Roles doc, slide outline, README updated. FINAL PROMOTION DONE: develop, pre and main contain everything up to UC5; PRE and PRO jobs Success (evidence 78-79). Evidence up to 79. Next: Power BI at the class PC (docs/es/powerbi_guide.md), questions in docs/es/class_questions.md; Wednesday: try reset, rehearse demo, record alerts (delta 6), slides, defense questions, review gold with the author (Claude wrote it).
+- 2026-11-24 evening (Claude, class PC): `fct_sales` made incremental in gold (D-072) and promoted to DEV, PRE and PRO (full-refresh once per environment; PRO failed first without it, evidence 85); teachers' answers recorded (`class_questions.md`); D-073 `dim_date` without a package; defence §12–14; presentation guidance in `slides_outline.md`; Power BI started (see §0). Open: `D-035`/`D-037` should be marked as modified by `D-068`; CLAUDE.md/CONTRIBUTING.md still say "no `pre`" (D-038) while D-067 uses it.

@@ -9,6 +9,11 @@ Sustituye al apartado 2 de `slides_notes.md`, que se redactó antes de construir
 
 Todo lo que no ayude a esa frase se queda fuera.
 
+## Indicaciones del autor para la presentación (24/11, mandan sobre el guion)
+- **Foco:** las **decisiones** (con la alternativa que se descartó y por qué), los **problemas resueltos** (contados como historias: error, diagnóstico, solución) y **qué resuelve el proyecto** para el negocio. Menos «cómo se hace» y más «por qué se hizo así».
+- **Cierre:** termina con un **bloque de IA** que recalque el **valor humano**: qué hizo la IA (explicar, revisar, escribir parte del código) y qué hiciste tú (conocimiento del automóvil y del negocio, el grano, la clasificación de defectos, el alcance, las decisiones y la comprobación de que los números tienen sentido). Va como **último bloque**, después de aprendizajes y límites. Material: `defense_justifications.md` (apartado 11), `ai_collaboration_log.md` y `decisions_log.md`.
+- **Historias de problemas resueltos listas para contar** (con evidencia): el `generate_schema_name` vacío que creó esquemas `CORE_*` (evidencias 37-40); el gold incremental que falló en PRO por falta de `_loaded_at` y se arregló con un `--full-refresh` aparte (evidencias 85-90); las «rutas de acceso ambiguas» de Power BI (`defense_justifications.md`, apartado 14); la clasificación de defectos corregida tras ver que eléctrico no es electrónico (apartado 9).
+
 ## Guion
 
 | # | Diapositiva | Min | Qué dice | Qué se ve (prueba) |

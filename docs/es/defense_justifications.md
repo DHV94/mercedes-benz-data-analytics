@@ -117,3 +117,21 @@ Es la pregunta que enlaza los dos casos:
 
 **Mensaje:** la IA aceleró la escritura; el criterio, el alcance y la comprobación de que los números tienen sentido fueron míos. Un proyecto de datos sin conocimiento del negocio da números correctos que no significan nada.
 
+## 12. Por qué `dim_date` no usa un paquete (D-073)
+- **Pregunta probable:** «¿No hay un paquete de dbt para generar la dimensión de fechas?»
+- **Respuesta:** sí: `dbt_utils.date_spine` (genera la secuencia de días) y `dbt_date` (con atributos de calendario). Yo la generé con el `generator()` nativo de Snowflake: son pocas líneas, se entienden enteras y no añaden dependencias. Cubre 2020–2027 (2.922 días) con una fila `-1` «Unknown» para ventas sin fecha válida.
+- **Límite que reconozco:** el rango y los atributos son manuales (no hay día de la semana ni semana del año). Si hiciera falta más, pasaría a `date_spine` o `dbt_date`.
+- **Mensaje:** conozco la alternativa estándar y elegí la opción más simple para el tamaño del proyecto, sabiendo lo que se pierde.
+
+## 13. Dos fechas en `fct_sales` y una sola `dim_date` (Power BI)
+- **Pregunta probable:** «Tienes fecha de venta y fecha de entrega. ¿No hay que duplicar la dimensión de fecha?»
+- **Respuesta (confirmada por los profesores):** en el modelado se queda **una sola** `dim_date`, con dos claves en el hecho. En Power BI solo una relación puede estar activa entre dos tablas (la de la fecha de venta); la de entrega queda **inactiva** y se usa dentro de una medida con `USERELATIONSHIP` (`Unidades entregadas`).
+- **Cuándo sí se duplicaría (solo en Power BI):** si hiciera falta que **ambas fechas filtraran a la vez** (por ejemplo, un segmentador de año de venta y otro de año de entrega). No hace falta para UC1–UC4, que se analizan por fecha de venta.
+- **Por qué no se duplica en el modelo:** una copia más de la dimensión no aporta nada al dato y añade otra tabla y otra relación que mantener.
+- **Mensaje:** una dimensión puede jugar varios papeles (*role-playing*); se resuelve con una relación inactiva y una medida, no copiando tablas.
+
+## 14. «Rutas de acceso ambiguas» en Power BI: por qué `dim_family` va directa a los hechos (D-059)
+- **Qué pasó:** al cargar el modelo, Power BI creó solo una relación `dim_family` → `dim_model` (por tener ambas la columna `family_id`). Eso dejó **dos caminos** entre `fct_sales` y `dim_family` (`fct_sales → dim_model → dim_family` y `fct_sales → dim_family`), y Power BI **desactivó** una relación para evitar la ambigüedad (la de `dim_model → fct_sales`), con el error «Hay rutas de acceso ambiguas».
+- **Cómo se resolvió:** se eliminó la relación automática `dim_family` → `dim_model`, que no forma parte del diseño, y se reactivó `dim_model` → `fct_sales`. Las 9 relaciones del modelo quedan, todas de uno a varios con filtro único de dimensión a hecho.
+- **Por qué es así (D-059):** `dim_family` se enlaza **directamente** con los dos hechos, porque es la dimensión compartida: un mismo selector de familia filtra ventas y defectos. Si pasara por `dim_model`, los defectos (que solo conocen la familia, no la variante) no podrían usarla. Por eso en los informes se usa siempre `family_name` de `dim_family`, no la copia que trae `dim_model` como atributo.
+- **Mensaje:** una estrella limpia no tiene dos caminos entre dos tablas. Power BI lo detecta y lo avisa; el diseño ya lo evitaba y solo hubo que quitar una relación que la herramienta había añadido por su cuenta.

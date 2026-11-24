@@ -86,5 +86,14 @@
 | 79 | `dbt/79_dbt_pro_job_success_with_uc5.png` | Job `PRO · build` en Success con UC5 (rama `main`, commit 9a62758): el gold que lee Power BI | 2026-11-24 |
 | 80 | `dbt/80_dbt_fct_sales_incremental_full_refresh_44382.png` | `fct_sales` ahora incremental en gold (D-072): `dbt build --full-refresh -s fct_sales` carga 44.382 filas (rama `feature-gold-incremental`) | 2026-11-24 |
 | 81 | `dbt/81_dbt_fct_sales_incremental_rerun_0_rows.png` | Segunda ejecución sin `--full-refresh`: `fct_sales` procesa **0 filas** (no hay lotes nuevos); los 3 avisos esperados siguen siendo avisos | 2026-11-24 |
+| 82 | `dbt/82_dbt_pre_full_refresh_fct_sales_44382.png` | Job `PRE · build` con `--full-refresh -s fct_sales` (una sola vez): `PRE_MB_GOLD_DB.sales.fct_sales` se crea incremental con 44.382 filas | 2026-11-24 |
+| 83 | `dbt/83_dbt_pre_silver_sales_incremental_0_rows.png` | `PRE · build` ya con el comando normal: `silver_sales` incremental procesa 0 filas (no hay lotes nuevos) | 2026-11-24 |
+| 84 | `dbt/84_dbt_pre_job_success_after_full_refresh.png` | Run de `PRE · build` en Success tras restaurar el comando normal (rama `pre`, commit 654c852) | 2026-11-24 |
+| 85 | `dbt/85_dbt_pro_fct_sales_error_missing_loaded_at.png` | **Error real, útil para contar:** `PRO · build` sin `--full-refresh` falla en `fct_sales` (`correlated aggregate function MAX(_LOADED_AT)`), porque la tabla de PRO aún no tenía la columna `_loaded_at` | 2026-11-24 |
+| 86 | `dbt/86_snowflake_pro_fct_sales_no_loaded_at_column.png` | Diagnóstico en Snowflake: `PRO_MB_GOLD_DB.SALES.FCT_SALES` no tiene la columna `_loaded_at` (el `--full-refresh` anterior no la había reconstruido) | 2026-11-24 |
+| 87 | `dbt/87_dbt_pro_full_refresh_job_fct_sales_44382.png` | Job aparte `PRO · full refresh fct_sales` (`dbt build --full-refresh -s fct_sales`): `fct_sales` de PRO creada incremental con 44.382 filas | 2026-11-24 |
+| 88 | `dbt/88_snowflake_pro_fct_sales_44382_with_loaded_at.png` | Snowflake: `fct_sales` de PRO ya tiene `_loaded_at`: 44.382 filas | 2026-11-24 |
+| 89 | `dbt/89_dbt_pro_fct_sales_incremental_0_rows.png` | `PRO · build` con el comando normal: `fct_sales` incremental procesa 0 filas | 2026-11-24 |
+| 90 | `dbt/90_dbt_pro_job_success_incremental_gold.png` | Run de `PRO · build` en Success (rama `main`, commit 472a6404) con el gold de ventas incremental: lo que lee Power BI | 2026-11-24 |
 
 Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (80 en adelante).
