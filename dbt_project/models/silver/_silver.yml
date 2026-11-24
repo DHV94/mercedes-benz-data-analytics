@@ -28,7 +28,7 @@ models:
 
 
   - name: silver_campaign_lines
-    description: "Una fila por línea de campaña: campaña, familia, año modelo y componente. Los modelos que no vendemos (Sprinter, Metris, CLS...) quedan fuera."
+    description: "Una fila por línea de campaña: campaña, familia, año modelo y componente. Las furgonetas y autobuses (Sprinter, Metris, Tourrider) quedan fuera; el CLS se queda."
     columns:
       - name: campaign_number
         description: "Número de campaña de NHTSA."
@@ -40,7 +40,7 @@ models:
           - not_null
           - accepted_values:
               arguments:
-                values: ['A-Class', 'AMG GT', 'B-Class', 'C-Class', 'CLA', 'CLE', 'E-Class', 'EQA', 'EQB', 'EQC', 'EQE', 'EQE SUV', 'EQS', 'EQS SUV', 'G-Class', 'GLA', 'GLB', 'GLC', 'GLE', 'GLS', 'S-Class', 'SL']
+                values: ['A-Class', 'AMG GT', 'B-Class', 'C-Class', 'CLA', 'CLE', 'CLS', 'E-Class', 'EQA', 'EQB', 'EQC', 'EQE', 'EQE SUV', 'EQS', 'EQS SUV', 'G-Class', 'GLA', 'GLB', 'GLC', 'GLE', 'GLS', 'S-Class', 'SL']
       - name: model_year
         description: "Año modelo afectado."
         data_tests:

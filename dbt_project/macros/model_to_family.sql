@@ -1,7 +1,8 @@
 {#
   Translates the model text of a NHTSA recall (GLE 450, S 580 4MATIC, EQS SUV 450+...) to one of the
-  22 families of our catalog (A-Class, C-Class, GLE, EQS SUV...). Returns NULL when the model is not in our
-  catalog (Sprinter, Metris, CLS...): those vehicles are never sold in our data.
+  22 families of our catalog (A-Class, C-Class, GLE, EQS SUV...) plus CLS, which only appears in recalls.
+  Returns NULL for vans and buses (Sprinter, Metris, Tourrider), which are left out. CLS is a car and is kept: it has recalls but no sales in our simulated
+  catalog (see dim_family).
 
   Pass a column that is already cleaned (upper case, without the prefixes AMG / MAYBACH / REDUNDANT).
   Order matters: the longer names (EQS SUV) must be tested before the shorter ones (EQS).
@@ -23,6 +24,7 @@
         when regexp_like({{ column }}, '^GLS.*')     then 'GLS'
         when regexp_like({{ column }}, '^CLA.*')     then 'CLA'
         when regexp_like({{ column }}, '^CLE.*')     then 'CLE'
+        when regexp_like({{ column }}, '^CLS.*')     then 'CLS'
         when regexp_like({{ column }}, '^GT.*')      then 'AMG GT'
         when regexp_like({{ column }}, '^SL ?[0-9].*') then 'SL'
         when regexp_like({{ column }}, '^S ?[0-9].*')  then 'S-Class'
