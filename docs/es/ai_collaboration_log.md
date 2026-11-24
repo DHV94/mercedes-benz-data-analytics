@@ -14,6 +14,7 @@ Una compactación ocurre cuando la conversación es demasiado larga: el contexto
 |---|---|---|---|
 | 2026-11-22 | Modelado, Snowflake y generador | Primera compactación anotada en este registro (al menos una antes de empezar el registro) | Resumen + lectura de `SESSION_NOTES.md`, `decisions_log.md` y `defense_justifications.md` |
 | 2026-11-22 | Conexión dbt Cloud y esqueleto dbt | Segunda compactación (tras cargar bronce y conectar dbt Cloud) | Resumen + transcripción de la sesión; el estado real se comprobó en el repo (git status, carpetas) antes de seguir |
+| 2026-11-24 | Entornos PRE/PRO, jobs y gold | Tercera compactación (tras silver, snapshot y entornos) | Resumen + transcripción; el estado real se comprobó en el repo y en GitHub (descubrió el macro de esquemas vacío) |
 
 ## Ideas para mencionar en la presentación
 - La IA como asistente que explica y revisa, no como sustituto: el usuario defiende cada pieza.
