@@ -72,5 +72,8 @@
 | 65 | `snowflake/65_snowflake_net_eur_average_by_currency.png` | Control de cordura del neto en EUR por moneda: EUR 31.949 ventas (media 52.386), GBP 9.561 (52.805) y CHF 2.872 (58.482); suman 44.382 | 2026-11-24 |
 | 66 | `dbt/66_dbt_pre_job_success_with_net_eur.png` | Job `PRE · build` en Success tras la segunda promoción (neto en EUR y descripciones de silver) | 2026-11-24 |
 | 67 | `dbt/67_dbt_pro_job_success_with_net_eur.png` | Job `PRO · build` en Success con el neto en EUR: es el gold que lee Power BI | 2026-11-24 |
+| 68 | `snowflake/68_snowflake_reporting_role_reads_pro_fct_sales.png` | Con `MB_REPORTING_ROLE` se lee `PRO_MB_GOLD_DB.SALES.FCT_SALES`: 44.382 ventas y 2.342.399.904 EUR de neto en total | 2026-11-24 |
+| 69 | `snowflake/69_snowflake_reporting_role_reads_pro_campaign_lines.png` | Con `MB_REPORTING_ROLE` se lee `FCT_CAMPAIGN_LINE` de PRO: 525 líneas (Power BI podrá conectarse) | 2026-11-24 |
+| 70 | `dbt/70_dbt_test_price_positive_fails_124_rows_d10.png` | El test de precio positivo falla con 124 filas en los datos normales: es el defecto D10 (precio cero o negativo, ~0,3 %), que ya viene en el generador | 2026-11-24 |
 
-Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (68 en adelante).
+Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (71 en adelante).
