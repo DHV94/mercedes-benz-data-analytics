@@ -1,5 +1,7 @@
 # Guion de la demo en directo
 
+> **Guion definitivo para el jueves: `docs/es/demo_jueves.md`** (con el `delta_3` y el `delta_5`). Este archivo se conserva como referencia de los pasos sueltos de cada delta. Para reiniciar el estado: `docs/es/demo_reset.md`.
+
 > **ANTES DE EMPEZAR cualquier demo: iniciar la grabación de pantalla (Win + Alt + R).** Si se lee el guion paso a paso, cuando se llega al final ya se ha hecho sin grabar.
 
 Contiene dos demos: **A) incremental** (ventas) y **B) snapshot** (concesionarios).

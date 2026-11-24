@@ -81,6 +81,11 @@ CALCULATE([Unidades vendidas], USERELATIONSHIP(dim_date[date_id], fct_sales[deli
 Campañas = DISTINCTCOUNT(fct_campaign_line[campaign_id])
 
 Líneas de campaña = COUNTROWS(fct_campaign_line)
+
+Líneas electrónica y software =
+CALCULATE([Líneas de campaña], dim_component[component_category] = "ELECTRONICS_SOFTWARE")
+
+% electrónica y software = DIVIDE([Líneas electrónica y software], [Líneas de campaña])
 ```
 
 **Importes:** `price_local` está en **tres monedas** (EUR, GBP, CHF): **no lo sumes entre países**. Para ingresos totales usa `price_net_eur` (precio sin impuestos en euros, con el tipo de cambio mensual del seed `fx_rates`, valores simulados). Solo se cuentan las ventas en estado `SOLD`. Las ventas sin fecha válida (78) no tienen tipo de cambio y quedan sin neto en EUR: es un aviso de dbt esperado.
@@ -100,6 +105,8 @@ Líneas de campaña = COUNTROWS(fct_campaign_line)
 - Tarjetas: Campañas, Líneas de campaña.
 - Barras: Líneas de campaña por `dim_family[family_name]`.
 - Barras: por `dim_component[component_type]`.
+- **Periodo de UC5 y de las campañas: 2021 a 2025** (D-071). Pon en la página un filtro `dim_date[year]` entre 2021 y 2025 y deja fuera 2020 y 2026: 2026 llega solo hasta el 2/10 y es parcial. Dilo en una nota del gráfico.
+- **UC5 (la pregunta del proyecto):** columnas apiladas de líneas de campaña por año (`dim_date[year]`) con la leyenda `dim_component[component_category]` (electrónica y software, eléctrico, mecánico y mixto/otros), y la tarjeta `% electrónica y software`.
 - Línea: campañas por año (`dim_date[year]`).
 - Segmentación: familia (`dim_family`). Como la familia es compartida, la misma segmentación puede filtrar ventas y campañas.
 
@@ -119,6 +126,8 @@ Líneas de campaña = COUNTROWS(fct_campaign_line)
 | `fct_campaign_line` filas | 525 |
 | Campañas distintas | 141 |
 | Componentes | 100 |
+| Líneas por categoría | ELECTRONICS_SOFTWARE 166 · ELECTRICAL 128 · MECHANICAL 204 · MIXED_OTHER 27 |
+| Campañas por categoría (se solapan: una campaña puede tener de las dos) | 34 · 41 · 66 · 14 |
 | Familias en `dim_family` | 23 (el CLS tiene defectos y ninguna venta) |
 
 Si has cargado más deltas, las ventas serán más; consulta `docs/es/live_demo_script.md`.

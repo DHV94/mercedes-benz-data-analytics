@@ -75,3 +75,11 @@ seeds:
       - name: rate_to_eur
         description: "Euros que vale una unidad de la moneda en ese mes. El euro vale 1."
 
+  - name: component_type_map
+    description: "Clasifica cada sistema defectuoso de NHTSA (27) en ELECTRONICS_SOFTWARE, ELECTRICAL, MECHANICAL o MIXED_OTHER, para responder si las campañas son de electrónica y software o mecánicas (UC5). Clasificación simplificada del autor (D-071)."
+    columns:
+      - name: component_type
+        description: "Sistema principal tal como lo escribe NHTSA (primera parte del componente, antes de los dos puntos)."
+      - name: component_category
+        description: "ELECTRONICS_SOFTWARE (comunicación, cámaras y sensores, control electrónico), ELECTRICAL (sistema eléctrico e iluminación; el modelo reclasifica a electrónica y software los componentes cuyo nombre dice SOFTWARE, cuadro de instrumentos, ADAS o módulo de control), MECHANICAL (motor, frenos, dirección, estructura...) o MIXED_OTHER (airbags, equipamiento y asientos infantiles)."
+
