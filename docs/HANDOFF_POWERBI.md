@@ -23,7 +23,9 @@ Qué hacer hoy, en orden:
 4. Montar las páginas: Ventas, Defectos (campañas NHTSA) y, si hay tiempo, Calidad del dato.
 5. Hacer capturas de cada página para las diapositivas y guardar el .pbix en mi Drive.
 
-Cifras de control (deben coincidir): fct_sales 44.382 filas (tras el delta 2), 78 con sale_date_id = -1, 212 sin dealer_id, 78 sin tax_id; fct_campaign_line 525 líneas y 141 campañas; dim_component 100; dim_family 23.
+Novedades: dim_component tiene component_category (ELECTRONICS_SOFTWARE, ELECTRICAL, MECHANICAL, MIXED_OTHER) para UC5 (campañas de electrónica y software frente a mecánicas); el periodo del informe es 2021 a 2025 (2026 y 2020 son parciales: filtrarlos); fct_sales tiene price_net_eur para sumar ingresos en euros. Todo está ya en main y desplegado en PRO.
+
+Cifras de control (deben coincidir): fct_sales 44.382 filas (tras el delta 2), 78 con sale_date_id = -1, 212 sin dealer_id, 78 sin tax_id; fct_campaign_line 525 líneas y 141 campañas; dim_component 100 (líneas por categoría: 204 mecánico, 166 electrónica y software, 128 eléctrico, 27 mixto); dim_family 23.
 ```
 
 ## Preguntas para clase
