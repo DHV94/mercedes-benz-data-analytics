@@ -208,6 +208,14 @@ models:
         data_tests: [not_null]
       - name: component_type
         description: "Sistema principal (SEAT BELTS, ELECTRICAL SYSTEM, AIR BAGS...)."
+      - name: component_category
+        description: "Categoría para el caso de uso UC5: ELECTRONICS_SOFTWARE, ELECTRICAL, MECHANICAL o MIXED_OTHER. Primero mandan las palabras del nombre (SOFTWARE, cuadro de instrumentos, ADAS, módulo de control) y después el seed component_type_map por sistema. UNCLASSIFIED si el sistema no está en el seed."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['ELECTRONICS_SOFTWARE', 'ELECTRICAL', 'MECHANICAL', 'MIXED_OTHER']
+              config:
+                severity: warn
 
   - name: fct_campaign_line
     description: "Una fila por línea de campaña de defectos (campaña + familia + año modelo + componente). Comparte dim_family con fct_sales."
