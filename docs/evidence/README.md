@@ -96,5 +96,6 @@
 | 89 | `dbt/89_dbt_pro_fct_sales_incremental_0_rows.png` | `PRO · build` con el comando normal: `fct_sales` incremental procesa 0 filas | 2026-11-24 |
 | 90 | `dbt/90_dbt_pro_job_success_incremental_gold.png` | Run de `PRO · build` en Success (rama `main`, commit 472a6404) con el gold de ventas incremental: lo que lee Power BI | 2026-11-24 |
 | 91 | `powerbi/91_powerbi_uc1_map_and_bars_first_version.png` | Primera versión del informe de Power BI en casa: mapa y barras de unidades vendidas por país (UC1); el grupo «(En blanco)» son las ventas sin concesionario en el maestro | 2026-11-24 |
+| 92 | `powerbi/92_powerbi_uc1_units_sold_by_family_top6.png` | UC1 en Power BI: unidades vendidas por familia y año (6 principales), 2021-2025, con líneas rectas, marcadores y colores distintos | 2026-11-24 |
 
 Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (80 en adelante).
