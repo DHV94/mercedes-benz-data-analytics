@@ -76,8 +76,8 @@ Detalle en `defense_justifications.md` y `roles_permissions.md`. Las seis más p
 | # | Diapositiva | Min | Contenido |
 |---|---|---|---|
 | 1 | Motivación | 1:00 | Por qué este trabajo |
-| 2 | Casos de uso | 1:00 | Dos descartados (predicción de modelo nuevo por región; pentesting y ciberseguridad del coche) y las preguntas finales: familias por región, carrocería, propulsión, campañas mecánicas frente a electrónica/software |
-| 3 | Datos y arquitectura | 1:15 | Ventas **simuladas** y campañas **reales** (NHTSA, EE. UU.); medallion |
+| 2 | Casos de uso | 1:00 | Dos descartados (predicción de modelo nuevo por región; pentesting y ciberseguridad del coche) y las cinco preguntas finales: UC1 familias, UC2 carrocería, UC3 propulsión, UC4 top 3 modelos por país en 2025, UC5 campañas mecánicas frente a electrónica/software |
+| 3 | Datos y arquitectura | 1:00 | Ventas **simuladas** y campañas **reales** (NHTSA, EE. UU.); medallion |
 | 4 | Modelos | 1:45 | **Conceptual → lógico → dimensional**, con sus versiones. La decisión estrella frente a copo de nieve es del **dimensional**. Mucho tiempo y atención |
 | 5 | Demo en directo | 3:00 | Tabla incremental y snapshot (`demo_jueves.md`) |
 | 6 | Calidad y alertas | 0:45 | Tests, avisos con filas guardadas |
@@ -85,6 +85,23 @@ Detalle en `defense_justifications.md` y `roles_permissions.md`. Las seis más p
 | 8 | Entornos, ramas y jobs | 1:00 | DEV, PRE, PRO; PR; job semanal |
 | 9 | Ciberseguridad | 0:30 | Roles de mínimo privilegio, lectura para Power BI, clave para dbt, sin secretos en el repositorio |
 | 10 | Mejoras | 0:30 | Bronce crudo de campañas, más regiones, ingesta automática, usuarios de servicio |
-| 11 | IA y mi aportación | 0:45 | Qué hizo la IA y qué decidí yo |
+| 11 | Toma de decisiones, IA y mi aportación | 1:00 | **Cómo decidí y cómo lo registré** (`decisions_log.md`: contexto, opciones, decisión y porqué; incluye lo descartado y lo que cambió, p. ej. D-072 tras consultar al profesorado). Qué hizo la IA y qué decidí yo. Captura del registro |
 
-Total: **13:00**. Las «decisiones tomadas» no van en una diapositiva aparte: una decisión con su alternativa descartada en cada diapositiva.
+Total: **13:00**. En cada diapositiva, una decisión con su alternativa descartada; en la 11, el **método**: el registro de decisiones.
+
+**Control del tiempo (25/11):** los 2 minutos de margen no se planifican, y a partir del minuto 10 puede haber presión para terminar. Por eso la demo y los resultados deben estar contados hacia el minuto 10 (si hace falta, modelos en 1:30). Si aprietan: diapositivas 8, 9 y 10 en una frase cada una (1:00 en total) y la 11 (decisiones, IA y mi aportación) se mantiene.
+
+### Cómo contar UC5 (diapositiva 7)
+- «Esta clasificación es mía: NHTSA solo indica el sistema afectado.»
+- «Eléctrico no es electrónico, y por eso van separados. La iluminación es eléctrica salvo que el componente diga software o módulo de control. Lo ambiguo, como los airbags, va a una categoría mixta.»
+- «Lo mecánico lidera de 2021 a 2024; en 2025 lo supera lo eléctrico.» 2025 no es comparable sin más: solo hay modelos hasta 2025 y los recientes han tenido menos tiempo para acumular campañas.
+- Si preguntan por modelo o familia: «el modelo lo permite; es una mejora del informe» (D-077).
+
+### Mejoras: métricas que podríamos mostrar (diapositiva 10)
+Salen del gold actual, sin cambiar dbt:
+- Ingresos netos en euros y precio medio neto por país y familia (con tipos de cambio simulados).
+- Porcentaje de devoluciones y cancelaciones.
+- Días entre la venta y la entrega.
+- Ranking de concesionarios (contando por `dealer_code`, no por versión).
+- Campañas por familia, junto a las unidades vendidas, **sin ratio** (EE. UU. frente a Europa).
+- Unidades afectadas por campaña (una vez por campaña, nunca sumando líneas).
