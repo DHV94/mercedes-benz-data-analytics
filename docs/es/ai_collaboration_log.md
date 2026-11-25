@@ -6,6 +6,7 @@
 - Claude **guía y explica**; el usuario construye y decide. Las decisiones de proyecto son del usuario y se registran en `docs/es/decisions_log.md`.
 - Claude escribe plantillas y el generador de datos (con explicación). Los commits locales los puede crear Claude tras explicarlos; push, PR y merge son siempre del usuario.
 - A partir del 24/11, por falta de tiempo, el usuario pidió a Claude que escribiera además partes concretas: los modelos gold, la carga de campañas de NHTSA, tests, la clasificación de UC5 (con las correcciones del usuario) y buena parte de la documentación. El usuario las revisa y las defiende.
+- En las diapositivas, el estilo se trabajó con ChatGPT y Claude montó, a petición del usuario, la primera versión completa a partir del guion y de las capturas del repositorio; el usuario la revisa y la usa como guía.
 - Las preguntas de defensa y las decisiones descartadas se documentan para poder justificarlas en voz alta.
 
 ## Compactaciones de contexto

@@ -3,29 +3,29 @@
 > **Rule: whoever works on the project (Claude, ChatGPT or the user) updates this file before the last commit of every work session.** It must always reflect the real state of the repo, so any session can resume from it alone.
 > Read order for a new session: `CLAUDE.md` → this file → `docs/PROJECT_CONTEXT.md` → `docs/es/decisions_log.md` → (when relevant) `docs/es/source_design.md`.
 
-- **Last updated:** 2026-11-24, evening, class PC (Power BI session; by Claude, Sonnet 5.5)
+- **Last updated:** 2026-11-26 00:20, home (by Claude, Sonnet 5.5)
 - **Copy-paste prompt to start any new session:** `docs/HANDOFF_PROMPT.md`
 - **Branch of reference:** `develop`. Flow `feature-*` → `develop` → `pre` → `main` (**D-067 reversed the "no `pre`" of D-038**: `pre` is the branch of the PRE environment in dbt Cloud; `main` is PRO; there is no `pro` branch).
 - Slide notes: `docs/es/slides_notes.md` (script, evidence checklist, questions for the teachers).
 
-## 0. Right now (2026-11-24 evening, Power BI at the class PC)
-- Connected to `PRO_MB_GOLD_DB.SALES` with `MB_REPORTING_ROLE`; 8 tables imported; 9 relations OK (delivery date inactive on purpose; the automatic `dim_family`–`dim_model` relation was removed, see defence §14); `MONTH_NAME` sorted by `MONTH`; date table NOT marked (the `-1` row has a null date, defence §15 to write).
-- Measures created (English names, table `Medidas`): `Units sold`, `Recorded sales`, `Returns and cancellations`. **Pending:** the 4 UC5 measures (`Campaign lines`, `Campaigns`, `Electronics and software lines`, `% electronics and software`).
-- Report: page UC1 with a map + chart. Plan: duplicate the page for UC2, UC3, UC4 (map as selector, top 3 filter and year 2025 in UC4) and a UC5 page. Report in English.
-- **The `.pbix` is NOT in the repo** (it carries the connection data). It lives in the author's Drive; export to PDF/screenshots into `docs/evidence/` instead.
-- **Before presenting:** promote the docs commits `feature-gold-incremental` → `develop` → `pre` → `main` by PR (docs only, no job rerun needed). Wednesday: try `demo_reset.md`, add the gold step to the demo script, write defence §15, slides.
+## 0. Right now (2026-11-26 00:20, presentation day)
+- Power BI finished (UC1–UC5) and saved in `powerbi/mb.pbix`.
+- Slides: first full version `Proyecto_final_V5.pptx` (20 slides, speaker notes adding up to 12:00), kept in the author's Downloads folder, NOT in the repo. Built by Claude at the author's request on the style made with ChatGPT; rendered only with LibreOffice, not yet checked in Google Slides. The author reviews it and uses it as a guide.
+- Branch `feature-presentation`: local commits to push.
+- **Thursday morning, in this order:** (1) review the slides; (2) push, PRs `feature-presentation` -> `develop` -> `pre` -> `main`, optionally `PRO · build` to refresh the docs, ONLY BEFORE any demo file is loaded (bronze is shared); (3) demo: check the starting state (45,051 / 44,382 / 256 / 131-128), files for delta 3 and delta 5 ready, backup recording; do NOT load them in rehearsals; (4) timed rehearsal and gold review; (5) before making the repo public: review the screenshots in `docs/evidence`, check Snowflake MFA (login e-mail and server name become visible); (6) share repo link and slides BEFORE presenting.
+- Delta 6 and the demo reset are out (D-078); the delta 6 alert tests were never proven.
 
-## 1. Real state of the repo (updated 2026-11-24 evening; sections 2–5 below are partly historical from 2026-11-20, the session log §6 is the up-to-date story)
+## 1. Real state of the repo (updated 2026-11-26 00:20; sections 2–5 below are partly historical from 2026-11-20, the session log §6 is the up-to-date story)
 
 | Area | State |
 |---|---|
 | Snowflake (`snowflake/01…04`), bronze loads, roles and reporting grants | ✅ Done; batch 1 and deltas loaded; DEV/PRE/PRO databases |
 | Data generator (`data/data_generator/`, Europe only) and NHTSA (`data/nhtsa/`, `prepare_recalls.py`) | ✅ Done (US/China/Japan/Korea not built) |
 | dbt Cloud project (`dbt_project/`): staging → silver (`silver_sales` incremental, `snap_dealers` SCD2) → gold (star: `fct_sales` **incremental, D-072**, `fct_campaign_line`, 6 dims) | ✅ Done, tested, deployed in DEV, PRE and PRO (jobs `PRE · build`, `PRO · build`, `PRO · full refresh fct_sales`) |
-| Decision log (D-001…D-073), defence notes, evidence 01–90 | ✅ Written |
-| Demo scripts (`demo_jueves.md`, `demo_reset.md`) | ✍️ Written; reset NOT tried yet; they do not yet include the incremental gold step or the `--full-refresh -s fct_sales` job |
-| Power BI | 🚧 **In progress, not saved yet** (see §0) |
-| Slides | ❌ To do (outline in `docs/es/slides_outline.md`, with the author's guidance: focus on decisions, solved problems, close with an AI block stressing the human value) |
+| Decision log (D-001…D-078), defence notes, evidence 01–98 | ✅ Written |
+| Demo scripts (`demo_jueves.md`: delta 3 incremental, delta 5 snapshot) | ✍️ Written; to rehearse. `demo_reset.md` NOT tried and not planned |
+| Power BI (`powerbi/mb.pbix`) | ✅ Done (UC1–UC5) |
+| Slides | 🚧 V5 outside the repo, pending the author's review (script in `docs/es/slides_outline.md`) |
 | `docs/en/` English docs | ❌ Partial/not started |
 
 Japan and Korea are **only designed on paper**, nothing is implemented for them.
@@ -60,12 +60,7 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 - **Thu 26: user presents, 3rd turn** (10–15 min). Needs repo + slides submitted before presenting. Extras: dog meme (if natural), miniature Mercedes car.
 
 ## 5. Next actions (in order)
-1. Dimensional model closed and understood by the user (grain, facts, dimensions, keys).
-2. Run/verify Snowflake setup; stage + file format + bronze table for **one** source (suggested: Europe).
-3. Small generator with reproducible batches for that source.
-4. dbt Cloud project: sources → staging → silver (incremental) → gold; tests; snapshot on dealers.
-5. Idempotency demo (run twice) and second batch; SQL counts. **This is the base of the live demo** (D-031, open point 7).
-6. Power BI; documentation; slides.
+See §0 (the list for Thursday morning).
 
 ## 6. Session log (append one line per session)
 - 2026-11-17/19 (Claude): scope, repo, hook, docs, Snowflake script, decision log.
@@ -118,3 +113,4 @@ Japan and Korea are **only designed on paper**, nothing is implemented for them.
 - 2026-11-25 ~14:30 (Claude): POWER BI DONE (`powerbi/mb.pbix`): map page, UC1 families, UC2 body type (note on convertibles), UC3 powertrain (legend), UC4 top 3 MODELS by country 2025 (D-076), UC5 recall campaigns by year and category (legend, no family filter, D-077); evidence up to 96. D-075 (UC numbering kept). Slide script updated (decision log on slide 11, time control, how to tell UC5, future metrics). Power BI crashed once with no autorecovery: save often. Open: author starts the slides (in order) tonight; delta 6 / demo reset decision still unanswered; docs and pbix promoted today up to `pre`, then one last promotion to `main` once the final docs are in (no dbt/Snowflake code differs between the branches).
 - 2026-11-25 ~14:30 (Claude, session closed until tonight): added to the slide script the naming criteria (English, prefixes, branches, commits; slide 8) and the Power BI visual improvement (corporate colours, left out for time). TONIGHT: author works on the slides in order; confirm the push and PRs up to `pre`; answer the delta 6 / demo reset question (recommendation: skip). THURSDAY: slides, rehearsals (demo and full, results told by minute 10), gold review, last promotion to `main`, delivery, checklist.
 - 2026-11-25 ~22:55 (Claude, home): branch `feature-presentation`. Slide script now 12:00 with a short demo and a governance slide (D-078); dimensional v9 matches the built gold (white background); public-repo cleanup of personal wording; D-035/D-037/D-038 marked as modified; `_loaded_at` described (not yet run in dbt). Text scan of the history found no keys or passwords. PENDING before going public: review the screenshots in `docs/evidence`, check Snowflake MFA (login e-mail and server name become visible), promote to `main` and run `PRO · build` for the docs. THEN: slides, lineage and column captures, demo and full rehearsal, gold review, delivery.
+- 2026-11-26 00:20 (Claude, session closed): conceptual v4 and logical v15 on white background; lineage evidence 97-98; presentation V5 built (20 slides) with captures from the repo; the dealer warning (212) only warns, stored rows exist for the 78 dates and 124 prices. Author continues in the morning: review slides, demo, publish.
