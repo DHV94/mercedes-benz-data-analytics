@@ -82,7 +82,7 @@ Detalle en `defense_justifications.md` y `roles_permissions.md`. Las seis más p
 | 5 | Demo en directo | 3:00 | Tabla incremental y snapshot (`demo_jueves.md`) |
 | 6 | Calidad y alertas | 0:45 | Tests, avisos con filas guardadas |
 | 7 | Resultados en Power BI | 1:30 | La respuesta a cada pregunta |
-| 8 | Entornos, ramas y jobs | 1:00 | DEV, PRE, PRO; PR; job semanal |
+| 8 | Entornos, ramas y jobs | 1:00 | DEV, PRE, PRO; PR; job semanal. **Criterios de nombres** (ver abajo): no olvidar |
 | 9 | Ciberseguridad | 0:30 | Roles de mínimo privilegio, lectura para Power BI, clave para dbt, sin secretos en el repositorio |
 | 10 | Mejoras | 0:30 | Bronce crudo de campañas, más regiones, ingesta automática, usuarios de servicio |
 | 11 | Toma de decisiones, IA y mi aportación | 1:00 | **Cómo decidí y cómo lo registré** (`decisions_log.md`: contexto, opciones, decisión y porqué; incluye lo descartado y lo que cambió, p. ej. D-072 tras consultar al profesorado). Qué hizo la IA y qué decidí yo. Captura del registro |
@@ -105,3 +105,10 @@ Salen del gold actual, sin cambiar dbt:
 - Ranking de concesionarios (contando por `dealer_code`, no por versión).
 - Campañas por familia, junto a las unidades vendidas, **sin ratio** (EE. UU. frente a Europa).
 - Unidades afectadas por campaña (una vez por campaña, nunca sumando líneas).
+
+**Mejora visual:** aplicar los colores corporativos al informe y un mismo color por concepto entre gráficos. Se puede hacer; no se hizo por tiempo.
+
+### Criterios de nombres (diapositiva 8, no olvidar)
+- **Inglés** en código, columnas, modelos, ramas, commits y pull requests: se simula un equipo internacional. Documentación en español e inglés (`defense_justifications.md`, apartado 10).
+- Prefijos que dicen la capa o el tipo: `stg_`, `silver_`, `snap_`, `dim_`, `fct_`; bases `{DEV|PRE|PRO}_MB_{capa}_DB`; roles `..._ROLE`.
+- Ramas `feature-<tema>` y commits en formato *Conventional Commits* (`feat`, `docs`, `release`...).
