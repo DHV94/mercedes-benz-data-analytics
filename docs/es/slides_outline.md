@@ -9,6 +9,11 @@ Sustituye al apartado 2 de `slides_notes.md`, que se redactó antes de construir
 
 Todo lo que no ayude a esa frase se queda fuera.
 
+## Indicaciones del autor para la presentación (24/11, mandan sobre el guion)
+- **Foco:** las **decisiones** (con la alternativa que se descartó y por qué), los **problemas resueltos** (contados como historias: error, diagnóstico, solución) y **qué resuelve el proyecto** para el negocio. Menos «cómo se hace» y más «por qué se hizo así».
+- **Cierre:** termina con un **bloque de IA** que recalque el **valor humano**: qué hizo la IA (explicar, revisar, escribir parte del código) y qué hiciste tú (conocimiento del automóvil y del negocio, el grano, la clasificación de defectos, el alcance, las decisiones y la comprobación de que los números tienen sentido). Va como **último bloque**, después de aprendizajes y límites. Material: `defense_justifications.md` (apartado 11), `ai_collaboration_log.md` y `decisions_log.md`.
+- **Historias de problemas resueltos listas para contar** (con evidencia): el `generate_schema_name` vacío que creó esquemas `CORE_*` (evidencias 37-40); el gold incremental que falló en PRO por falta de `_loaded_at` y se arregló con un `--full-refresh` aparte (evidencias 85-90); las «rutas de acceso ambiguas» de Power BI (`defense_justifications.md`, apartado 14); la clasificación de defectos corregida tras ver que eléctrico no es electrónico (apartado 9).
+
 ## Guion
 
 | # | Diapositiva | Min | Qué dice | Qué se ve (prueba) |
@@ -60,9 +65,43 @@ Suma: unos 15 min si se va despacio. Para llegar a 12, acorta 2 (motivación), 5
 
 ## Preguntas de defensa que conviene ensayar
 Detalle en `defense_justifications.md` y `roles_permissions.md`. Las seis más probables:
-1. ¿Por qué silver es incremental y gold no? (volumen: 44.000 filas; incremental cuando el coste lo justifique)
+1. ¿Por qué el hecho es incremental en silver y en gold? (coherencia de extremo a extremo, tras consultarlo con el profesorado, D-072; la primera ejecución de cada entorno necesitó `--full-refresh`)
 2. ¿Qué pasa si llega una venta repetida? (`merge` por `sale_id`; el reenvío no duplica)
 3. ¿Por qué un snapshot y no una tabla con fechas? (historial automático de cambios, sin perder el nombre anterior)
 4. ¿Cómo sabes que los datos son correctos? (tests, avisos con filas guardadas, recuentos que cuadran entre capas)
 5. ¿Por qué tres entornos y cómo evitas tocar PRO? (variable de entorno, rama y permisos por rol)
 6. ¿Qué harías con datos reales y más volumen? (ingesta automática, usuarios de servicio, un bronce por entorno)
+
+## Borrador del autor revisado (25/11): este es el guion a seguir
+| # | Diapositiva | Min | Contenido |
+|---|---|---|---|
+| 1 | Motivación | 1:00 | Por qué este trabajo |
+| 2 | Casos de uso | 1:00 | Dos descartados (predicción de modelo nuevo por región; pentesting y ciberseguridad del coche) y las cinco preguntas finales: UC1 familias, UC2 carrocería, UC3 propulsión, UC4 top 3 modelos por país en 2025, UC5 campañas mecánicas frente a electrónica/software |
+| 3 | Datos y arquitectura | 1:00 | Ventas **simuladas** y campañas **reales** (NHTSA, EE. UU.); medallion |
+| 4 | Modelos | 1:45 | **Conceptual → lógico → dimensional**, con sus versiones. La decisión estrella frente a copo de nieve es del **dimensional**. Mucho tiempo y atención |
+| 5 | Demo en directo | 3:00 | Tabla incremental y snapshot (`demo_jueves.md`) |
+| 6 | Calidad y alertas | 0:45 | Tests, avisos con filas guardadas |
+| 7 | Resultados en Power BI | 1:30 | La respuesta a cada pregunta |
+| 8 | Entornos, ramas y jobs | 1:00 | DEV, PRE, PRO; PR; job semanal |
+| 9 | Ciberseguridad | 0:30 | Roles de mínimo privilegio, lectura para Power BI, clave para dbt, sin secretos en el repositorio |
+| 10 | Mejoras | 0:30 | Bronce crudo de campañas, más regiones, ingesta automática, usuarios de servicio |
+| 11 | Toma de decisiones, IA y mi aportación | 1:00 | **Cómo decidí y cómo lo registré** (`decisions_log.md`: contexto, opciones, decisión y porqué; incluye lo descartado y lo que cambió, p. ej. D-072 tras consultar al profesorado). Qué hizo la IA y qué decidí yo. Captura del registro |
+
+Total: **13:00**. En cada diapositiva, una decisión con su alternativa descartada; en la 11, el **método**: el registro de decisiones.
+
+**Control del tiempo (25/11):** los 2 minutos de margen no se planifican, y a partir del minuto 10 puede haber presión para terminar. Por eso la demo y los resultados deben estar contados hacia el minuto 10 (si hace falta, modelos en 1:30). Si aprietan: diapositivas 8, 9 y 10 en una frase cada una (1:00 en total) y la 11 (decisiones, IA y mi aportación) se mantiene.
+
+### Cómo contar UC5 (diapositiva 7)
+- «Esta clasificación es mía: NHTSA solo indica el sistema afectado.»
+- «Eléctrico no es electrónico, y por eso van separados. La iluminación es eléctrica salvo que el componente diga software o módulo de control. Lo ambiguo, como los airbags, va a una categoría mixta.»
+- «Lo mecánico lidera de 2021 a 2024; en 2025 lo supera lo eléctrico.» 2025 no es comparable sin más: solo hay modelos hasta 2025 y los recientes han tenido menos tiempo para acumular campañas.
+- Si preguntan por modelo o familia: «el modelo lo permite; es una mejora del informe» (D-077).
+
+### Mejoras: métricas que podríamos mostrar (diapositiva 10)
+Salen del gold actual, sin cambiar dbt:
+- Ingresos netos en euros y precio medio neto por país y familia (con tipos de cambio simulados).
+- Porcentaje de devoluciones y cancelaciones.
+- Días entre la venta y la entrega.
+- Ranking de concesionarios (contando por `dealer_code`, no por versión).
+- Campañas por familia, junto a las unidades vendidas, **sin ratio** (EE. UU. frente a Europa).
+- Unidades afectadas por campaña (una vez por campaña, nunca sumando líneas).
