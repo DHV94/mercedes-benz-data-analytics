@@ -57,7 +57,7 @@ select count(*), count(distinct sale_id) from DEV_MB_SILVER_DB.DBT_DHV994_CORE.S
 ```
 Son 44.382 + 150 nuevas. Las otras 10 filas son **correcciones** de ventas antiguas (6 pasan a `RETURNED` y 4 cambian de precio): se actualizan, no se suman.
 6. **Repetir** `dbt run -s silver_sales`: el merge procesa **0** (idempotencia).
-7. (Opcional, 30 s) llevarlo a gold: `dbt build -s fct_sales` → **44.532** filas.
+7. (Opcional, 30 s) llevarlo a gold: `dbt build -s fct_sales`. Gold también es incremental (D-072): el `merge` procesa **160** y la tabla queda en **44.532** filas.
 
 **Números:** bronce 45.211 · silver 44.532 · merge 160 y luego 0.
 

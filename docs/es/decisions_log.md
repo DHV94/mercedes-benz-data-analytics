@@ -508,3 +508,10 @@
 - **Coste**: hay que mantener a mano el rango de fechas y los atributos del calendario (por ejemplo, día de la semana o semana del año, que no están).
 - **Mejora futura**: pasar a `dbt_utils.date_spine` (una línea para generar los días, sin contar filas a mano) o a `dbt_date` si hacen falta más atributos. No se cambia antes de la exposición: no aporta nada visible.
 - **Si lo preguntan**: «Sé que hay un paquete para esto. Lo hice nativo para no depender de otro paquete; el cambio a `date_spine` es sencillo».
+
+## D-074 · El filtro de las campañas se queda en la extracción; bronce crudo como mejora (2026-11-25)
+- **Contexto**: al autor no le convence que bronce reciba las campañas ya seleccionadas (`prepare_recalls.py` se queda con Mercedes, vehículos, años modelo 2021-2025 y 8 de las 29 columnas).
+- **Opciones**: (a) cargar el fichero original completo en bronce (248.544 filas, 299 MB, unos 14 MB en `.gz`) y filtrar en silver; (b) dejarlo y justificarlo.
+- **Decisión (autor)**: (b). El proceso es una **selección en la extracción**, no una limpieza: los valores llegan como texto tal cual (solo se quitan espacios sobrantes) y la limpieza (tipos, fechas, modelo a familia, categorías) se hace en dbt.
+- **Por qué**: se sabe cómo se haría y aporta poco frente al riesgo de tocar el bronce compartido la víspera de la presentación.
+- **Mejora futura**: carga del fichero (o de la API) sin filtrar, con las 29 columnas, y los filtros en silver. Prueba de que está bien: el mismo resultado (525 líneas, 141 campañas, 100 componentes).
