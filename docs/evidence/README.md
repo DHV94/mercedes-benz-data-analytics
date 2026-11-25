@@ -101,5 +101,7 @@
 | 94 | `powerbi/94_powerbi_uc3_unidades_por_propulsion.png` | UC3 en Power BI: unidades vendidas por propulsión y año, 2021-2025 con leyenda explicativa de las propulsiones y eje desde 0; HEV y BEV suben, gasolina y diésel bajan. Datos simulados | 2026-11-25 |
 | 95 | `powerbi/95_powerbi_uc5_campanas_por_categoria.png` | UC5 en Power BI: campañas de revisión en EE. UU. por año y categoría de componente, 2021-2025 (con leyenda de las cuatro categorías; sin desglose por familia, D-077) | 2026-11-25 |
 | 96 | `powerbi/96_powerbi_uc4_top3_modelos_por_pais.png` | UC4 en Power BI: top 3 de modelos por país en 2025, ordenado por unidades vendidas (D-076); el GLC 200 es el primero en los seis países. Datos simulados | 2026-11-25 |
+| 97 | `dbt/97_dbt_linaje_completo.png` | Linaje en dbt Cloud: orígenes de bronze, staging, silver, snapshot, seeds y gold (`+fct_sales +fct_campaign_line dim_date`) | 2026-11-25 |
+| 98 | `dbt/98_dbt_linaje_diapositiva_sin_dim_date.png` | Linaje para la diapositiva (`+fct_sales +fct_campaign_line`), sin `dim_date`, que no tiene dependencias | 2026-11-25 |
 
 Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (80 en adelante).

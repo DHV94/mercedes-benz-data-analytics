@@ -80,7 +80,7 @@ Detalle en `defense_justifications.md` y `roles_permissions.md`. Las seis más p
 | 3 | Datos y arquitectura | 1:00 | 3:00 | Ventas **simuladas** y campañas **reales** (NHTSA, EE. UU.); medallion | Diagrama de capas |
 | 4 | Modelos | 1:45 | 4:45 | **Conceptual → lógico → dimensional**, con sus versiones. La decisión estrella frente a copo de nieve es del **dimensional** | `docs/diagrams/` |
 | 5 | Demo en directo | 2:15 | 7:00 | Solo incremental y snapshot (D-078) | Vídeo de respaldo |
-| 6 | Calidad y gobierno del dato | 1:00 | 8:00 | **Linaje**, **descripción de columnas**, tests y avisos con filas guardadas | Captura de linaje y de descripciones (por hacer); evidencia 71 |
+| 6 | Calidad y gobierno del dato | 1:00 | 8:00 | **Linaje**, **descripción de columnas**, tests y avisos con filas guardadas | Linaje: evidencia 98; captura de descripciones (por hacer); evidencia 71 |
 | 7 | Resultados en Power BI | 1:30 | 9:30 | La respuesta a cada pregunta | `docs/evidence/powerbi/` 92, 93, 94, 96, 95 |
 | 8 | Entornos, ramas y jobs | 0:50 | 10:20 | DEV, PRE, PRO; PR; job semanal; **criterios de nombres** | Evidencias 29, 62, 90 |
 | 9 | Ciberseguridad | 0:20 | 10:40 | Roles de mínimo privilegio, lectura para Power BI, clave para dbt, sin secretos en el repositorio | Evidencia 48 |
