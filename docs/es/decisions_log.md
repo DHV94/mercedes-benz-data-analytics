@@ -483,7 +483,7 @@
 
 ## D-071 · UC5: clasificación de los defectos por naturaleza (2026-11-24)
 - **Contexto**: la pregunta UC5 es si las campañas de defectos son de electrónica y software o de mecánica. NHTSA no trae esa clasificación: trae el sistema defectuoso (27 sistemas) y, dentro del nombre del componente, un segundo nivel (por ejemplo `ELECTRICAL SYSTEM:SOFTWARE`).
-- **Cómo se llegó (discusión con el autor)**: (1) primera versión, tres categorías por sistema, con todo el «sistema eléctrico» como electrónica y software; (2) el autor señala que **airbags e iluminación no son ni mecánicos ni electrónicos** → categoría aparte; (3) el autor señala que **eléctrico no es electrónico** → se revisan los datos y se ve que de 5.845 filas del sistema eléctrico, 4.129 dicen literalmente `SOFTWARE` y el resto es hardware (baterías, cableado, fusibles). (4) Se descarta separar electrónica de software: NHTSA no indica si se corrige con una actualización.
+- **Cómo se llegó (discusión con el autor)**: (1) primera versión, tres categorías por sistema, con todo el «sistema eléctrico» como electrónica y software; (2) el autor señala que **airbags e iluminación no son ni mecánicos ni electrónicos** → categoría aparte; (3) el autor señala que **eléctrico no es electrónico** → se revisan los datos y se ve que de 5.845 filas del sistema eléctrico, 4.129 dicen literalmente `SOFTWARE` y el resto es hardware (baterías, cableado, fusibles). En esa misma revisión, la **iluminación sale de la categoría mixta y pasa a `ELECTRICAL`**: en NHTSA son cuatro piezas (faros, luces de emergencia, intermitentes y marcha atrás), hardware eléctrico; el autor aprueba esta versión (B). (4) Se descarta separar electrónica de software: NHTSA no indica si se corrige con una actualización.
 - **Opciones**: (A) tres categorías por sistema; (B) cuatro categorías con una regla en dos niveles; (C) clasificar los 100 componentes a mano.
 - **Decisión**: (B). Cuatro categorías: `ELECTRONICS_SOFTWARE`, `ELECTRICAL`, `MECHANICAL` y `MIXED_OTHER`. La regla va en `dim_component`: **primero** las palabras del nombre (`SOFTWARE`, cuadro de instrumentos, `:ADAS`, módulo de control) fuerzan `ELECTRONICS_SOFTWARE`; **después** manda el seed `component_type_map` (27 filas, por sistema): comunicación, cámaras y sensores, estabilidad, velocidad, colisión y tracción son electrónica y software; sistema eléctrico (cableado, baterías) e iluminación son `ELECTRICAL`; airbags, equipamiento y sillas infantiles son `MIXED_OTHER`; el resto, `MECHANICAL`. Un sistema que no esté en el seed cae en `UNCLASSIFIED` y salta un aviso.
 - **Por qué seed y regla y no solo código**: la clasificación es una decisión de negocio, no una transformación; en un seed se ve, se revisa y se cambia sin tocar los modelos.
@@ -508,3 +508,28 @@
 - **Coste**: hay que mantener a mano el rango de fechas y los atributos del calendario (por ejemplo, día de la semana o semana del año, que no están).
 - **Mejora futura**: pasar a `dbt_utils.date_spine` (una línea para generar los días, sin contar filas a mano) o a `dbt_date` si hacen falta más atributos. No se cambia antes de la exposición: no aporta nada visible.
 - **Si lo preguntan**: «Sé que hay un paquete para esto. Lo hice nativo para no depender de otro paquete; el cambio a `date_spine` es sencillo».
+
+## D-074 · El filtro de las campañas se queda en la extracción; bronce crudo como mejora (2026-11-25)
+- **Contexto**: al autor no le convence que bronce reciba las campañas ya seleccionadas (`prepare_recalls.py` se queda con Mercedes, vehículos, años modelo 2021-2025 y 8 de las 29 columnas).
+- **Opciones**: (a) cargar el fichero original completo en bronce (248.544 filas, 299 MB, unos 14 MB en `.gz`) y filtrar en silver; (b) dejarlo y justificarlo.
+- **Decisión (autor)**: (b). El proceso es una **selección en la extracción**, no una limpieza: los valores llegan como texto tal cual (solo se quitan espacios sobrantes) y la limpieza (tipos, fechas, modelo a familia, categorías) se hace en dbt.
+- **Por qué**: se sabe cómo se haría y aporta poco frente al riesgo de tocar el bronce compartido la víspera de la presentación.
+- **Mejora futura**: carga del fichero (o de la API) sin filtrar, con las 29 columnas, y los filtros en silver. Prueba de que está bien: el mismo resultado (525 líneas, 141 campañas, 100 componentes).
+
+## D-075 · Numeración de los casos de uso en el informe y UC4 por país (2026-11-25)
+- **Contexto**: al montar Power BI se propuso llamar «UC4» a las campañas para tener cuatro preguntas. Eso no coincidía con la numeración de D-019. Además, UC4 pide el «top 3 de familias por región» y solo hay ventas de Europa (D-056).
+- **Opciones**: (a) renumerar a cuatro casos; (b) mantener UC1–UC5 y responder UC4 con el país como nivel geográfico.
+- **Decisión**: (b). UC1 familia, UC2 carrocería, UC3 propulsión, UC4 top 3 de familias por país en 2025, UC5 campañas (EE. UU.). El top 5 de modelos es un detalle de UC1, sin número propio.
+- **Por qué**: informe, diapositivas y documentos hablan igual; con una sola región cargada, «por región» no compararía nada, y el país sí.
+
+## D-076 · UC4: top 3 de modelos (no de familias) por país en 2025 (2026-11-25)
+- **Contexto**: D-019 pedía el top 3 de **familias** y D-075 lo mantenía por país. UC1 ya muestra las familias.
+- **Opciones**: (a) top 3 de familias por país; (b) top 3 de modelos (variantes, p. ej. «GLC 200») por país.
+- **Decisión** (del autor): (b). Modifica la parte «familias» de UC4 en D-019 y D-075. El top 5 de modelos en la página de UC1 se descarta, porque repetiría lo mismo.
+- **Por qué**: no repite UC1 y da un detalle más útil. Límite: las ventas de una familia se reparten entre sus variantes, así que una familia fuerte puede no tener ningún modelo en el top 3. No hubo cambios en dbt: `dim_model` ya tiene el nombre del modelo.
+
+## D-077 · UC5 sin desglose por familia en el informe (2026-11-25)
+- **Contexto**: UC5 se definió «por modelo y año» (D-019). La página muestra campañas por año y categoría.
+- **Opciones**: (a) añadir una segmentación por familia; (b) dejar solo año y categoría.
+- **Decisión** (del autor): (b), no hace falta para la presentación.
+- **Límite a decir**: el informe no desglosa por familia; el modelo sí lo permite (`fct_campaign_line` enlaza con `dim_family`), así que es una mejora solo de informe.
