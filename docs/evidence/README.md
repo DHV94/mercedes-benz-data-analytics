@@ -86,5 +86,23 @@
 | 79 | `dbt/79_dbt_pro_job_success_with_uc5.png` | Job `PRO · build` en Success con UC5 (rama `main`, commit 9a62758): el gold que lee Power BI | 2026-11-24 |
 | 80 | `dbt/80_dbt_fct_sales_incremental_full_refresh_44382.png` | `fct_sales` ahora incremental en gold (D-072): `dbt build --full-refresh -s fct_sales` carga 44.382 filas (rama `feature-gold-incremental`) | 2026-11-24 |
 | 81 | `dbt/81_dbt_fct_sales_incremental_rerun_0_rows.png` | Segunda ejecución sin `--full-refresh`: `fct_sales` procesa **0 filas** (no hay lotes nuevos); los 3 avisos esperados siguen siendo avisos | 2026-11-24 |
+| 82 | `dbt/82_dbt_pre_full_refresh_fct_sales_44382.png` | Job `PRE · build` con `--full-refresh -s fct_sales` (una sola vez): `PRE_MB_GOLD_DB.sales.fct_sales` se crea incremental con 44.382 filas | 2026-11-24 |
+| 83 | `dbt/83_dbt_pre_silver_sales_incremental_0_rows.png` | `PRE · build` ya con el comando normal: `silver_sales` incremental procesa 0 filas (no hay lotes nuevos) | 2026-11-24 |
+| 84 | `dbt/84_dbt_pre_job_success_after_full_refresh.png` | Run de `PRE · build` en Success tras restaurar el comando normal (rama `pre`, commit 654c852) | 2026-11-24 |
+| 85 | `dbt/85_dbt_pro_fct_sales_error_missing_loaded_at.png` | **Error real, útil para contar:** `PRO · build` sin `--full-refresh` falla en `fct_sales` (`correlated aggregate function MAX(_LOADED_AT)`), porque la tabla de PRO aún no tenía la columna `_loaded_at` | 2026-11-24 |
+| 86 | `dbt/86_snowflake_pro_fct_sales_no_loaded_at_column.png` | Diagnóstico en Snowflake: `PRO_MB_GOLD_DB.SALES.FCT_SALES` no tiene la columna `_loaded_at` (el `--full-refresh` anterior no la había reconstruido) | 2026-11-24 |
+| 87 | `dbt/87_dbt_pro_full_refresh_job_fct_sales_44382.png` | Job aparte `PRO · full refresh fct_sales` (`dbt build --full-refresh -s fct_sales`): `fct_sales` de PRO creada incremental con 44.382 filas | 2026-11-24 |
+| 88 | `dbt/88_snowflake_pro_fct_sales_44382_with_loaded_at.png` | Snowflake: `fct_sales` de PRO ya tiene `_loaded_at`: 44.382 filas | 2026-11-24 |
+| 89 | `dbt/89_dbt_pro_fct_sales_incremental_0_rows.png` | `PRO · build` con el comando normal: `fct_sales` incremental procesa 0 filas | 2026-11-24 |
+| 90 | `dbt/90_dbt_pro_job_success_incremental_gold.png` | Run de `PRO · build` en Success (rama `main`, commit 472a6404) con el gold de ventas incremental: lo que lee Power BI | 2026-11-24 |
+| 91 | `powerbi/91_powerbi_uc1_map_and_bars_first_version.png` | Primera versión del informe de Power BI en casa: mapa y barras de unidades vendidas por país (UC1); el grupo «(En blanco)» son las ventas sin concesionario en el maestro | 2026-11-24 |
+| 92 | `powerbi/92_powerbi_uc1_units_sold_by_family_top6.png` | UC1 en Power BI: unidades vendidas por familia y año (6 principales), 2021-2025, con título «UC1», líneas rectas, marcadores y colores distintos | 2026-11-24 |
+| 93 | `powerbi/93_powerbi_uc2_units_sold_by_body_type.png` | UC2 en Power BI: unidades vendidas por carrocería y año, 2021-2025 (SUV en cabeza y al alza, hatchback a la baja; nota en el gráfico: descapotable con el SL desde 2022 y el CLE Cabriolet desde 2024; 2025 hasta mediados de diciembre) | 2026-11-25 |
+| 94 | `powerbi/94_powerbi_uc3_unidades_por_propulsion.png` | UC3 en Power BI: unidades vendidas por propulsión y año, 2021-2025 con leyenda explicativa de las propulsiones y eje desde 0; HEV y BEV suben, gasolina y diésel bajan. Datos simulados | 2026-11-25 |
+| 95 | `powerbi/95_powerbi_uc5_campanas_por_categoria.png` | UC5 en Power BI: campañas de revisión en EE. UU. por año y categoría de componente, 2021-2025 (con leyenda de las cuatro categorías; sin desglose por familia, D-077) | 2026-11-25 |
+| 96 | `powerbi/96_powerbi_uc4_top3_modelos_por_pais.png` | UC4 en Power BI: top 3 de modelos por país en 2025, ordenado por unidades vendidas (D-076); el GLC 200 es el primero en los seis países. Datos simulados | 2026-11-25 |
+| 97 | `dbt/97_dbt_linaje_completo.png` | Linaje en dbt Cloud: orígenes de bronze, staging, silver, snapshot, seeds y gold (`+fct_sales +fct_campaign_line dim_date`) | 2026-11-25 |
+| 98 | `dbt/98_dbt_linaje_diapositiva_sin_dim_date.png` | Linaje para la diapositiva (`+fct_sales +fct_campaign_line`), sin `dim_date`, que no tiene dependencias | 2026-11-25 |
+| 99 | `dbt/99_dbt_variables_de_entorno_dev_pre_pro.png` | dbt Cloud: variables de entorno `DBT_ENV_NAME` (DEV, PRE, PRO) y `DBT_BRONZE_DB`, con las tres columnas visibles | 2026-11-26 |
 
 Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (80 en adelante).

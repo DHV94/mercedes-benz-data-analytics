@@ -44,10 +44,10 @@
 | D-032 | 2026-11-20 | Revisiones NHTSA de 2021 a 2025, filtradas por fecha del informe | ✅ |
 | D-033 | 2026-11-20 | NHTSA: descarga del fichero plano en lugar de la API | ✅ |
 | D-034 | 2026-11-20 | Todo lo de datos bajo `data/` | ✅ |
-| D-035 | 2026-11-20 | NHTSA: bronze completo, filtrado en silver | ✅ |
+| D-035 | 2026-11-20 | NHTSA: bronze completo, filtrado en silver | 🔁 modificada por D-068 |
 | D-036 | 2026-11-20 | Revisiones NHTSA opcionales, con punto de control | ⏳ |
-| D-037 | 2026-11-20 | Alcance: solo turismos Mercedes-Benz; camiones, furgonetas y Maybach como ampliación | ✅ |
-| D-038 | 2026-11-20 | Flujo feature → develop → main, sin rama pre ni pro | ✅ |
+| D-037 | 2026-11-20 | Alcance: solo turismos Mercedes-Benz; camiones, furgonetas y Maybach como ampliación | 🔁 modificada por D-068 |
+| D-038 | 2026-11-20 | Flujo feature → develop → main, sin rama pre ni pro | 🔁 modificada por D-067 |
 | D-039 | 2026-11-20 | UC5 limitado a EE. UU. y mostrado junto a las ventas de EE. UU. | ✅ |
 
 ---
@@ -220,6 +220,7 @@
 - **Por qué**: un solo sitio para lo que son datos de entrada, separado del código dbt y de Snowflake.
 
 ## D-035 · NHTSA: bronze completo, filtrado en silver (2026-11-20)
+- **Estado**: modificada por D-068 (el filtro se aplica con un script antes de bronze; el bronze completo queda como mejora, D-074).
 - **Opciones**: (a) filtrar Mercedes-Benz antes de cargar; (b) cargar el fichero completo en bronze y filtrar después.
 - **Decisión**: (b). Bronze guarda el fichero tal como llega (todas las marcas, desde 2010); el filtro (turismos Mercedes-Benz, informes de 2021 a 2025) se hace al pasar a silver.
 - **Por qué**: bronze es una copia fiel del origen, y así el filtro queda en código dbt versionado y se puede cambiar sin volver a descargar. Los datos de otras marcas son públicos de la NHTSA y no plantean problema; el coste de almacenamiento es insignificante.
@@ -232,6 +233,7 @@
 - **Criterio para descartar**: si el miércoles 25 o antes el flujo de ventas de extremo a extremo (bronze → gold) no está estable, las revisiones salen.
 
 ## D-037 · Alcance: solo turismos (2026-11-20)
+- **Estado**: modificada por D-068 (se incluyen los vehículos Mercedes-Maybach; furgonetas y autobuses siguen fuera).
 - **Contexto**: el fichero de la NHTSA incluye también furgonetas (Sprinter, Daimler Vans), camiones, autobuses y Maybach, algo que no se había planteado.
 - **Opciones**: (a) cubrir todo el grupo Daimler/Mercedes; (b) centrarse en turismos de la marca Mercedes-Benz y decir expresamente que el resto queda fuera.
 - **Decisión**: (b). El proyecto trata **turismos Mercedes-Benz**; camiones, furgonetas y Maybach quedan fuera de alcance y se declaran así en la exposición.
@@ -239,6 +241,7 @@
 - **Cómo se aplica**: en silver se filtra `MAKETXT` en `MERCEDES-BENZ` y `MERCEDES BENZ` y `RCLTYPECD = 'V'`. Las furgonetas Sprinter vienen bajo la marca Mercedes-Benz, así que se excluyen porque su modelo no está en el catálogo (alias → variante). Ajusta el filtro de D-035, que mencionaba `MERCEDES-MAYBACH`.
 
 ## D-038 · Flujo de ramas: feature → develop → main (2026-11-20)
+- **Estado**: modificada por D-067 (se añade la rama `pre` para el entorno PRE).
 - **Contexto**: D-030 proponía trabajar solo en `develop`. Se prefiere aislar cada tarea en su propia rama, pero sin la rama `pre`.
 - **Opciones**: (a) solo `develop` (D-030); (b) `feature/*` → `develop` → `pre` → `main` (D-029); (c) `feature/*` → `develop` → `main`; (d) añadir una rama `pro` para dbt.
 - **Decisión**: (c). Una rama `feature/<tema>` por tarea; cuando funciona, a `develop` (DEV); cuando se comprueba allí, a `main` (PRO). Sin `pre`.
@@ -376,6 +379,7 @@
 - **Opciones**: (a) `dim_family` 1—M `dim_model` (copo de nieve, defendible pero rompe la estrella); (b) `dim_family` enlazada directamente a `fct_sales` (con `family_id` en el hecho) y a `fct_campaign_line`; (c) una sola dimensión de modelo con la familia y unir campañas por texto.
 - **Decisión**: (b). `fct_sales` lleva `family_id` (derivable de `model_id`), y `dim_model` conserva `family_id` y `family_name` como atributos, sin enlace a `dim_family`. Un selector de familia filtra ventas y campañas.
 - **Por qué**: estrella pura (ninguna dimensión enlaza con otra) y dimensión conforme. El coste es un dato repetido en el hecho; se protege con un test (el `family_id` del hecho coincide con el de su modelo). Descartado (c) por frágil.
+- **Nota (2026-11-25)**: el test de coherencia de `family_id` **no se implementó**; la coherencia se da por construcción, porque `fct_sales` toma `family_id` de `dim_model`. En dbt, `dim_model` depende de `dim_family` para calcular la clave, sin relación entre ambas en el modelo.
 
 ## D-060 · Tipos de impuesto: varias tasas por país y tipo explícito (2026-11-22)
 - **Contexto**: el usuario detecta que `taxes` no indica de qué impuesto se trata y que un país puede tener **varias tasas a la vez** (ejemplo: IVA general del 21 % y reducido del 4 % para familias con hijos con discapacidad). Con solo país y fecha, silver no puede saber qué tasa aplicar: el dato tiene que venir en la venta.
@@ -483,7 +487,7 @@
 
 ## D-071 · UC5: clasificación de los defectos por naturaleza (2026-11-24)
 - **Contexto**: la pregunta UC5 es si las campañas de defectos son de electrónica y software o de mecánica. NHTSA no trae esa clasificación: trae el sistema defectuoso (27 sistemas) y, dentro del nombre del componente, un segundo nivel (por ejemplo `ELECTRICAL SYSTEM:SOFTWARE`).
-- **Cómo se llegó (discusión con el autor)**: (1) primera versión, tres categorías por sistema, con todo el «sistema eléctrico» como electrónica y software; (2) el autor señala que **airbags e iluminación no son ni mecánicos ni electrónicos** → categoría aparte; (3) el autor señala que **eléctrico no es electrónico** → se revisan los datos y se ve que de 5.845 filas del sistema eléctrico, 4.129 dicen literalmente `SOFTWARE` y el resto es hardware (baterías, cableado, fusibles). (4) Se descarta separar electrónica de software: NHTSA no indica si se corrige con una actualización.
+- **Cómo se llegó (discusión con el autor)**: (1) primera versión, tres categorías por sistema, con todo el «sistema eléctrico» como electrónica y software; (2) el autor señala que **airbags e iluminación no son ni mecánicos ni electrónicos** → categoría aparte; (3) el autor señala que **eléctrico no es electrónico** → se revisan los datos y se ve que de 5.845 filas del sistema eléctrico, 4.129 dicen literalmente `SOFTWARE` y el resto es hardware (baterías, cableado, fusibles). En esa misma revisión, la **iluminación sale de la categoría mixta y pasa a `ELECTRICAL`**: en NHTSA son cuatro piezas (faros, luces de emergencia, intermitentes y marcha atrás), hardware eléctrico; el autor aprueba esta versión (B). (4) Se descarta separar electrónica de software: NHTSA no indica si se corrige con una actualización.
 - **Opciones**: (A) tres categorías por sistema; (B) cuatro categorías con una regla en dos niveles; (C) clasificar los 100 componentes a mano.
 - **Decisión**: (B). Cuatro categorías: `ELECTRONICS_SOFTWARE`, `ELECTRICAL`, `MECHANICAL` y `MIXED_OTHER`. La regla va en `dim_component`: **primero** las palabras del nombre (`SOFTWARE`, cuadro de instrumentos, `:ADAS`, módulo de control) fuerzan `ELECTRONICS_SOFTWARE`; **después** manda el seed `component_type_map` (27 filas, por sistema): comunicación, cámaras y sensores, estabilidad, velocidad, colisión y tracción son electrónica y software; sistema eléctrico (cableado, baterías) e iluminación son `ELECTRICAL`; airbags, equipamiento y sillas infantiles son `MIXED_OTHER`; el resto, `MECHANICAL`. Un sistema que no esté en el seed cae en `UNCLASSIFIED` y salta un aviso.
 - **Por qué seed y regla y no solo código**: la clasificación es una decisión de negocio, no una transformación; en un seed se ve, se revisa y se cambia sin tocar los modelos.
@@ -497,5 +501,51 @@
 - **Decisión**: (b). Los profesores indican que no tiene sentido que el hecho sea incremental en silver y no en gold; solo se justificaría no serlo en pocos casos en los que los agregados dieran problemas, y aquí no es el caso. Las dimensiones siguen como tablas (D-022: no se impone a todas).
 - **Por qué**: coherencia del flujo de extremo a extremo; la reconstrucción solo se había mantenido por el bajo volumen. D-022 ya pedía incremental hasta gold.
 - **A comprobar al implementarlo** (riesgos que la reconstrucción evitaba): (1) `dealer_id` cambia cuando el concesionario cambia de nombre (D-058): las ventas ya cargadas conservarían la clave de la versión antigua; (2) un cambio en los seeds de tipos de cambio o de impuestos no llegaría al histórico sin `--full-refresh`; (3) una corrección de silver en una venta antigua debe actualizar su fila en gold (`merge` por `sale_id`).
-- **Estado**: se implementa en una rama de feature propia y se promociona por `develop` → `pre` → `main` (D-067). Se da por cerrada cuando esté probada.
+- **Estado**: se implementa en una rama de feature propia y se promociona por `develop` → `pre` → `main` (D-067). **Cerrada (2026-11-24):** probada en DEV, PRE y PRO (evidencias 80 a 90). La primera ejecución de cada entorno necesitó `--full-refresh -s fct_sales`, porque la tabla existente no tenía `_loaded_at`; sin ello el job falla (evidencia 85). Para PRO se creó un job aparte, `PRO · full refresh fct_sales`, que también servirá para el reset de la demo.
 - **Nota**: D-022 no se modifica; esta decisión la aplica a `fct_sales`.
+
+## D-073 · `dim_date` generada con el `generator()` de Snowflake, sin paquete (2026-11-24)
+- **Contexto**: existen paquetes de dbt para generar una dimensión de fechas: `dbt_utils` (macro `date_spine`, que genera la secuencia de días) y `dbt_date` (además añade atributos de calendario). El proyecto no usa ningún paquete (no hay `packages.yml`).
+- **Opciones**: (a) `dbt_utils.date_spine`; (b) paquete `dbt_date`; (c) generar el calendario con SQL nativo de Snowflake (`table(generator(rowcount => ...))`).
+- **Decisión**: (c). `dim_date` cubre del 2020-01-01 al 2027-12-31 (2.922 días), con `date_id` en formato `yyyymmdd`, año, mes, nombre del mes y trimestre, más una fila `-1` «Unknown».
+- **Por qué**: para no añadir una dependencia externa a un proyecto pequeño; el calendario son pocas líneas de SQL y se entiende entero. Ya está desplegado en los tres entornos y Power BI se apoya en él.
+- **Coste**: hay que mantener a mano el rango de fechas y los atributos del calendario (por ejemplo, día de la semana o semana del año, que no están).
+- **Mejora futura**: pasar a `dbt_utils.date_spine` (una línea para generar los días, sin contar filas a mano) o a `dbt_date` si hacen falta más atributos. No se cambia antes de la exposición: no aporta nada visible.
+- **Si lo preguntan**: «Sé que hay un paquete para esto. Lo hice nativo para no depender de otro paquete; el cambio a `date_spine` es sencillo».
+
+## D-074 · El filtro de las campañas se queda en la extracción; bronce crudo como mejora (2026-11-25)
+- **Contexto**: al autor no le convence que bronce reciba las campañas ya seleccionadas (`prepare_recalls.py` se queda con Mercedes, vehículos, años modelo 2021-2025 y 8 de las 29 columnas).
+- **Opciones**: (a) cargar el fichero original completo en bronce (248.544 filas, 299 MB, unos 14 MB en `.gz`) y filtrar en silver; (b) dejarlo y justificarlo.
+- **Decisión (autor)**: (b). El proceso es una **selección en la extracción**, no una limpieza: los valores llegan como texto tal cual (solo se quitan espacios sobrantes) y la limpieza (tipos, fechas, modelo a familia, categorías) se hace en dbt.
+- **Por qué**: se sabe cómo se haría y aporta poco frente al riesgo de tocar el bronce compartido la víspera de la presentación.
+- **Mejora futura**: carga del fichero (o de la API) sin filtrar, con las 29 columnas, y los filtros en silver. Prueba de que está bien: el mismo resultado (525 líneas, 141 campañas, 100 componentes).
+
+## D-075 · Numeración de los casos de uso en el informe y UC4 por país (2026-11-25)
+- **Contexto**: al montar Power BI se propuso llamar «UC4» a las campañas para tener cuatro preguntas. Eso no coincidía con la numeración de D-019. Además, UC4 pide el «top 3 de familias por región» y solo hay ventas de Europa (D-056).
+- **Opciones**: (a) renumerar a cuatro casos; (b) mantener UC1–UC5 y responder UC4 con el país como nivel geográfico.
+- **Decisión**: (b). UC1 familia, UC2 carrocería, UC3 propulsión, UC4 top 3 de familias por país en 2025, UC5 campañas (EE. UU.). El top 5 de modelos es un detalle de UC1, sin número propio.
+- **Por qué**: informe, diapositivas y documentos hablan igual; con una sola región cargada, «por región» no compararía nada, y el país sí.
+
+## D-076 · UC4: top 3 de modelos (no de familias) por país en 2025 (2026-11-25)
+- **Contexto**: D-019 pedía el top 3 de **familias** y D-075 lo mantenía por país. UC1 ya muestra las familias.
+- **Opciones**: (a) top 3 de familias por país; (b) top 3 de modelos (variantes, p. ej. «GLC 200») por país.
+- **Decisión** (del autor): (b). Modifica la parte «familias» de UC4 en D-019 y D-075. El top 5 de modelos en la página de UC1 se descarta, porque repetiría lo mismo.
+- **Por qué**: no repite UC1 y da un detalle más útil. Límite: las ventas de una familia se reparten entre sus variantes, así que una familia fuerte puede no tener ningún modelo en el top 3. No hubo cambios en dbt: `dim_model` ya tiene el nombre del modelo.
+
+## D-077 · UC5 sin desglose por familia en el informe (2026-11-25)
+- **Contexto**: UC5 se definió «por modelo y año» (D-019). La página muestra campañas por año y categoría.
+- **Opciones**: (a) añadir una segmentación por familia; (b) dejar solo año y categoría.
+- **Decisión** (del autor): (b), no hace falta para la presentación.
+- **Límite a decir**: el informe no desglosa por familia; el modelo sí lo permite (`fct_campaign_line` enlaza con `dim_family`), así que es una mejora solo de informe.
+
+## D-078 · Presentación de 12 minutos con demo reducida y bloque de gobierno (2026-11-25)
+- **Contexto**: en las presentaciones del miércoles se pidió el linaje a algunos alumnos y hubo presión de tiempo hacia el minuto 10.
+- **Opciones**: (a) mantener 13:00 con demo de 3:00; (b) bajar a 12:00, con una demo más corta como una parte más.
+- **Decisión** (del autor): (b). Demo solo con incremental y snapshot (sin delta 6 ni reinicio); la diapositiva de calidad pasa a «calidad y gobierno del dato», con linaje y descripción de columnas; DevSecOps se cita como mejora.
+- **Por qué**: la demo no debe comerse la exposición y los resultados deben contarse antes del minuto 10. Límite: las alertas del delta 6 no se han probado y no se afirma que lo estén.
+
+## D-079 · Demo solapada con la exposición y probada antes en tablas temporales (2026-11-26)
+- **Contexto**: el ensayo de la demo, sin la carga, duró unos 3 minutos, y los ficheros del delta 3 (ventas) y del delta 5 (concesionarios) no se habían cargado nunca.
+- **Opciones**: (a) esperar a dbt en pantalla; (b) lanzar un solo comando de dbt sin tests y contar mientras tanto el linaje y la calidad; (c) ensayar con la carga real y reiniciar después (reinicio sin probar).
+- **Decisión** (del autor): (b), con `dbt build -s silver_sales silver_dealers snap_dealers --exclude-resource-type test`. La carga se probó antes con `COPY INTO` sobre tablas temporales (160 y 129 filas), que no toca las tablas ni su historial de carga.
+- **Por qué**: la demo no se come la exposición y el estado de partida queda intacto.

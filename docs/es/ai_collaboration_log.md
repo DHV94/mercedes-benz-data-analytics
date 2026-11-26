@@ -5,6 +5,8 @@
 ## Cómo se ha trabajado con la IA
 - Claude **guía y explica**; el usuario construye y decide. Las decisiones de proyecto son del usuario y se registran en `docs/es/decisions_log.md`.
 - Claude escribe plantillas y el generador de datos (con explicación). Los commits locales los puede crear Claude tras explicarlos; push, PR y merge son siempre del usuario.
+- A partir del 24/11, por falta de tiempo, el usuario pidió a Claude que escribiera además partes concretas: los modelos gold, la carga de campañas de NHTSA, tests, la clasificación de UC5 (con las correcciones del usuario) y buena parte de la documentación. El usuario las revisa y las defiende.
+- En las diapositivas, el estilo se trabajó con ChatGPT y Claude montó, a petición del usuario, la primera versión completa a partir del guion y de las capturas del repositorio; el usuario la revisa y la usa como guía.
 - Las preguntas de defensa y las decisiones descartadas se documentan para poder justificarlas en voz alta.
 
 ## Compactaciones de contexto
@@ -15,6 +17,7 @@ Una compactación ocurre cuando la conversación es demasiado larga: el contexto
 | 2026-11-22 | Modelado, Snowflake y generador | Primera compactación anotada en este registro (al menos una antes de empezar el registro) | Resumen + lectura de `SESSION_NOTES.md`, `decisions_log.md` y `defense_justifications.md` |
 | 2026-11-22 | Conexión dbt Cloud y esqueleto dbt | Segunda compactación (tras cargar bronce y conectar dbt Cloud) | Resumen + transcripción de la sesión; el estado real se comprobó en el repo (git status, carpetas) antes de seguir |
 | 2026-11-24 | Entornos PRE/PRO, jobs y gold | Tercera compactación (tras silver, snapshot y entornos) | Resumen + transcripción; el estado real se comprobó en el repo y en GitHub (descubrió el macro de esquemas vacío) |
+| 2026-11-25 | Gold, recalls y Power BI | Cuarta compactación (tras preparar Power BI y la demo, antes de replanificar el miércoles) | Resumen + transcripción de la sesión + lectura de los documentos del repositorio |
 
 ## Ideas para mencionar en la presentación
 - La IA como asistente que explica y revisa, no como sustituto: el usuario defiende cada pieza.

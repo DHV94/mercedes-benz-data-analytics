@@ -1,4 +1,4 @@
-# Traspaso para la sesión de Power BI (PC de trabajo)
+# Traspaso para la sesión de Power BI (segundo PC)
 
 Copia el texto de la sección «Prompt» en una sesión nueva de Claude abierta **dentro de este repositorio**. Esa sesión no tiene la conversación de casa, así que esto le da el contexto mínimo. Antes, haz `git pull` de `main` (o de `develop`) para tener todo.
 

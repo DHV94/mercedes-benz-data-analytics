@@ -2,6 +2,7 @@
 
 > Living document. Update it whenever a decision changes. Purpose: recover full context if the AI assistant session is lost.
 > Última actualización: 2026-11-18.
+> Documento de partida: algunas partes quedaron superadas. El estado final está en `README.md` y en `docs/es/decisions_log.md`.
 
 ## 1. Goal
 Final project, Data Engineering programme (Cívica). Simulate working for **Mercedes-Benz**: build the full data platform (ingestion, cleaning, modelling, testing, BI) with **Snowflake + dbt Cloud + Power BI**, simulating a multi-person international team.
@@ -10,7 +11,7 @@ Final project, Data Engineering programme (Cívica). Simulate working for **Merc
 - Individual project; deadline **2026-11-24 ~20:00**; presentations 25–26 Nov; **user presents Thu 26 Nov, 3rd turn** (updated 2026-11-20). Internal goal: stable code by Tue 24 ~20:00.
 - Snowflake trial: ~382 $ credits, ~19 days left on 2026-11-17 (expires ~2026-12-06). Warehouse XS, auto-suspend 60 s.
 - dbt Cloud: use **"Latest" (v1.x)**, not v2/Fusion. New account planned (Gmail `+dbt` alias) because the free Developer plan allows 1 project and the practice project uses it.
-- Course material (read-only reference): `C:\Users\dhv94\Documents\GitHub\Curso-Data-Engineer`. Do NOT copy it into this repo (slides may not be redistributable).
+- Course material: read-only reference kept outside this repo. Do NOT copy it here (slides may not be redistributable).
 
 ## 3. Business questions
 **Core (must):** sales evolution over recent years by (a) **body type** (coupé, sedan, SUV…) and (b) **powertrain** (ICE, hybrid, plug-in hybrid, electric…).

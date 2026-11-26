@@ -57,7 +57,7 @@ select count(*), count(distinct sale_id) from DEV_MB_SILVER_DB.DBT_DHV994_CORE.S
 ```
 Son 44.382 + 150 nuevas. Las otras 10 filas son **correcciones** de ventas antiguas (6 pasan a `RETURNED` y 4 cambian de precio): se actualizan, no se suman.
 6. **Repetir** `dbt run -s silver_sales`: el merge procesa **0** (idempotencia).
-7. (Opcional, 30 s) llevarlo a gold: `dbt build -s fct_sales` → **44.532** filas.
+7. (Opcional, 30 s) llevarlo a gold: `dbt build -s fct_sales`. Gold también es incremental (D-072): el `merge` procesa **160** y la tabla queda en **44.532** filas.
 
 **Números:** bronce 45.211 · silver 44.532 · merge 160 y luego 0.
 
@@ -82,7 +82,7 @@ file_format = (format_name = 'crm.ff_dealers')
 pattern = '.*dealer_master[.]csv'
 on_error = 'ABORT_STATEMENT';
 ```
-4. **Comprobar bronce** (rol `DEV_MB_TRANSFORM_ROLE`): `select count(*) from DEV_MB_BRONZE_DB.CRM.RAW_DEALER_MASTER;` → **384** (256 + 128).
+4. **Comprobar bronce** (rol `DEV_MB_TRANSFORM_ROLE`): `select count(*) from DEV_MB_BRONZE_DB.CRM.RAW_DEALER_MASTER;` → **385** (256 + 129: el delta 5 añade un concesionario).
 5. **IDE de dbt Cloud, dos comandos y por este orden:** `dbt run -s silver_dealers` y después `dbt snapshot`. La rama debe contener `snapshots/snap_dealers.sql` (si no, «Success» sin hacer nada: comprueba que el log dice `1 of 1`, no `0 of 0`).
 6. **Captura estrella** (rol `DEV_MB_TRANSFORM_ROLE`):
 ```sql
