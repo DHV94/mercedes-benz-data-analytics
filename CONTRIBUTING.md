@@ -7,11 +7,12 @@
 ## Branches / Ramas
 | Branch | Purpose |
 |---|---|
-| `main` | Production (**PRO**). Deliverable-ready only. Tagged releases. |
+| `main` | Production (**PRO**). Deliverable-ready only. |
 | `develop` | Integration (**DEV**). A feature lands here when it works. |
+| `pre` | Pre-production (**PRE**). Checked here before `main`. |
 | `feature-<topic>` | One task each, e.g. `feature-snowflake-setup`. Created from `develop`. Written with a hyphen because GitHub Desktop does not accept `feature/` here (a branch named `feature` already exists locally). |
 
-Flow (decision D-038): `feature-*` → `develop` → `main`, by **pull request** (or merge from GitHub Desktop). A feature goes to `develop` when it works; `develop` goes to `main` only after it has been checked there. There is **no `pre` branch** and **no `pro` branch**: `main` is production (PRO). In dbt Cloud the Development environment uses the feature branches, a deployment environment follows `develop` (DEV) and the Production environment follows `main` (PRO).
+Flow (D-038, updated by D-067): `feature-*` → `develop` → `pre` → `main`, by **pull request**. In dbt Cloud the Development environment uses the feature branches, the PRE deployment environment follows `pre` and the Production environment follows `main` (PRO). There is no `pro` branch.
 
 Every commit must be explained by the assistant before the user makes it (message + plain-language explanation).
 
@@ -20,17 +21,17 @@ Every commit must be explained by the assistant before the user makes it (messag
 <type>(<scope>): <short description in English, imperative>
 ```
 - **type**: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
-- **scope**: `ingestion`, `staging`, `silver`, `gold`, `bi`, `snowflake`, `generator`, `ci`
+- **scope**: `ingestion`, `staging`, `silver`, `gold`, `recalls`, `powerbi`, `bi`, `snowflake`, `generator`, `ci`
 - Example: `feat(ingestion): add stage and file formats for EU sales`
 
-## Versions (tags, SemVer)
+## Versions (tags, SemVer) — planned, not applied yet
 `v0.1.0-alpha` raw ingestion · `v0.2.0-alpha` staging/silver + tests · `v0.3.0-beta` star schema · `v0.4.0-beta` Power BI · `v1.0.0` final delivery.
 
 ## Naming conventions
-- Snowflake: `{ENV}_MB_{LAYER}_DB` (`DEV_MB_BRONZE_DB`, `DEV_MB_SILVER_DB`, `DEV_MB_GOLD_DB`); roles `{ENV}_MB_TRANSFORM_ROLE`.
-- dbt models: `stg_<source>__<table>`, `slv_<source>__<table>`, `int_<topic>__<verb>`, `dim_<entity>`, `fct_<event>`, `agg_<topic>`.
-- YAML files: `_<source>__models.yml`, `_<source>__sources.yml`.
-- Columns: `snake_case`, English, with units/zone in the name (`price_eur`, `sale_date_utc`).
+- Snowflake: `{ENV}_MB_{LAYER}_DB` (`DEV_MB_SILVER_DB`, `PRO_MB_GOLD_DB`); a single bronze, `DEV_MB_BRONZE_DB`. Roles: `MB_INGEST_ROLE`, `{ENV}_MB_TRANSFORM_ROLE`, `MB_REPORTING_ROLE`.
+- dbt models: `stg_<name>`, `silver_<name>`, `snap_<name>`, `dim_<entity>`, `fct_<event>`.
+- YAML files: `_sources.yml`, `_<layer>.yml`.
+- Columns: `snake_case`, English, with the unit or currency in the name when it matters (`price_net_eur`).
 
 ## Secrets
 Never commit credentials. `profiles.yml` and `.env` are git-ignored.

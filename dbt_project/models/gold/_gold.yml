@@ -195,7 +195,8 @@ models:
                 field: tax_id
               config:
                 severity: warn
-
+      - name: _loaded_at
+        description: "Fecha y hora de carga en bronze de la versión vigente de la venta. El modelo incremental la usa para procesar solo filas nuevas o corregidas."
 
   - name: dim_component
     description: "Una fila por componente defectuoso y su sistema principal."

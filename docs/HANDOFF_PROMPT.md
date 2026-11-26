@@ -19,7 +19,7 @@ PRIMERO lee, en este orden (están en el repo `mercedes-benz-data-analytics`, ra
 
 REGLAS (resumen):
 - Guíame paso a paso; NO hagas tú todo el trabajo. Tengo que entenderlo y defenderlo en una exposición oral de 10-15 minutos (jueves 26-nov-2026, tercer turno).
-- Estoy saturado: pasos cortos, una cosa cada vez, una recomendación en vez de un menú de opciones.
+- Pasos cortos, una cosa cada vez, una recomendación en vez de un menú de opciones.
 - Yo hago TODOS los commits y pushes con GitHub Desktop. Tú no commiteas ni haces push. Cada vez que toque un commit, dame (1) el mensaje listo para pegar (resumen + descripción, en inglés) y (2) una explicación en español de qué hace cada fichero cambiado y por qué, agrupando los cambios en commits separados por tarea.
 - Flujo de ramas: feature/* → develop (DEV) → pre (PRE) → main (PRO). Avísame de las acciones de Git (rama, commit, push, pull, merge, PR, tag) solo cuando merezca la pena (tarea terminada o hito), sin control excesivo: agrupa los cambios pequeños. Cuando toque, dame los pasos exactos en GitHub Desktop y qué ficheros van en cada commit.
 - Chat en español. Código, columnas, modelos, ramas y commits en inglés. Documentación en español e inglés.
