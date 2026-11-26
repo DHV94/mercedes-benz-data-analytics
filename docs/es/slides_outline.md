@@ -72,24 +72,33 @@ Detalle en `defense_justifications.md` y `roles_permissions.md`. Las seis más p
 5. ¿Por qué tres entornos y cómo evitas tocar PRO? (variable de entorno, rama y permisos por rol)
 6. ¿Qué harías con datos reales y más volumen? (ingesta automática, usuarios de servicio, un bronce por entorno)
 
-## Borrador del autor revisado (25/11): este es el guion a seguir
-| # | Diapositiva | Min | Contenido |
-|---|---|---|---|
-| 1 | Motivación | 1:00 | Por qué este trabajo |
-| 2 | Casos de uso | 1:00 | Dos descartados (predicción de modelo nuevo por región; pentesting y ciberseguridad del coche) y las cinco preguntas finales: UC1 familias, UC2 carrocería, UC3 propulsión, UC4 top 3 modelos por país en 2025, UC5 campañas mecánicas frente a electrónica/software |
-| 3 | Datos y arquitectura | 1:00 | Ventas **simuladas** y campañas **reales** (NHTSA, EE. UU.); medallion |
-| 4 | Modelos | 1:45 | **Conceptual → lógico → dimensional**, con sus versiones. La decisión estrella frente a copo de nieve es del **dimensional**. Mucho tiempo y atención |
-| 5 | Demo en directo | 3:00 | Tabla incremental y snapshot (`demo_jueves.md`) |
-| 6 | Calidad y alertas | 0:45 | Tests, avisos con filas guardadas |
-| 7 | Resultados en Power BI | 1:30 | La respuesta a cada pregunta |
-| 8 | Entornos, ramas y jobs | 1:00 | DEV, PRE, PRO; PR; job semanal |
-| 9 | Ciberseguridad | 0:30 | Roles de mínimo privilegio, lectura para Power BI, clave para dbt, sin secretos en el repositorio |
-| 10 | Mejoras | 0:30 | Bronce crudo de campañas, más regiones, ingesta automática, usuarios de servicio |
-| 11 | Toma de decisiones, IA y mi aportación | 1:00 | **Cómo decidí y cómo lo registré** (`decisions_log.md`: contexto, opciones, decisión y porqué; incluye lo descartado y lo que cambió, p. ej. D-072 tras consultar al profesorado). Qué hizo la IA y qué decidí yo. Captura del registro |
+## Borrador del autor revisado (25/11, noche): este es el guion a seguir
+| # | Diapositiva | Min | Acumulado | Contenido | Material |
+|---|---|---|---|---|---|
+| 1 | Motivación (con portada) | 1:00 | 1:00 | Por qué este trabajo | Imagen de portada |
+| 2 | Casos de uso | 1:00 | 2:00 | Dos descartados (predicción de modelo nuevo por región; pentesting y ciberseguridad del coche) y las cinco preguntas finales: UC1 familias, UC2 carrocería, UC3 propulsión, UC4 top 3 modelos por país en 2025, UC5 campañas mecánicas frente a electrónica/software | Iconos |
+| 3 | Datos y arquitectura | 1:00 | 3:00 | Ventas **simuladas** y campañas **reales** (NHTSA, EE. UU.); medallion | Diagrama de capas |
+| 4 | Modelos | 1:45 | 4:45 | **Conceptual → lógico → dimensional**, con sus versiones. La decisión estrella frente a copo de nieve es del **dimensional** | `docs/diagrams/` |
+| 5 | Demo en directo | 2:15 | 7:00 | Solo incremental y snapshot (D-078); dbt trabaja mientras se cuentan 9 y 10 (D-079) | Vídeo de respaldo |
+| 6 | Calidad y gobierno del dato | 1:00 | 8:00 | **Linaje**, **descripción de columnas**, tests y avisos con filas guardadas | Linaje: evidencia 98; captura de descripciones (por hacer); evidencia 71 |
+| 7 | Resultados en Power BI | 1:30 | 9:30 | La respuesta a cada pregunta | `docs/evidence/powerbi/` 92, 93, 94, 96, 95 |
+| 8 | Entornos, ramas y jobs | 0:50 | 10:20 | DEV, PRE, PRO; PR; job semanal; **criterios de nombres** | Evidencias 29, 62, 90 |
+| 9 | Ciberseguridad | 0:20 | 10:40 | Roles de mínimo privilegio, lectura para Power BI, clave para dbt, sin secretos en el repositorio | Evidencia 48 |
+| 10 | Mejoras | 0:30 | 11:10 | **DevSecOps**, bronce crudo de campañas, más regiones, ingesta automática, usuarios de servicio, métricas y colores | — |
+| 11 | Toma de decisiones, IA y mi aportación | 0:50 | 12:00 | **Cómo decidí y cómo lo registré** (`decisions_log.md`: contexto, opciones, decisión y porqué; lo descartado y lo que cambió). Qué hizo la IA y qué decidí yo | Captura del registro |
 
-Total: **13:00**. En cada diapositiva, una decisión con su alternativa descartada; en la 11, el **método**: el registro de decisiones.
+Total: **12:00**. En cada diapositiva, una decisión con su alternativa descartada; en la 11, el **método**.
 
-**Control del tiempo (25/11):** los 2 minutos de margen no se planifican, y a partir del minuto 10 puede haber presión para terminar. Por eso la demo y los resultados deben estar contados hacia el minuto 10 (si hace falta, modelos en 1:30). Si aprietan: diapositivas 8, 9 y 10 en una frase cada una (1:00 en total) y la 11 (decisiones, IA y mi aportación) se mantiene.
+**Control del tiempo:** los 2 minutos de margen no se planifican y a partir del minuto 10 puede haber presión. Demo y resultados terminan en el 9:30. Si la demo no cabe en 2:15 al ensayarla, en directo solo el incremental y el snapshot con captura. Si aprietan al final: 8, 9 y 10 en una frase cada una y la 11 se mantiene.
+
+### Linaje y gobierno (diapositiva 6)
+- Comprobado en el código (25/11): todas las referencias resuelven, los 7 seeds se usan, solo staging lee de bronze y no hay nombres de base de datos escritos a mano.
+- «¿Por qué `dim_date` está suelta?» Se genera con SQL, sin origen; los hechos guardan la clave de fecha y los tests `relationships` comprueban el enlace.
+- «¿La flecha `dim_family` → `dim_model` es copo de nieve?» No: es una dependencia de construcción (la clave se define en un solo sitio). En el modelo y en Power BI las dimensiones no se relacionan (D-059).
+- Descripciones: todas las columnas de staging, silver y gold descritas, salvo `_loaded_at` de `fct_sales` (pendiente). En bronze, descripción por tabla.
+
+### Mejora: DevSecOps (diapositiva 10)
+CI que ejecute `dbt build` en cada pull request, análisis de secretos y protección de ramas, y despliegue automático tras el merge.
 
 ### Cómo contar UC5 (diapositiva 7)
 - «Esta clasificación es mía: NHTSA solo indica el sistema afectado.»
@@ -105,3 +114,10 @@ Salen del gold actual, sin cambiar dbt:
 - Ranking de concesionarios (contando por `dealer_code`, no por versión).
 - Campañas por familia, junto a las unidades vendidas, **sin ratio** (EE. UU. frente a Europa).
 - Unidades afectadas por campaña (una vez por campaña, nunca sumando líneas).
+
+**Mejora visual:** aplicar los colores corporativos al informe y un mismo color por concepto entre gráficos. Se puede hacer; no se hizo por tiempo.
+
+### Criterios de nombres (diapositiva 8, no olvidar)
+- **Inglés** en código, columnas, modelos, ramas, commits y pull requests: se simula un equipo internacional. Documentación en español e inglés (`defense_justifications.md`, apartado 10).
+- Prefijos que dicen la capa o el tipo: `stg_`, `silver_`, `snap_`, `dim_`, `fct_`; bases `{DEV|PRE|PRO}_MB_{capa}_DB`; roles `..._ROLE`.
+- Ramas `feature-<tema>` y commits en formato *Conventional Commits* (`feat`, `docs`, `release`...).

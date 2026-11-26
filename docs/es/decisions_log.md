@@ -44,10 +44,10 @@
 | D-032 | 2026-11-20 | Revisiones NHTSA de 2021 a 2025, filtradas por fecha del informe | ✅ |
 | D-033 | 2026-11-20 | NHTSA: descarga del fichero plano en lugar de la API | ✅ |
 | D-034 | 2026-11-20 | Todo lo de datos bajo `data/` | ✅ |
-| D-035 | 2026-11-20 | NHTSA: bronze completo, filtrado en silver | ✅ |
+| D-035 | 2026-11-20 | NHTSA: bronze completo, filtrado en silver | 🔁 modificada por D-068 |
 | D-036 | 2026-11-20 | Revisiones NHTSA opcionales, con punto de control | ⏳ |
-| D-037 | 2026-11-20 | Alcance: solo turismos Mercedes-Benz; camiones, furgonetas y Maybach como ampliación | ✅ |
-| D-038 | 2026-11-20 | Flujo feature → develop → main, sin rama pre ni pro | ✅ |
+| D-037 | 2026-11-20 | Alcance: solo turismos Mercedes-Benz; camiones, furgonetas y Maybach como ampliación | 🔁 modificada por D-068 |
+| D-038 | 2026-11-20 | Flujo feature → develop → main, sin rama pre ni pro | 🔁 modificada por D-067 |
 | D-039 | 2026-11-20 | UC5 limitado a EE. UU. y mostrado junto a las ventas de EE. UU. | ✅ |
 
 ---
@@ -220,6 +220,7 @@
 - **Por qué**: un solo sitio para lo que son datos de entrada, separado del código dbt y de Snowflake.
 
 ## D-035 · NHTSA: bronze completo, filtrado en silver (2026-11-20)
+- **Estado**: modificada por D-068 (el filtro se aplica con un script antes de bronze; el bronze completo queda como mejora, D-074).
 - **Opciones**: (a) filtrar Mercedes-Benz antes de cargar; (b) cargar el fichero completo en bronze y filtrar después.
 - **Decisión**: (b). Bronze guarda el fichero tal como llega (todas las marcas, desde 2010); el filtro (turismos Mercedes-Benz, informes de 2021 a 2025) se hace al pasar a silver.
 - **Por qué**: bronze es una copia fiel del origen, y así el filtro queda en código dbt versionado y se puede cambiar sin volver a descargar. Los datos de otras marcas son públicos de la NHTSA y no plantean problema; el coste de almacenamiento es insignificante.
@@ -232,6 +233,7 @@
 - **Criterio para descartar**: si el miércoles 25 o antes el flujo de ventas de extremo a extremo (bronze → gold) no está estable, las revisiones salen.
 
 ## D-037 · Alcance: solo turismos (2026-11-20)
+- **Estado**: modificada por D-068 (se incluyen los vehículos Mercedes-Maybach; furgonetas y autobuses siguen fuera).
 - **Contexto**: el fichero de la NHTSA incluye también furgonetas (Sprinter, Daimler Vans), camiones, autobuses y Maybach, algo que no se había planteado.
 - **Opciones**: (a) cubrir todo el grupo Daimler/Mercedes; (b) centrarse en turismos de la marca Mercedes-Benz y decir expresamente que el resto queda fuera.
 - **Decisión**: (b). El proyecto trata **turismos Mercedes-Benz**; camiones, furgonetas y Maybach quedan fuera de alcance y se declaran así en la exposición.
@@ -239,6 +241,7 @@
 - **Cómo se aplica**: en silver se filtra `MAKETXT` en `MERCEDES-BENZ` y `MERCEDES BENZ` y `RCLTYPECD = 'V'`. Las furgonetas Sprinter vienen bajo la marca Mercedes-Benz, así que se excluyen porque su modelo no está en el catálogo (alias → variante). Ajusta el filtro de D-035, que mencionaba `MERCEDES-MAYBACH`.
 
 ## D-038 · Flujo de ramas: feature → develop → main (2026-11-20)
+- **Estado**: modificada por D-067 (se añade la rama `pre` para el entorno PRE).
 - **Contexto**: D-030 proponía trabajar solo en `develop`. Se prefiere aislar cada tarea en su propia rama, pero sin la rama `pre`.
 - **Opciones**: (a) solo `develop` (D-030); (b) `feature/*` → `develop` → `pre` → `main` (D-029); (c) `feature/*` → `develop` → `main`; (d) añadir una rama `pro` para dbt.
 - **Decisión**: (c). Una rama `feature/<tema>` por tarea; cuando funciona, a `develop` (DEV); cuando se comprueba allí, a `main` (PRO). Sin `pre`.
@@ -376,6 +379,7 @@
 - **Opciones**: (a) `dim_family` 1—M `dim_model` (copo de nieve, defendible pero rompe la estrella); (b) `dim_family` enlazada directamente a `fct_sales` (con `family_id` en el hecho) y a `fct_campaign_line`; (c) una sola dimensión de modelo con la familia y unir campañas por texto.
 - **Decisión**: (b). `fct_sales` lleva `family_id` (derivable de `model_id`), y `dim_model` conserva `family_id` y `family_name` como atributos, sin enlace a `dim_family`. Un selector de familia filtra ventas y campañas.
 - **Por qué**: estrella pura (ninguna dimensión enlaza con otra) y dimensión conforme. El coste es un dato repetido en el hecho; se protege con un test (el `family_id` del hecho coincide con el de su modelo). Descartado (c) por frágil.
+- **Nota (2026-11-25)**: el test de coherencia de `family_id` **no se implementó**; la coherencia se da por construcción, porque `fct_sales` toma `family_id` de `dim_model`. En dbt, `dim_model` depende de `dim_family` para calcular la clave, sin relación entre ambas en el modelo.
 
 ## D-060 · Tipos de impuesto: varias tasas por país y tipo explícito (2026-11-22)
 - **Contexto**: el usuario detecta que `taxes` no indica de qué impuesto se trata y que un país puede tener **varias tasas a la vez** (ejemplo: IVA general del 21 % y reducido del 4 % para familias con hijos con discapacidad). Con solo país y fecha, silver no puede saber qué tasa aplicar: el dato tiene que venir en la venta.
@@ -533,3 +537,15 @@
 - **Opciones**: (a) añadir una segmentación por familia; (b) dejar solo año y categoría.
 - **Decisión** (del autor): (b), no hace falta para la presentación.
 - **Límite a decir**: el informe no desglosa por familia; el modelo sí lo permite (`fct_campaign_line` enlaza con `dim_family`), así que es una mejora solo de informe.
+
+## D-078 · Presentación de 12 minutos con demo reducida y bloque de gobierno (2026-11-25)
+- **Contexto**: en las presentaciones del miércoles se pidió el linaje a algunos alumnos y hubo presión de tiempo hacia el minuto 10.
+- **Opciones**: (a) mantener 13:00 con demo de 3:00; (b) bajar a 12:00, con una demo más corta como una parte más.
+- **Decisión** (del autor): (b). Demo solo con incremental y snapshot (sin delta 6 ni reinicio); la diapositiva de calidad pasa a «calidad y gobierno del dato», con linaje y descripción de columnas; DevSecOps se cita como mejora.
+- **Por qué**: la demo no debe comerse la exposición y los resultados deben contarse antes del minuto 10. Límite: las alertas del delta 6 no se han probado y no se afirma que lo estén.
+
+## D-079 · Demo solapada con la exposición y probada antes en tablas temporales (2026-11-26)
+- **Contexto**: el ensayo de la demo, sin la carga, duró unos 3 minutos, y los ficheros del delta 3 (ventas) y del delta 5 (concesionarios) no se habían cargado nunca.
+- **Opciones**: (a) esperar a dbt en pantalla; (b) lanzar un solo comando de dbt sin tests y contar mientras tanto el linaje y la calidad; (c) ensayar con la carga real y reiniciar después (reinicio sin probar).
+- **Decisión** (del autor): (b), con `dbt build -s silver_sales silver_dealers snap_dealers --exclude-resource-type test`. La carga se probó antes con `COPY INTO` sobre tablas temporales (160 y 129 filas), que no toca las tablas ni su historial de carga.
+- **Por qué**: la demo no se come la exposición y el estado de partida queda intacto.
