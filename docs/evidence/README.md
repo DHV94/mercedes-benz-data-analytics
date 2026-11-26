@@ -103,5 +103,6 @@
 | 96 | `powerbi/96_powerbi_uc4_top3_modelos_por_pais.png` | UC4 en Power BI: top 3 de modelos por país en 2025, ordenado por unidades vendidas (D-076); el GLC 200 es el primero en los seis países. Datos simulados | 2026-11-25 |
 | 97 | `dbt/97_dbt_linaje_completo.png` | Linaje en dbt Cloud: orígenes de bronze, staging, silver, snapshot, seeds y gold (`+fct_sales +fct_campaign_line dim_date`) | 2026-11-25 |
 | 98 | `dbt/98_dbt_linaje_diapositiva_sin_dim_date.png` | Linaje para la diapositiva (`+fct_sales +fct_campaign_line`), sin `dim_date`, que no tiene dependencias | 2026-11-25 |
+| 99 | `dbt/99_dbt_variables_de_entorno_dev_pre_pro.png` | dbt Cloud: variables de entorno `DBT_ENV_NAME` (DEV, PRE, PRO) y `DBT_BRONZE_DB`, con las tres columnas visibles | 2026-11-26 |
 
 Las capturas 01-02 y 05-08 cuentan dos anécdotas útiles para la presentación: un error real y cómo se diagnosticó y resolvió (usuario en mayúsculas; ficheros subidos sin carpeta). Las siguientes capturas (carga correcta, dbt, tests, alertas, Power BI) se añaden con el siguiente número (80 en adelante).

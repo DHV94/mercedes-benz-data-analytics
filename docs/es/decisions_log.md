@@ -544,3 +544,8 @@
 - **Decisión** (del autor): (b). Demo solo con incremental y snapshot (sin delta 6 ni reinicio); la diapositiva de calidad pasa a «calidad y gobierno del dato», con linaje y descripción de columnas; DevSecOps se cita como mejora.
 - **Por qué**: la demo no debe comerse la exposición y los resultados deben contarse antes del minuto 10. Límite: las alertas del delta 6 no se han probado y no se afirma que lo estén.
 
+## D-079 · Demo solapada con la exposición y probada antes en tablas temporales (2026-11-26)
+- **Contexto**: el ensayo de la demo, sin la carga, duró unos 3 minutos, y los ficheros del delta 3 (ventas) y del delta 5 (concesionarios) no se habían cargado nunca.
+- **Opciones**: (a) esperar a dbt en pantalla; (b) lanzar un solo comando de dbt sin tests y contar mientras tanto el linaje y la calidad; (c) ensayar con la carga real y reiniciar después (reinicio sin probar).
+- **Decisión** (del autor): (b), con `dbt build -s silver_sales silver_dealers snap_dealers --exclude-resource-type test`. La carga se probó antes con `COPY INTO` sobre tablas temporales (160 y 129 filas), que no toca las tablas ni su historial de carga.
+- **Por qué**: la demo no se come la exposición y el estado de partida queda intacto.

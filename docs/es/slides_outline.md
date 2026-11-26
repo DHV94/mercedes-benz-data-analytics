@@ -79,7 +79,7 @@ Detalle en `defense_justifications.md` y `roles_permissions.md`. Las seis más p
 | 2 | Casos de uso | 1:00 | 2:00 | Dos descartados (predicción de modelo nuevo por región; pentesting y ciberseguridad del coche) y las cinco preguntas finales: UC1 familias, UC2 carrocería, UC3 propulsión, UC4 top 3 modelos por país en 2025, UC5 campañas mecánicas frente a electrónica/software | Iconos |
 | 3 | Datos y arquitectura | 1:00 | 3:00 | Ventas **simuladas** y campañas **reales** (NHTSA, EE. UU.); medallion | Diagrama de capas |
 | 4 | Modelos | 1:45 | 4:45 | **Conceptual → lógico → dimensional**, con sus versiones. La decisión estrella frente a copo de nieve es del **dimensional** | `docs/diagrams/` |
-| 5 | Demo en directo | 2:15 | 7:00 | Solo incremental y snapshot (D-078) | Vídeo de respaldo |
+| 5 | Demo en directo | 2:15 | 7:00 | Solo incremental y snapshot (D-078); dbt trabaja mientras se cuentan 9 y 10 (D-079) | Vídeo de respaldo |
 | 6 | Calidad y gobierno del dato | 1:00 | 8:00 | **Linaje**, **descripción de columnas**, tests y avisos con filas guardadas | Linaje: evidencia 98; captura de descripciones (por hacer); evidencia 71 |
 | 7 | Resultados en Power BI | 1:30 | 9:30 | La respuesta a cada pregunta | `docs/evidence/powerbi/` 92, 93, 94, 96, 95 |
 | 8 | Entornos, ramas y jobs | 0:50 | 10:20 | DEV, PRE, PRO; PR; job semanal; **criterios de nombres** | Evidencias 29, 62, 90 |
